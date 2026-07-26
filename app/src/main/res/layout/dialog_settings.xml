@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="22dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings"
+        android:textColor="@color/ink"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/settings_subtitle"
+        android:textColor="@color/ink_soft"
+        android:textSize="13sp" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/flagModeDefault"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:text="@string/flag_mode_default"
+        android:textColor="@color/ink" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/showBottomToggle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/show_bottom_toggle"
+        android:textColor="@color/ink" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/enableCording"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/enable_cording"
+        android:textColor="@color/ink" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/darkTheme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/dark_theme"
+        android:textColor="@color/ink" />
+
+    <TextView
+        android:id="@+id/themePicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/bg_input"
+        android:padding="12dp"
+        android:text="@string/theme_color"
+        android:textColor="@color/ink" />
+
+    <TextView
+        android:id="@+id/themeName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/ink_soft"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/errorTextPlaceholder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:textColor="@color/error" />
+
+</LinearLayout>
+</ScrollView>

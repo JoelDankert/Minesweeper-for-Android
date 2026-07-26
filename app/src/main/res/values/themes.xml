@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Minesweeper" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowBackground">@color/app_background</item>
+        <item name="android:statusBarColor">@color/app_background</item>
+        <item name="android:navigationBarColor">@color/app_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="colorPrimary">@color/accent</item>
+        <item name="colorSurface">@color/panel</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="materialAlertDialogTheme">@style/Minesweeper.Dialog</item>
+    </style>
+
+    <style name="Minesweeper.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="backgroundTint">@color/panel</item>
+    </style>
+</resources>

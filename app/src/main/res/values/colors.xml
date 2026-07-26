@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="app_background">#F7F5EF</color>
+    <color name="panel">#EFEBE2</color>
+    <color name="input">#FFFFFF</color>
+    <color name="accent">#7CA7C7</color>
+    <color name="ink">#20262B</color>
+    <color name="ink_soft">#69747C</color>
+    <color name="error">#C86A6A</color>
+</resources>
