@@ -91,6 +91,26 @@
                 android:switchPadding="14dp"
                 android:text="@string/show_top_clears" />
 
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/mergeTiles"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:switchPadding="14dp"
+                android:text="@string/merge_tiles" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/fillGaps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:switchPadding="14dp"
+                android:text="@string/fill_gaps" />
+
             <LinearLayout
                 android:id="@+id/longPressRow"
                 android:layout_width="match_parent"

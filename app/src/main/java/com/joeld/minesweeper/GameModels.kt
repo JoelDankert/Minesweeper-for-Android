@@ -14,6 +14,8 @@ data class AppSettings(
     val flagModeDefault: Boolean = false,
     val showInputToggle: Boolean = true,
     val showTopClears: Boolean = true,
+    val mergeTiles: Boolean = true,
+    val fillGaps: Boolean = true,
     val cordingEnabled: Boolean = true,
     val vibrateEnabled: Boolean = true,
     val longPressDelayMs: Int = 250,

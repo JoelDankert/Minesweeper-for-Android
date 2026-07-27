@@ -69,7 +69,7 @@ class HomeActivity : AppCompatActivity() {
 
     private fun createModeCard(mode: GameMode): View {
         val view = LayoutInflater.from(this).inflate(R.layout.item_mode_card, binding.modeStrip, false)
-        val hasProgress = repository.hasProgress(mode.id)
+        val hasProgress = repository.hasContinuableProgress(mode.id)
         val continueButton = view.findViewById<TextView>(R.id.continueButton)
         val newGameButton = view.findViewById<TextView>(R.id.newGameButton)
         view.findViewById<TextView>(R.id.modeTitle).text = mode.name
@@ -77,7 +77,7 @@ class HomeActivity : AppCompatActivity() {
         continueButton.apply {
             visibility = if (hasProgress) View.VISIBLE else View.GONE
             setOnClickListener {
-                if (repository.hasProgress(mode.id)) {
+                if (repository.hasContinuableProgress(mode.id)) {
                     openGame(mode.id, true)
                 }
             }

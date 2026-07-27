@@ -3,6 +3,7 @@ package com.joeld.minesweeper
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
@@ -22,6 +23,9 @@ class BoardView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : View(context, attrs) {
+    companion object {
+        private const val CORNER_PIECE_ANIMATION_DELAY_FRACTION = 0.62f
+    }
 
     private data class CellVisualState(
         val revealed: Boolean,
@@ -32,15 +36,40 @@ class BoardView @JvmOverloads constructor(
     )
 
     private data class CellTransition(
+        val index: Int,
         val previous: CellVisualState,
         val current: CellVisualState,
+        val previousNeighborhood: Map<Int, CellVisualState>,
+        val currentNeighborhood: Map<Int, CellVisualState>,
         val startedAtMs: Long
+    )
+
+    private data class EdgeExpansion(
+        val left: Float,
+        val top: Float,
+        val right: Float,
+        val bottom: Float
     )
 
     private enum class TransitionKind {
         REVEAL,
         FLAG,
+        MORPH,
         SNAP
+    }
+
+    private enum class MergeGroup {
+        HIDDEN,
+        REVEALED,
+        FLAGGED,
+        EXPLODED
+    }
+
+    private enum class Corner {
+        TOP_LEFT,
+        TOP_RIGHT,
+        BOTTOM_RIGHT,
+        BOTTOM_LEFT
     }
 
     interface Listener {
@@ -52,6 +81,8 @@ class BoardView @JvmOverloads constructor(
     private var listener: Listener? = null
     private var interactionsEnabled = true
     private var palette = ThemeCatalog.resolve("sand", false)
+    private var mergeTiles = true
+    private var fillGaps = true
 
     private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val hiddenPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -62,9 +93,14 @@ class BoardView @JvmOverloads constructor(
     private val minePaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val flagPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val cellRect = RectF()
+    private val shapeRect = RectF()
+    private val roundRectPath = Path()
+    private val cornerPiecePath = Path()
+    private val cornerArcRect = RectF()
     private val numberPaints = (1..8).associateWith { Paint(Paint.ANTI_ALIAS_FLAG) }
     private val flagIcon: Drawable? = ContextCompat.getDrawable(context, R.drawable.ic_flag_material)?.mutate()
     private val lastCellStates = mutableMapOf<Int, CellVisualState>()
+    private val previousCellStates = mutableMapOf<Int, CellVisualState>()
     private val cellTransitions = mutableMapOf<Int, CellTransition>()
 
     private var scale = 1f
@@ -141,19 +177,62 @@ class BoardView @JvmOverloads constructor(
         invalidate()
     }
 
+    fun setMergeTiles(enabled: Boolean) {
+        mergeTiles = enabled
+        invalidate()
+    }
+
+    fun setFillGaps(enabled: Boolean) {
+        fillGaps = enabled
+        invalidate()
+    }
+
     fun refresh() {
         val current = game ?: return
         val currentStates = captureCurrentStates(current)
+        val currentStateMap = currentStates.withIndex().associate { it.index to it.value }
         if (animationDurationMs > 0L) {
             val now = SystemClock.elapsedRealtime()
+            val transitionIndexes = linkedSetOf<Int>()
             currentStates.forEachIndexed { index, state ->
                 val previous = lastCellStates[index]
                 if (previous != null && previous != state) {
-                    cellTransitions[index] = CellTransition(previous, state, now)
+                    transitionIndexes += index
+                    neighborIndexes(index, current.width(), current.height()).forEach(transitionIndexes::add)
                 }
             }
+            val previousStateMap = lastCellStates.toMap()
+            transitionIndexes.forEach { index ->
+                val previous = previousStateMap[index] ?: return@forEach
+                val currentState = currentStates[index]
+                val previousNeighborhood = captureNeighborhoodStates(index, current.width(), current.height(), previousStateMap)
+                val currentNeighborhood = captureNeighborhoodStates(index, current.width(), current.height(), currentStateMap)
+                val existing = cellTransitions[index]
+                val shouldKeepExisting = existing != null &&
+                    existing.current == currentState &&
+                    neighborhoodsEqual(existing.currentNeighborhood, currentNeighborhood)
+                if (!shouldKeepExisting &&
+                    (
+                        previous != currentState ||
+                            cornerSignature(index, current.width(), current.height(), previousStateMap) != cornerSignature(index, current.width(), current.height(), currentStateMap) ||
+                            !neighborhoodsEqual(previousNeighborhood, currentNeighborhood)
+                        )
+                ) {
+                    cellTransitions[index] = CellTransition(
+                        index = index,
+                        previous = previous,
+                        current = currentState,
+                        previousNeighborhood = previousNeighborhood,
+                        currentNeighborhood = currentNeighborhood,
+                        startedAtMs = now
+                    )
+                }
+            }
+            previousCellStates.clear()
+            previousCellStates.putAll(previousStateMap)
         } else {
             cellTransitions.clear()
+            previousCellStates.clear()
         }
         lastCellStates.clear()
         currentStates.forEachIndexed { index, state -> lastCellStates[index] = state }
@@ -205,8 +284,7 @@ class BoardView @JvmOverloads constructor(
                 if (right < 0f || bottom < 0f || left > width || top > height) continue
                 val cell = current.getCell(col, row)
                 cellRect.set(left, top, right, bottom)
-                val inset = (cellSize * 0.035f).coerceAtLeast(1f)
-                cellRect.inset(inset, inset)
+                val inset = (cellSize * 0.024f).coerceAtLeast(0.8f)
                 val radius = cellSize * 0.22f
 
                 val currentState = CellVisualState(
@@ -221,13 +299,13 @@ class BoardView @JvmOverloads constructor(
                     val progress = ((now - transition.startedAtMs).toFloat() / animationDurationMs.toFloat()).coerceIn(0f, 1f)
                     if (progress < 1f) {
                         hasActiveAnimations = true
-                        drawCellTransition(canvas, cellRect, radius, transition, eased(progress))
+                        drawCellTransition(canvas, cellRect, inset, radius, transition, eased(progress), current.width(), current.height())
                     } else {
                         cellTransitions.remove(index)
-                        drawCellState(canvas, cellRect, radius, currentState, 255)
+                        drawCellState(canvas, cellRect, inset, radius, currentState, 255, index, current.width(), current.height(), lastCellStates)
                     }
                 } else {
-                    drawCellState(canvas, cellRect, radius, currentState, 255)
+                    drawCellState(canvas, cellRect, inset, radius, currentState, 255, index, current.width(), current.height(), lastCellStates)
                 }
             }
         }
@@ -317,7 +395,7 @@ class BoardView @JvmOverloads constructor(
             android.graphics.Color.parseColor("#C7CCD1")
         }
         flagIcon?.let {
-            DrawableCompat.setTint(it, themePalette.background)
+            DrawableCompat.setTint(it, minePaint.color)
         }
 
         numberPaints.forEach { (_, paint) ->
@@ -327,7 +405,21 @@ class BoardView @JvmOverloads constructor(
         }
     }
 
-    private fun drawCellState(canvas: Canvas, rect: RectF, radius: Float, state: CellVisualState, alpha: Int) {
+    private fun drawCellState(
+        canvas: Canvas,
+        baseRect: RectF,
+        inset: Float,
+        radius: Float,
+        state: CellVisualState,
+        alpha: Int,
+        index: Int,
+        boardWidth: Int,
+        boardHeight: Int,
+        states: Map<Int, CellVisualState>
+    ) {
+        val cornerRadii = cornerRadii(index, boardWidth, boardHeight, states, state, radius)
+        val reverseCorners = reverseCorners(index, boardWidth, boardHeight, states, state, radius, inset)
+        val rect = adjustedRect(baseRect, inset, edgeExpansion(index, boardWidth, boardHeight, states, state, inset))
         when {
             state.revealed -> {
                 val fillPaint = when {
@@ -336,16 +428,18 @@ class BoardView @JvmOverloads constructor(
                     state.isMine -> revealedMinePaint
                     else -> revealedPaint
                 }
-                drawRoundRectWithAlpha(canvas, rect, radius, fillPaint, alpha)
+                drawShapeWithAlpha(canvas, rect, cornerRadii, reverseCorners, fillPaint, alpha)
             }
             state.flagged -> {
-                drawRoundRectWithAlpha(canvas, rect, radius, flagPaint, alpha)
+                drawShapeWithAlpha(canvas, rect, cornerRadii, reverseCorners, flagPaint, alpha)
                 drawFlag(canvas, rect, alpha)
             }
             else -> {
-                drawRoundRectWithAlpha(canvas, rect, radius, hiddenPaint, alpha)
+                drawShapeWithAlpha(canvas, rect, cornerRadii, reverseCorners, hiddenPaint, alpha)
             }
         }
+
+        drawForeignCornerFixes(canvas, rect, radius + inset, index, boardWidth, boardHeight, states, alpha, 1f)
 
         if (state.revealed) {
             if (state.isMine) {
@@ -358,15 +452,68 @@ class BoardView @JvmOverloads constructor(
 
     private fun drawCellTransition(
         canvas: Canvas,
-        rect: RectF,
+        baseRect: RectF,
+        inset: Float,
         radius: Float,
         transition: CellTransition,
-        progress: Float
+        progress: Float,
+        boardWidth: Int,
+        boardHeight: Int
     ) {
-        when (transitionKind(transition.previous, transition.current)) {
-            TransitionKind.REVEAL -> drawRevealTransition(canvas, rect, radius, transition.previous, transition.current, progress)
-            TransitionKind.FLAG -> drawFlagTransition(canvas, rect, radius, transition.previous, transition.current, progress)
-            TransitionKind.SNAP -> drawCellState(canvas, rect, radius, transition.current, 255)
+        val previousRadii = cornerRadii(transition.index, boardWidth, boardHeight, transition.previousNeighborhood, transition.previous, radius)
+        val currentRadii = cornerRadii(transition.index, boardWidth, boardHeight, transition.currentNeighborhood, transition.current, radius)
+        val previousReverseCorners = reverseCorners(transition.index, boardWidth, boardHeight, transition.previousNeighborhood, transition.previous, radius, inset)
+        val currentReverseCorners = reverseCorners(transition.index, boardWidth, boardHeight, transition.currentNeighborhood, transition.current, radius, inset)
+        val previousRect = adjustedRect(
+            baseRect,
+            inset,
+            edgeExpansion(transition.index, boardWidth, boardHeight, transition.previousNeighborhood, transition.previous, inset)
+        )
+        val currentRect = adjustedRect(
+            baseRect,
+            inset,
+            edgeExpansion(transition.index, boardWidth, boardHeight, transition.currentNeighborhood, transition.current, inset)
+        )
+        val morphRect = lerpRect(previousRect, currentRect, progress)
+        val morphRadii = lerpRadii(previousRadii, currentRadii, progress)
+        val morphReverseCorners = lerpCornerFixes(previousReverseCorners, currentReverseCorners, progress)
+        val kind = transitionKind(transition.previous, transition.current)
+        when (kind) {
+            TransitionKind.REVEAL -> drawRevealTransition(canvas, previousRect, morphRect, transition.previous, transition.current, progress, previousRadii, morphRadii, previousReverseCorners, morphReverseCorners)
+            TransitionKind.FLAG -> drawFlagTransition(canvas, morphRect, transition.previous, transition.current, progress, morphRadii, morphReverseCorners)
+            TransitionKind.MORPH -> drawMorphTransition(canvas, morphRect, transition.current, morphRadii, morphReverseCorners)
+            TransitionKind.SNAP -> drawCellState(canvas, baseRect, inset, radius, transition.current, 255, transition.index, boardWidth, boardHeight, lastCellStates)
+        }
+        when (kind) {
+            TransitionKind.REVEAL, TransitionKind.FLAG -> {
+                val cornerProgress = delayedCornerPieceProgress(progress)
+                drawForeignCornerFixes(
+                    canvas,
+                    previousRect,
+                    radius + inset,
+                    transition.index,
+                    boardWidth,
+                    boardHeight,
+                    transition.previousNeighborhood,
+                    255,
+                    1f - cornerProgress
+                )
+                drawForeignCornerFixes(
+                    canvas,
+                    morphRect,
+                    radius + inset,
+                    transition.index,
+                    boardWidth,
+                    boardHeight,
+                    transition.currentNeighborhood,
+                    255,
+                    cornerProgress
+                )
+            }
+            TransitionKind.MORPH -> {
+                drawForeignCornerFixes(canvas, morphRect, radius + inset, transition.index, boardWidth, boardHeight, lastCellStates, 255, 1f)
+            }
+            TransitionKind.SNAP -> Unit
         }
     }
 
@@ -374,45 +521,67 @@ class BoardView @JvmOverloads constructor(
         return when {
             !previous.revealed && current.revealed -> TransitionKind.REVEAL
             !previous.revealed && !current.revealed && previous.flagged != current.flagged -> TransitionKind.FLAG
+            previous == current -> TransitionKind.MORPH
             else -> TransitionKind.SNAP
         }
     }
 
     private fun drawRevealTransition(
         canvas: Canvas,
-        rect: RectF,
-        radius: Float,
+        previousRect: RectF,
+        currentRect: RectF,
         previous: CellVisualState,
         current: CellVisualState,
-        progress: Float
+        progress: Float,
+        previousRadii: FloatArray,
+        currentRadii: FloatArray,
+        previousReverseCorners: FloatArray,
+        currentReverseCorners: FloatArray
     ) {
-        drawCellBase(canvas, rect, radius, current, 255)
-        drawCellContent(canvas, rect, current, fadeAlpha(progress))
+        gridPaint.color = lerpColor(fillColorForState(previous), fillColorForState(current), progress)
+        drawShapeWithAlpha(canvas, currentRect, lerpRadii(previousRadii, currentRadii, progress), currentReverseCorners, gridPaint, 255)
+        gridPaint.color = palette.grid
+        drawCellContent(canvas, currentRect, current, fadeAlpha(progress))
 
-        drawRoundRectWithAlpha(canvas, rect, radius, hiddenPaint, fadeAlpha(1f - progress))
-        drawCellContent(canvas, rect, previous, fadeAlpha(1f - progress))
+        if (previous.flagged) {
+            drawCellContent(canvas, previousRect, previous, fadeAlpha(1f - progress))
+        }
+        if (!previous.flagged) {
+            drawShapeWithAlpha(canvas, previousRect, previousRadii, previousReverseCorners, hiddenPaint, fadeAlpha(1f - progress))
+        }
     }
 
     private fun drawFlagTransition(
         canvas: Canvas,
         rect: RectF,
-        radius: Float,
         previous: CellVisualState,
         current: CellVisualState,
-        progress: Float
+        progress: Float,
+        radii: FloatArray,
+        reverseCorners: FloatArray
     ) {
         val startColor = if (previous.flagged) flagPaint.color else hiddenPaint.color
         val endColor = if (current.flagged) flagPaint.color else hiddenPaint.color
         gridPaint.color = lerpColor(startColor, endColor, progress)
-        canvas.drawRoundRect(rect, radius, radius, gridPaint)
+        drawShapeWithAlpha(canvas, rect, radii, reverseCorners, gridPaint, 255)
         gridPaint.color = palette.grid
 
         drawCellContent(canvas, rect, previous, fadeAlpha(1f - progress))
         drawCellContent(canvas, rect, current, fadeAlpha(progress))
     }
 
-    private fun drawCellBase(canvas: Canvas, rect: RectF, radius: Float, state: CellVisualState, alpha: Int) {
-        val fillPaint = when {
+    private fun drawMorphTransition(canvas: Canvas, rect: RectF, state: CellVisualState, radii: FloatArray, reverseCorners: FloatArray) {
+        drawCellBase(canvas, rect, state, 255, radii, reverseCorners)
+        drawCellContent(canvas, rect, state, 255)
+    }
+
+    private fun drawCellBase(canvas: Canvas, rect: RectF, state: CellVisualState, alpha: Int, radii: FloatArray, reverseCorners: FloatArray) {
+        val fillPaint = fillPaintForState(state)
+        drawShapeWithAlpha(canvas, rect, radii, reverseCorners, fillPaint, alpha)
+    }
+
+    private fun fillPaintForState(state: CellVisualState): Paint {
+        return when {
             state.revealed && state.isMine && state.exploded -> explodedMinePaint
             state.revealed && state.isMine && state.flagged -> flagPaint
             state.revealed && state.isMine -> revealedMinePaint
@@ -420,8 +589,9 @@ class BoardView @JvmOverloads constructor(
             state.flagged -> flagPaint
             else -> hiddenPaint
         }
-        drawRoundRectWithAlpha(canvas, rect, radius, fillPaint, alpha)
     }
+
+    private fun fillColorForState(state: CellVisualState): Int = fillPaintForState(state).color
 
     private fun drawCellContent(canvas: Canvas, rect: RectF, state: CellVisualState, alpha: Int) {
         if (alpha <= 0) return
@@ -503,10 +673,13 @@ class BoardView @JvmOverloads constructor(
         paint.alpha = originalAlpha
     }
 
-    private fun drawRoundRectWithAlpha(canvas: Canvas, rect: RectF, radius: Float, paint: Paint, alpha: Int) {
+    private fun drawShapeWithAlpha(canvas: Canvas, rect: RectF, radii: FloatArray, reverseCorners: FloatArray, paint: Paint, alpha: Int) {
         val originalAlpha = paint.alpha
         paint.alpha = alpha
-        canvas.drawRoundRect(rect, radius, radius, paint)
+        roundRectPath.reset()
+        roundRectPath.addRoundRect(rect, radii, Path.Direction.CW)
+        applyReverseCorners(rect, reverseCorners)
+        canvas.drawPath(roundRectPath, paint)
         paint.alpha = originalAlpha
     }
 
@@ -534,9 +707,328 @@ class BoardView @JvmOverloads constructor(
         return android.graphics.Color.argb(a, r, g, b)
     }
 
+    private fun lerpRadii(from: FloatArray, to: FloatArray, progress: Float): FloatArray {
+        val clamped = progress.coerceIn(0f, 1f)
+        return FloatArray(8) { index ->
+            from[index] + (to[index] - from[index]) * clamped
+        }
+    }
+
+    private fun lerpCornerFixes(from: FloatArray, to: FloatArray, progress: Float): FloatArray {
+        val clamped = progress.coerceIn(0f, 1f)
+        return FloatArray(4) { index ->
+            from[index] + (to[index] - from[index]) * clamped
+        }
+    }
+
+    private fun lerpRect(from: RectF, to: RectF, progress: Float): RectF {
+        val clamped = progress.coerceIn(0f, 1f)
+        return RectF(
+            from.left + (to.left - from.left) * clamped,
+            from.top + (to.top - from.top) * clamped,
+            from.right + (to.right - from.right) * clamped,
+            from.bottom + (to.bottom - from.bottom) * clamped
+        )
+    }
+
     private fun eased(progress: Float): Float {
         val clamped = progress.coerceIn(0f, 1f)
         return 1f - (1f - clamped) * (1f - clamped)
+    }
+
+    private fun cornerRadii(
+        index: Int,
+        boardWidth: Int,
+        boardHeight: Int,
+        states: Map<Int, CellVisualState>,
+        state: CellVisualState,
+        radius: Float
+    ): FloatArray {
+        if (!mergeTiles) {
+            return FloatArray(8) { radius }
+        }
+        val row = index / boardWidth
+        val col = index % boardWidth
+        val group = mergeGroup(state)
+        val topSame = neighborMatches(col, row - 1, boardWidth, boardHeight, states, group)
+        val rightSame = neighborMatches(col + 1, row, boardWidth, boardHeight, states, group)
+        val bottomSame = neighborMatches(col, row + 1, boardWidth, boardHeight, states, group)
+        val leftSame = neighborMatches(col - 1, row, boardWidth, boardHeight, states, group)
+
+        val topLeft = if (topSame || leftSame) 0f else radius
+        val topRight = if (topSame || rightSame) 0f else radius
+        val bottomRight = if (bottomSame || rightSame) 0f else radius
+        val bottomLeft = if (bottomSame || leftSame) 0f else radius
+
+        return floatArrayOf(
+            topLeft, topLeft,
+            topRight, topRight,
+            bottomRight, bottomRight,
+            bottomLeft, bottomLeft
+        )
+    }
+
+    private fun reverseCorners(
+        index: Int,
+        boardWidth: Int,
+        boardHeight: Int,
+        states: Map<Int, CellVisualState>,
+        state: CellVisualState,
+        radius: Float,
+        inset: Float
+    ): FloatArray {
+        return floatArrayOf(0f, 0f, 0f, 0f)
+    }
+
+    private fun edgeExpansion(
+        index: Int,
+        boardWidth: Int,
+        boardHeight: Int,
+        states: Map<Int, CellVisualState>,
+        state: CellVisualState,
+        inset: Float
+    ): EdgeExpansion {
+        if (!fillGaps) return EdgeExpansion(0f, 0f, 0f, 0f)
+        val row = index / boardWidth
+        val col = index % boardWidth
+        val group = mergeGroup(state)
+        val overlap = edgeOverlap(inset)
+        val connectedExpansion = inset
+        return EdgeExpansion(
+            left = if (neighborMatches(col - 1, row, boardWidth, boardHeight, states, group)) connectedExpansion + overlap else 0f,
+            top = if (neighborMatches(col, row - 1, boardWidth, boardHeight, states, group)) connectedExpansion + overlap else 0f,
+            right = if (neighborMatches(col + 1, row, boardWidth, boardHeight, states, group)) connectedExpansion + overlap else 0f,
+            bottom = if (neighborMatches(col, row + 1, boardWidth, boardHeight, states, group)) connectedExpansion + overlap else 0f
+        )
+    }
+
+    private fun adjustedRect(baseRect: RectF, inset: Float, expansion: EdgeExpansion): RectF {
+        shapeRect.set(
+            baseRect.left + inset - expansion.left,
+            baseRect.top + inset - expansion.top,
+            baseRect.right - inset + expansion.right,
+            baseRect.bottom - inset + expansion.bottom
+        )
+        return RectF(shapeRect)
+    }
+
+    private fun applyReverseCorners(rect: RectF, reverseCorners: FloatArray) = Unit
+
+    private fun drawForeignCornerFixes(
+        canvas: Canvas,
+        rect: RectF,
+        pieceSize: Float,
+        index: Int,
+        boardWidth: Int,
+        boardHeight: Int,
+        states: Map<Int, CellVisualState>,
+        alpha: Int,
+        expansionProgress: Float
+    ) {
+        if (!fillGaps || alpha <= 0 || expansionProgress <= 0f) return
+        val current = states[index] ?: return
+        val currentGroup = mergeGroup(current)
+        val row = index / boardWidth
+        val col = index % boardWidth
+
+        foreignCornerGroup(col, row, boardWidth, boardHeight, states, currentGroup, Corner.TOP_LEFT)?.let {
+            drawCornerPiece(canvas, rect, Corner.TOP_LEFT, pieceSize, fillPaintForGroup(it), alpha, expansionProgress)
+        }
+        foreignCornerGroup(col, row, boardWidth, boardHeight, states, currentGroup, Corner.TOP_RIGHT)?.let {
+            drawCornerPiece(canvas, rect, Corner.TOP_RIGHT, pieceSize, fillPaintForGroup(it), alpha, expansionProgress)
+        }
+        foreignCornerGroup(col, row, boardWidth, boardHeight, states, currentGroup, Corner.BOTTOM_RIGHT)?.let {
+            drawCornerPiece(canvas, rect, Corner.BOTTOM_RIGHT, pieceSize, fillPaintForGroup(it), alpha, expansionProgress)
+        }
+        foreignCornerGroup(col, row, boardWidth, boardHeight, states, currentGroup, Corner.BOTTOM_LEFT)?.let {
+            drawCornerPiece(canvas, rect, Corner.BOTTOM_LEFT, pieceSize, fillPaintForGroup(it), alpha, expansionProgress)
+        }
+    }
+
+    private fun foreignCornerGroup(
+        col: Int,
+        row: Int,
+        boardWidth: Int,
+        boardHeight: Int,
+        states: Map<Int, CellVisualState>,
+        currentGroup: MergeGroup,
+        corner: Corner
+    ): MergeGroup? {
+        val offsets = when (corner) {
+            Corner.TOP_LEFT -> listOf(0 to -1, -1 to 0, -1 to -1)
+            Corner.TOP_RIGHT -> listOf(0 to -1, 1 to 0, 1 to -1)
+            Corner.BOTTOM_RIGHT -> listOf(0 to 1, 1 to 0, 1 to 1)
+            Corner.BOTTOM_LEFT -> listOf(0 to 1, -1 to 0, -1 to 1)
+        }
+        val groups = offsets.map { (dx, dy) ->
+            val x = col + dx
+            val y = row + dy
+            if (x !in 0 until boardWidth || y !in 0 until boardHeight) return null
+            val state = states[y * boardWidth + x] ?: return null
+            mergeGroup(state)
+        }
+        val targetGroup = groups.first()
+        return if (targetGroup != currentGroup && groups.all { it == targetGroup }) targetGroup else null
+    }
+
+    private fun fillPaintForGroup(group: MergeGroup): Paint {
+        return when (group) {
+            MergeGroup.HIDDEN -> hiddenPaint
+            MergeGroup.REVEALED -> revealedPaint
+            MergeGroup.FLAGGED -> flagPaint
+            MergeGroup.EXPLODED -> explodedMinePaint
+        }
+    }
+
+    private fun drawCornerPiece(
+        canvas: Canvas,
+        rect: RectF,
+        corner: Corner,
+        pieceSize: Float,
+        paint: Paint,
+        alpha: Int,
+        expansionProgress: Float
+    ) {
+        val originalAlpha = paint.alpha
+        paint.alpha = alpha
+        cornerPiecePath.reset()
+        val cornerRadius = rect.width() * 0.22f
+        val inset = ((pieceSize - cornerRadius) / 1.44f).coerceAtLeast(0f)
+        val gapToFill = fillGapDistance(inset)
+        val expandedSize = pieceSize + gapToFill
+        val anchorShift = gapToFill * 1.5f
+        val progress = expansionProgress.coerceIn(0f, 1f)
+        val animatedSize = expandedSize * progress
+        when (corner) {
+            Corner.TOP_LEFT -> {
+                val shiftedLeft = rect.left - anchorShift
+                val shiftedTop = rect.top - anchorShift
+                cornerPiecePath.moveTo(shiftedLeft, shiftedTop + animatedSize)
+                cornerArcRect.set(shiftedLeft, shiftedTop, shiftedLeft + animatedSize * 2f, shiftedTop + animatedSize * 2f)
+                cornerPiecePath.arcTo(cornerArcRect, 180f, 90f, false)
+                cornerPiecePath.lineTo(shiftedLeft, shiftedTop)
+            }
+            Corner.TOP_RIGHT -> {
+                val shiftedRight = rect.right + anchorShift
+                val shiftedTop = rect.top - anchorShift
+                cornerPiecePath.moveTo(shiftedRight - animatedSize, shiftedTop)
+                cornerArcRect.set(shiftedRight - animatedSize * 2f, shiftedTop, shiftedRight, shiftedTop + animatedSize * 2f)
+                cornerPiecePath.arcTo(cornerArcRect, 270f, 90f, false)
+                cornerPiecePath.lineTo(shiftedRight, shiftedTop)
+            }
+            Corner.BOTTOM_RIGHT -> {
+                val shiftedRight = rect.right + anchorShift
+                val shiftedBottom = rect.bottom + anchorShift
+                cornerPiecePath.moveTo(shiftedRight, shiftedBottom - animatedSize)
+                cornerArcRect.set(shiftedRight - animatedSize * 2f, shiftedBottom - animatedSize * 2f, shiftedRight, shiftedBottom)
+                cornerPiecePath.arcTo(cornerArcRect, 0f, 90f, false)
+                cornerPiecePath.lineTo(shiftedRight, shiftedBottom)
+            }
+            Corner.BOTTOM_LEFT -> {
+                val shiftedLeft = rect.left - anchorShift
+                val shiftedBottom = rect.bottom + anchorShift
+                cornerPiecePath.moveTo(shiftedLeft + animatedSize, shiftedBottom)
+                cornerArcRect.set(shiftedLeft, shiftedBottom - animatedSize * 2f, shiftedLeft + animatedSize * 2f, shiftedBottom)
+                cornerPiecePath.arcTo(cornerArcRect, 90f, 90f, false)
+                cornerPiecePath.lineTo(shiftedLeft, shiftedBottom)
+            }
+        }
+        cornerPiecePath.close()
+        canvas.drawPath(cornerPiecePath, paint)
+        paint.alpha = originalAlpha
+    }
+
+    private fun delayedCornerPieceProgress(progress: Float): Float {
+        val clamped = progress.coerceIn(0f, 1f)
+        if (clamped <= CORNER_PIECE_ANIMATION_DELAY_FRACTION) return 0f
+        return ((clamped - CORNER_PIECE_ANIMATION_DELAY_FRACTION) / (1f - CORNER_PIECE_ANIMATION_DELAY_FRACTION)).coerceIn(0f, 1f)
+    }
+
+    private fun edgeOverlap(inset: Float): Float {
+        return max(resources.displayMetrics.density * 0.28f, inset * 0.08f)
+    }
+
+    private fun fillGapDistance(inset: Float): Float {
+        return (inset - edgeOverlap(inset)).coerceAtLeast(0f)
+    }
+
+    private fun neighborMatches(
+        col: Int,
+        row: Int,
+        boardWidth: Int,
+        boardHeight: Int,
+        states: Map<Int, CellVisualState>,
+        group: MergeGroup
+    ): Boolean {
+        if (col !in 0 until boardWidth || row !in 0 until boardHeight) return false
+        val neighborState = states[row * boardWidth + col] ?: return false
+        return mergeGroup(neighborState) == group
+    }
+
+    private fun mergeGroup(state: CellVisualState): MergeGroup {
+        return when {
+            state.revealed && state.isMine && state.exploded -> MergeGroup.EXPLODED
+            state.isMine && state.flagged -> MergeGroup.FLAGGED
+            state.isMine -> MergeGroup.HIDDEN
+            state.revealed -> MergeGroup.REVEALED
+            state.flagged -> MergeGroup.FLAGGED
+            else -> MergeGroup.HIDDEN
+        }
+    }
+
+    private fun cornerSignature(index: Int, boardWidth: Int, boardHeight: Int, states: Map<Int, CellVisualState>): String {
+        val state = states[index] ?: return ""
+        val row = index / boardWidth
+        val col = index % boardWidth
+        val group = mergeGroup(state)
+        return buildString(4) {
+            append(if (neighborMatches(col, row - 1, boardWidth, boardHeight, states, group)) '1' else '0')
+            append(if (neighborMatches(col + 1, row, boardWidth, boardHeight, states, group)) '1' else '0')
+            append(if (neighborMatches(col, row + 1, boardWidth, boardHeight, states, group)) '1' else '0')
+            append(if (neighborMatches(col - 1, row, boardWidth, boardHeight, states, group)) '1' else '0')
+        }
+    }
+
+    private fun neighborIndexes(index: Int, boardWidth: Int, boardHeight: Int): List<Int> {
+        val row = index / boardWidth
+        val col = index % boardWidth
+        val result = ArrayList<Int>(5)
+        result += index
+        if (row > 0) result += (row - 1) * boardWidth + col
+        if (col < boardWidth - 1) result += row * boardWidth + (col + 1)
+        if (row < boardHeight - 1) result += (row + 1) * boardWidth + col
+        if (col > 0) result += row * boardWidth + (col - 1)
+        return result
+    }
+
+    private fun captureNeighborhoodStates(
+        index: Int,
+        boardWidth: Int,
+        boardHeight: Int,
+        states: Map<Int, CellVisualState>
+    ): Map<Int, CellVisualState> {
+        val row = index / boardWidth
+        val col = index % boardWidth
+        val neighborhood = LinkedHashMap<Int, CellVisualState>(9)
+        for (dy in -1..1) {
+            for (dx in -1..1) {
+                val x = col + dx
+                val y = row + dy
+                if (x !in 0 until boardWidth || y !in 0 until boardHeight) continue
+                val neighborIndex = y * boardWidth + x
+                val state = states[neighborIndex] ?: continue
+                neighborhood[neighborIndex] = state
+            }
+        }
+        return neighborhood
+    }
+
+    private fun neighborhoodsEqual(
+        first: Map<Int, CellVisualState>,
+        second: Map<Int, CellVisualState>
+    ): Boolean {
+        if (first.size != second.size) return false
+        return first.all { (index, state) -> second[index] == state }
     }
 
     private fun captureCurrentStates(currentGame: MinesweeperGame): List<CellVisualState> {

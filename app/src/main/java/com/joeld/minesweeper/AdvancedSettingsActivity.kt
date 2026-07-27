@@ -43,6 +43,9 @@ class AdvancedSettingsActivity : AppCompatActivity() {
             restorePending = !restorePending
             updateRestoreModesState()
         }
+        binding.mergeTiles.setOnCheckedChangeListener { _, isChecked ->
+            updateFillGapsState(isChecked)
+        }
         binding.longPressSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 binding.longPressValue.text = formatLongPressDelay(progressToDelay(progress))
@@ -85,6 +88,9 @@ class AdvancedSettingsActivity : AppCompatActivity() {
     private fun bindValues() {
         binding.showBottomToggle.isChecked = settings.showInputToggle
         binding.showTopClears.isChecked = settings.showTopClears
+        binding.mergeTiles.isChecked = settings.mergeTiles
+        binding.fillGaps.isChecked = settings.fillGaps
+        updateFillGapsState(binding.mergeTiles.isChecked)
         binding.longPressSeekBar.progress = delayToProgress(settings.longPressDelayMs)
         binding.longPressValue.text = formatLongPressDelay(settings.longPressDelayMs)
         val snappedAnimationSpeed = snapAnimationSpeed(settings.animationSpeedPercent)
@@ -101,6 +107,8 @@ class AdvancedSettingsActivity : AppCompatActivity() {
             settings.copy(
                 showInputToggle = binding.showBottomToggle.isChecked,
                 showTopClears = binding.showTopClears.isChecked,
+                mergeTiles = binding.mergeTiles.isChecked,
+                fillGaps = binding.mergeTiles.isChecked && binding.fillGaps.isChecked,
                 longPressDelayMs = progressToDelay(binding.longPressSeekBar.progress),
                 animationSpeedPercent = snapAnimationSpeed(binding.animationSpeedSeekBar.progress)
             )
@@ -123,7 +131,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         binding.longPressValue.setTextColor(palette.inkSoft)
         binding.animationSpeedLabel.setTextColor(palette.ink)
         binding.animationSpeedValue.setTextColor(palette.inkSoft)
-        listOf(binding.showBottomToggle, binding.showTopClears).forEach {
+        listOf(binding.showBottomToggle, binding.showTopClears, binding.mergeTiles, binding.fillGaps).forEach {
             it.setTextColor(palette.ink)
             applySwitchPalette(it)
         }
@@ -150,12 +158,21 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         }
         binding.backButton.imageTintList = ColorStateList.valueOf(palette.ink)
         updateRestoreModesState()
+        updateFillGapsState(binding.mergeTiles.isChecked)
     }
 
     private fun updateRestoreModesState() {
         binding.restoreModesValue.text =
             getString(if (restorePending) R.string.pending else R.string.restore)
         binding.restoreModesValue.setTextColor(if (restorePending) palette.accent else palette.inkSoft)
+    }
+
+    private fun updateFillGapsState(mergeEnabled: Boolean) {
+        binding.fillGaps.isEnabled = mergeEnabled
+        binding.fillGaps.alpha = if (mergeEnabled) 1f else 0.45f
+        if (!mergeEnabled) {
+            binding.fillGaps.isChecked = false
+        }
     }
 
     private fun applySwitchPalette(switch: MaterialSwitch) {

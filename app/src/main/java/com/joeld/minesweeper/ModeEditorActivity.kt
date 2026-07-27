@@ -114,7 +114,7 @@ class ModeEditorActivity : AppCompatActivity() {
         } else {
             modes.map { if (it.id == updated.id) updated else it }.toMutableList()
         }
-        val requiresConfirmation = existingMode != null && existingMode != updated
+        val requiresConfirmation = existingMode != null && modeRulesChanged(existingMode!!, updated)
         if (requiresConfirmation) {
             pendingModeSave = updated
             pendingDeleteModeId = null
@@ -144,10 +144,18 @@ class ModeEditorActivity : AppCompatActivity() {
         }
         repository.saveModes(finalModes)
         repository.saveSelectedModeId(updated.id)
-        if (existingMode != null && existingMode != updated) {
+        if (existingMode != null && modeRulesChanged(existingMode!!, updated)) {
             repository.clearModeData(updated.id)
         }
         finish()
+    }
+
+    private fun modeRulesChanged(previous: GameMode, updated: GameMode): Boolean {
+        return previous.width != updated.width ||
+            previous.height != updated.height ||
+            previous.mines != updated.mines ||
+            previous.noGuess != updated.noGuess ||
+            previous.noFlagMode != updated.noFlagMode
     }
 
     private fun persistDelete(modeId: String) {
