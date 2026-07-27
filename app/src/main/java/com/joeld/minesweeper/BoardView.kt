@@ -23,10 +23,6 @@ class BoardView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : View(context, attrs) {
-    companion object {
-        private const val CORNER_PIECE_ANIMATION_DELAY_FRACTION = 0.62f
-    }
-
     private data class CellVisualState(
         val revealed: Boolean,
         val flagged: Boolean,
@@ -309,6 +305,31 @@ class BoardView @JvmOverloads constructor(
                 }
             }
         }
+        for (row in 0 until current.height()) {
+            for (col in 0 until current.width()) {
+                val index = row * current.width() + col
+                val left = offsetX + col * cellSize
+                val top = offsetY + row * cellSize
+                val right = left + cellSize
+                val bottom = top + cellSize
+                if (right < 0f || bottom < 0f || left > width || top > height) continue
+                cellRect.set(left, top, right, bottom)
+                val inset = (cellSize * 0.024f).coerceAtLeast(0.8f)
+                val radius = cellSize * 0.22f
+                val transition = cellTransitions[index]
+                if (transition != null && animationDurationMs > 0L) {
+                    val progress = ((now - transition.startedAtMs).toFloat() / animationDurationMs.toFloat()).coerceIn(0f, 1f)
+                    if (progress < 1f) {
+                        drawCornerFixTransitionOverlay(canvas, cellRect, inset, radius, transition, eased(progress), current.width(), current.height())
+                    } else {
+                        cellTransitions.remove(index)
+                        drawForeignCornerFixes(canvas, cellRect, inset, radius + inset, index, current.width(), current.height(), lastCellStates, 255, 1f)
+                    }
+                } else {
+                    drawForeignCornerFixes(canvas, cellRect, inset, radius + inset, index, current.width(), current.height(), lastCellStates, 255, 1f)
+                }
+            }
+        }
         if (hasActiveAnimations) postInvalidateOnAnimation()
     }
 
@@ -438,9 +459,6 @@ class BoardView @JvmOverloads constructor(
                 drawShapeWithAlpha(canvas, rect, cornerRadii, reverseCorners, hiddenPaint, alpha)
             }
         }
-
-        drawForeignCornerFixes(canvas, rect, radius + inset, index, boardWidth, boardHeight, states, alpha, 1f)
-
         if (state.revealed) {
             if (state.isMine) {
                 drawMine(canvas, rect, alpha)
@@ -484,34 +502,70 @@ class BoardView @JvmOverloads constructor(
             TransitionKind.MORPH -> drawMorphTransition(canvas, morphRect, transition.current, morphRadii, morphReverseCorners)
             TransitionKind.SNAP -> drawCellState(canvas, baseRect, inset, radius, transition.current, 255, transition.index, boardWidth, boardHeight, lastCellStates)
         }
-        when (kind) {
+    }
+
+    private fun drawCornerFixTransitionOverlay(
+        canvas: Canvas,
+        baseRect: RectF,
+        inset: Float,
+        radius: Float,
+        transition: CellTransition,
+        progress: Float,
+        boardWidth: Int,
+        boardHeight: Int
+    ) {
+        when (transitionKind(transition.previous, transition.current)) {
             TransitionKind.REVEAL, TransitionKind.FLAG -> {
-                val cornerProgress = delayedCornerPieceProgress(progress)
                 drawForeignCornerFixes(
                     canvas,
-                    previousRect,
+                    baseRect,
+                    inset,
                     radius + inset,
                     transition.index,
                     boardWidth,
                     boardHeight,
                     transition.previousNeighborhood,
                     255,
-                    1f - cornerProgress
+                    1f - progress
                 )
                 drawForeignCornerFixes(
                     canvas,
-                    morphRect,
+                    baseRect,
+                    inset,
                     radius + inset,
                     transition.index,
                     boardWidth,
                     boardHeight,
                     transition.currentNeighborhood,
                     255,
-                    cornerProgress
+                    progress
                 )
             }
             TransitionKind.MORPH -> {
-                drawForeignCornerFixes(canvas, morphRect, radius + inset, transition.index, boardWidth, boardHeight, lastCellStates, 255, 1f)
+                drawForeignCornerFixes(
+                    canvas,
+                    baseRect,
+                    inset,
+                    radius + inset,
+                    transition.index,
+                    boardWidth,
+                    boardHeight,
+                    transition.previousNeighborhood,
+                    255,
+                    1f - progress
+                )
+                drawForeignCornerFixes(
+                    canvas,
+                    baseRect,
+                    inset,
+                    radius + inset,
+                    transition.index,
+                    boardWidth,
+                    boardHeight,
+                    transition.currentNeighborhood,
+                    255,
+                    progress
+                )
             }
             TransitionKind.SNAP -> Unit
         }
@@ -816,7 +870,8 @@ class BoardView @JvmOverloads constructor(
 
     private fun drawForeignCornerFixes(
         canvas: Canvas,
-        rect: RectF,
+        baseRect: RectF,
+        inset: Float,
         pieceSize: Float,
         index: Int,
         boardWidth: Int,
@@ -832,16 +887,16 @@ class BoardView @JvmOverloads constructor(
         val col = index % boardWidth
 
         foreignCornerGroup(col, row, boardWidth, boardHeight, states, currentGroup, Corner.TOP_LEFT)?.let {
-            drawCornerPiece(canvas, rect, Corner.TOP_LEFT, pieceSize, fillPaintForGroup(it), alpha, expansionProgress)
+            drawCornerPiece(canvas, baseRect, inset, Corner.TOP_LEFT, pieceSize, fillPaintForGroup(it), alpha, expansionProgress)
         }
         foreignCornerGroup(col, row, boardWidth, boardHeight, states, currentGroup, Corner.TOP_RIGHT)?.let {
-            drawCornerPiece(canvas, rect, Corner.TOP_RIGHT, pieceSize, fillPaintForGroup(it), alpha, expansionProgress)
+            drawCornerPiece(canvas, baseRect, inset, Corner.TOP_RIGHT, pieceSize, fillPaintForGroup(it), alpha, expansionProgress)
         }
         foreignCornerGroup(col, row, boardWidth, boardHeight, states, currentGroup, Corner.BOTTOM_RIGHT)?.let {
-            drawCornerPiece(canvas, rect, Corner.BOTTOM_RIGHT, pieceSize, fillPaintForGroup(it), alpha, expansionProgress)
+            drawCornerPiece(canvas, baseRect, inset, Corner.BOTTOM_RIGHT, pieceSize, fillPaintForGroup(it), alpha, expansionProgress)
         }
         foreignCornerGroup(col, row, boardWidth, boardHeight, states, currentGroup, Corner.BOTTOM_LEFT)?.let {
-            drawCornerPiece(canvas, rect, Corner.BOTTOM_LEFT, pieceSize, fillPaintForGroup(it), alpha, expansionProgress)
+            drawCornerPiece(canvas, baseRect, inset, Corner.BOTTOM_LEFT, pieceSize, fillPaintForGroup(it), alpha, expansionProgress)
         }
     }
 
@@ -882,7 +937,8 @@ class BoardView @JvmOverloads constructor(
 
     private fun drawCornerPiece(
         canvas: Canvas,
-        rect: RectF,
+        baseRect: RectF,
+        inset: Float,
         corner: Corner,
         pieceSize: Float,
         paint: Paint,
@@ -892,56 +948,53 @@ class BoardView @JvmOverloads constructor(
         val originalAlpha = paint.alpha
         paint.alpha = alpha
         cornerPiecePath.reset()
-        val cornerRadius = rect.width() * 0.22f
-        val inset = ((pieceSize - cornerRadius) / 1.44f).coerceAtLeast(0f)
         val gapToFill = fillGapDistance(inset)
+        val gapShift = gapToFill * 1.5f
+        val cornerOverlap = max(0.5f, resources.displayMetrics.density * 0.45f)
         val expandedSize = pieceSize + gapToFill
-        val anchorShift = gapToFill * 1.5f
         val progress = expansionProgress.coerceIn(0f, 1f)
         val animatedSize = expandedSize * progress
         when (corner) {
             Corner.TOP_LEFT -> {
-                val shiftedLeft = rect.left - anchorShift
-                val shiftedTop = rect.top - anchorShift
-                cornerPiecePath.moveTo(shiftedLeft, shiftedTop + animatedSize)
-                cornerArcRect.set(shiftedLeft, shiftedTop, shiftedLeft + animatedSize * 2f, shiftedTop + animatedSize * 2f)
+                val anchorX = baseRect.left - gapShift
+                val anchorY = baseRect.top - gapShift
+                cornerPiecePath.moveTo(anchorX, anchorY)
+                cornerPiecePath.lineTo(anchorX, anchorY + animatedSize + cornerOverlap)
+                cornerArcRect.set(anchorX, anchorY, anchorX + (animatedSize + cornerOverlap) * 2f, anchorY + (animatedSize + cornerOverlap) * 2f)
                 cornerPiecePath.arcTo(cornerArcRect, 180f, 90f, false)
-                cornerPiecePath.lineTo(shiftedLeft, shiftedTop)
+                cornerPiecePath.lineTo(anchorX, anchorY)
             }
             Corner.TOP_RIGHT -> {
-                val shiftedRight = rect.right + anchorShift
-                val shiftedTop = rect.top - anchorShift
-                cornerPiecePath.moveTo(shiftedRight - animatedSize, shiftedTop)
-                cornerArcRect.set(shiftedRight - animatedSize * 2f, shiftedTop, shiftedRight, shiftedTop + animatedSize * 2f)
+                val anchorX = baseRect.right + gapShift
+                val anchorY = baseRect.top - gapShift
+                cornerPiecePath.moveTo(anchorX, anchorY)
+                cornerPiecePath.lineTo(anchorX - animatedSize - cornerOverlap, anchorY)
+                cornerArcRect.set(anchorX - (animatedSize + cornerOverlap) * 2f, anchorY, anchorX, anchorY + (animatedSize + cornerOverlap) * 2f)
                 cornerPiecePath.arcTo(cornerArcRect, 270f, 90f, false)
-                cornerPiecePath.lineTo(shiftedRight, shiftedTop)
+                cornerPiecePath.lineTo(anchorX, anchorY)
             }
             Corner.BOTTOM_RIGHT -> {
-                val shiftedRight = rect.right + anchorShift
-                val shiftedBottom = rect.bottom + anchorShift
-                cornerPiecePath.moveTo(shiftedRight, shiftedBottom - animatedSize)
-                cornerArcRect.set(shiftedRight - animatedSize * 2f, shiftedBottom - animatedSize * 2f, shiftedRight, shiftedBottom)
+                val anchorX = baseRect.right + gapShift
+                val anchorY = baseRect.bottom + gapShift
+                cornerPiecePath.moveTo(anchorX, anchorY)
+                cornerPiecePath.lineTo(anchorX, anchorY - animatedSize - cornerOverlap)
+                cornerArcRect.set(anchorX - (animatedSize + cornerOverlap) * 2f, anchorY - (animatedSize + cornerOverlap) * 2f, anchorX, anchorY)
                 cornerPiecePath.arcTo(cornerArcRect, 0f, 90f, false)
-                cornerPiecePath.lineTo(shiftedRight, shiftedBottom)
+                cornerPiecePath.lineTo(anchorX, anchorY)
             }
             Corner.BOTTOM_LEFT -> {
-                val shiftedLeft = rect.left - anchorShift
-                val shiftedBottom = rect.bottom + anchorShift
-                cornerPiecePath.moveTo(shiftedLeft + animatedSize, shiftedBottom)
-                cornerArcRect.set(shiftedLeft, shiftedBottom - animatedSize * 2f, shiftedLeft + animatedSize * 2f, shiftedBottom)
+                val anchorX = baseRect.left - gapShift
+                val anchorY = baseRect.bottom + gapShift
+                cornerPiecePath.moveTo(anchorX, anchorY)
+                cornerPiecePath.lineTo(anchorX + animatedSize + cornerOverlap, anchorY)
+                cornerArcRect.set(anchorX, anchorY - (animatedSize + cornerOverlap) * 2f, anchorX + (animatedSize + cornerOverlap) * 2f, anchorY)
                 cornerPiecePath.arcTo(cornerArcRect, 90f, 90f, false)
-                cornerPiecePath.lineTo(shiftedLeft, shiftedBottom)
+                cornerPiecePath.lineTo(anchorX, anchorY)
             }
         }
         cornerPiecePath.close()
         canvas.drawPath(cornerPiecePath, paint)
         paint.alpha = originalAlpha
-    }
-
-    private fun delayedCornerPieceProgress(progress: Float): Float {
-        val clamped = progress.coerceIn(0f, 1f)
-        if (clamped <= CORNER_PIECE_ANIMATION_DELAY_FRACTION) return 0f
-        return ((clamped - CORNER_PIECE_ANIMATION_DELAY_FRACTION) / (1f - CORNER_PIECE_ANIMATION_DELAY_FRACTION)).coerceIn(0f, 1f)
     }
 
     private fun edgeOverlap(inset: Float): Float {
@@ -992,12 +1045,15 @@ class BoardView @JvmOverloads constructor(
     private fun neighborIndexes(index: Int, boardWidth: Int, boardHeight: Int): List<Int> {
         val row = index / boardWidth
         val col = index % boardWidth
-        val result = ArrayList<Int>(5)
-        result += index
-        if (row > 0) result += (row - 1) * boardWidth + col
-        if (col < boardWidth - 1) result += row * boardWidth + (col + 1)
-        if (row < boardHeight - 1) result += (row + 1) * boardWidth + col
-        if (col > 0) result += row * boardWidth + (col - 1)
+        val result = ArrayList<Int>(9)
+        for (dy in -1..1) {
+            for (dx in -1..1) {
+                val x = col + dx
+                val y = row + dy
+                if (x !in 0 until boardWidth || y !in 0 until boardHeight) continue
+                result += y * boardWidth + x
+            }
+        }
         return result
     }
 
