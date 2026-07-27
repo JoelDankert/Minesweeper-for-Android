@@ -498,16 +498,20 @@ class BoardView @JvmOverloads constructor(
         previousReverseCorners: FloatArray,
         currentReverseCorners: FloatArray
     ) {
-        gridPaint.color = lerpColor(fillColorForState(previous), fillColorForState(current), progress)
-        drawShapeWithAlpha(canvas, currentRect, lerpRadii(previousRadii, currentRadii, progress), currentReverseCorners, gridPaint, 255)
+        val morphRect = lerpRect(previousRect, currentRect, progress)
+        val morphRadii = lerpRadii(previousRadii, currentRadii, progress)
+        val morphReverseCorners = lerpCornerFixes(previousReverseCorners, currentReverseCorners, progress)
+        val colorProgress = progress
+        gridPaint.color = lerpColor(fillColorForState(previous), fillColorForState(current), colorProgress)
+        drawShapeWithAlpha(canvas, morphRect, morphRadii, morphReverseCorners, gridPaint, 255)
         gridPaint.color = palette.grid
-        drawCellContent(canvas, currentRect, current, fadeAlpha(progress))
+        drawCellContent(canvas, morphRect, current, fadeAlpha(progress))
 
         if (previous.flagged) {
-            drawCellContent(canvas, previousRect, previous, fadeAlpha(1f - progress))
+            drawCellContent(canvas, morphRect, previous, fadeAlpha(1f - progress))
         }
         if (!previous.flagged) {
-            drawShapeWithAlpha(canvas, previousRect, previousRadii, previousReverseCorners, hiddenPaint, fadeAlpha(1f - progress))
+            drawShapeWithAlpha(canvas, morphRect, morphRadii, morphReverseCorners, hiddenPaint, fadeAlpha(1f - progress))
         }
     }
 
@@ -638,9 +642,29 @@ class BoardView @JvmOverloads constructor(
         paint.alpha = alpha
         roundRectPath.reset()
         roundRectPath.addRoundRect(rect, radii, Path.Direction.CW)
-        applyReverseCorners(rect, reverseCorners)
         canvas.drawPath(roundRectPath, paint)
         paint.alpha = originalAlpha
+        drawCornerCovers(canvas, rect, reverseCorners, alpha)
+    }
+
+    private fun drawCornerCovers(canvas: Canvas, rect: RectF, reverseCorners: FloatArray, alpha: Int) {
+        if (alpha <= 0) return
+        val originalAlpha = backgroundPaint.alpha
+        backgroundPaint.alpha = alpha
+        val overlap = max(0.75f, resources.displayMetrics.density * 0.5f)
+        reverseCorners[0].takeIf { it > 0f }?.let { size ->
+            canvas.drawRect(rect.left - overlap, rect.top - overlap, rect.left + size, rect.top + size, backgroundPaint)
+        }
+        reverseCorners[1].takeIf { it > 0f }?.let { size ->
+            canvas.drawRect(rect.right - size, rect.top - overlap, rect.right + overlap, rect.top + size, backgroundPaint)
+        }
+        reverseCorners[2].takeIf { it > 0f }?.let { size ->
+            canvas.drawRect(rect.right - size, rect.bottom - size, rect.right + overlap, rect.bottom + overlap, backgroundPaint)
+        }
+        reverseCorners[3].takeIf { it > 0f }?.let { size ->
+            canvas.drawRect(rect.left - overlap, rect.bottom - size, rect.left + size, rect.bottom + overlap, backgroundPaint)
+        }
+        backgroundPaint.alpha = originalAlpha
     }
 
     private inline fun drawLayeredAlpha(canvas: Canvas, rect: RectF, alpha: Int, block: () -> Unit) {
@@ -714,7 +738,6 @@ class BoardView @JvmOverloads constructor(
         val rightSame = neighborMatches(col + 1, row, boardWidth, boardHeight, states, group)
         val bottomSame = neighborMatches(col, row + 1, boardWidth, boardHeight, states, group)
         val leftSame = neighborMatches(col - 1, row, boardWidth, boardHeight, states, group)
-
         val topLeft = if (topSame || leftSame) 0f else radius
         val topRight = if (topSame || rightSame) 0f else radius
         val bottomRight = if (bottomSame || rightSame) 0f else radius
@@ -737,7 +760,25 @@ class BoardView @JvmOverloads constructor(
         radius: Float,
         inset: Float
     ): FloatArray {
-        return floatArrayOf(0f, 0f, 0f, 0f)
+        if (!mergeTiles || !fillGaps) return floatArrayOf(0f, 0f, 0f, 0f)
+        val row = index / boardWidth
+        val col = index % boardWidth
+        val group = mergeGroup(state)
+        val topSame = neighborMatches(col, row - 1, boardWidth, boardHeight, states, group)
+        val rightSame = neighborMatches(col + 1, row, boardWidth, boardHeight, states, group)
+        val bottomSame = neighborMatches(col, row + 1, boardWidth, boardHeight, states, group)
+        val leftSame = neighborMatches(col - 1, row, boardWidth, boardHeight, states, group)
+        val topLeftSame = neighborMatches(col - 1, row - 1, boardWidth, boardHeight, states, group)
+        val topRightSame = neighborMatches(col + 1, row - 1, boardWidth, boardHeight, states, group)
+        val bottomRightSame = neighborMatches(col + 1, row + 1, boardWidth, boardHeight, states, group)
+        val bottomLeftSame = neighborMatches(col - 1, row + 1, boardWidth, boardHeight, states, group)
+        val coverSize = inset + edgeOverlap(inset)
+        return floatArrayOf(
+            if (topSame && leftSame && !topLeftSame) coverSize else 0f,
+            if (topSame && rightSame && !topRightSame) coverSize else 0f,
+            if (bottomSame && rightSame && !bottomRightSame) coverSize else 0f,
+            if (bottomSame && leftSame && !bottomLeftSame) coverSize else 0f
+        )
     }
 
     private fun edgeExpansion(
@@ -771,8 +812,6 @@ class BoardView @JvmOverloads constructor(
         )
         return RectF(shapeRect)
     }
-
-    private fun applyReverseCorners(rect: RectF, reverseCorners: FloatArray) = Unit
 
     private fun edgeOverlap(inset: Float): Float {
         return max(resources.displayMetrics.density * 0.28f, inset * 0.08f)
