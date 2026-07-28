@@ -72,8 +72,9 @@ class HomeActivity : AppCompatActivity() {
         val hasProgress = repository.hasContinuableProgress(mode.id)
         val continueButton = view.findViewById<TextView>(R.id.continueButton)
         val newGameButton = view.findViewById<TextView>(R.id.newGameButton)
-        view.findViewById<TextView>(R.id.modeTitle).text = mode.name
-        view.findViewById<TextView>(R.id.modeMeta).text = formatModeMeta(mode)
+        val modeMeta = formatModeMeta(mode)
+        view.findViewById<TextView>(R.id.modeTitle).text = mode.name.ifBlank { modeMeta }
+        view.findViewById<TextView>(R.id.modeMeta).text = modeMeta
         continueButton.apply {
             visibility = if (hasProgress) View.VISIBLE else View.GONE
             setOnClickListener {
@@ -91,9 +92,8 @@ class HomeActivity : AppCompatActivity() {
             weight = if (hasProgress) 1f else 2f
             marginStart = if (hasProgress) 8.dp else 0
         }
-        view.setOnLongClickListener {
+        view.setOnClickListener {
             startActivity(Intent(this, ModeEditorActivity::class.java).putExtra(ModeEditorActivity.EXTRA_MODE_ID, mode.id))
-            true
         }
         applyModeCardStyle(view)
         return view
@@ -144,7 +144,12 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun formatModeMeta(mode: GameMode): String {
-        return getString(R.string.mode_meta, mode.width, mode.height, mode.mines, if (mode.noGuess) getString(R.string.no_guess_short) else "").trim()
+        val tags = listOfNotNull(
+            getString(R.string.no_guess_short).takeIf { mode.noGuess },
+            getString(R.string.no_flag_short).takeIf { mode.noFlagMode }
+        ).joinToString(" ")
+        val suffix = tags.takeIf { it.isNotEmpty() }?.let { " · $it" } ?: ""
+        return getString(R.string.mode_meta, mode.width, mode.height, mode.mines, suffix)
     }
 
     private val Int.dp: Int

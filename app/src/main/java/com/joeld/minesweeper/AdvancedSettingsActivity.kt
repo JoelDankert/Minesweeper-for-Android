@@ -1,9 +1,12 @@
 package com.joeld.minesweeper
 
+import android.app.Activity
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.widget.SeekBar
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
@@ -22,6 +25,13 @@ class AdvancedSettingsActivity : AppCompatActivity() {
     private lateinit var palette: ThemePalette
     private var settings = AppSettings()
     private var restorePending = false
+
+    private val confirmLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                repository.clearAllScores()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         repository = PrefsRepository(this)
@@ -42,6 +52,14 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         binding.restoreModesButton.setOnClickListener {
             restorePending = !restorePending
             updateRestoreModesState()
+        }
+        binding.clearAllScoresButton.setOnClickListener {
+            confirmLauncher.launch(
+                Intent(this, ModeChangeConfirmActivity::class.java)
+                    .putExtra(ModeChangeConfirmActivity.EXTRA_TITLE, getString(R.string.clear_all_scores))
+                    .putExtra(ModeChangeConfirmActivity.EXTRA_MESSAGE, getString(R.string.clear_all_scores_confirm_message))
+                    .putExtra(ModeChangeConfirmActivity.EXTRA_DESTRUCTIVE, true)
+            )
         }
         binding.mergeTiles.setOnCheckedChangeListener { _, isChecked ->
             updateFillGapsState(isChecked)
@@ -147,6 +165,11 @@ class AdvancedSettingsActivity : AppCompatActivity() {
             cornerRadius = 22f * resources.displayMetrics.density
             setColor(palette.panel)
         }
+        binding.clearAllScoresButton.background = GradientDrawable().apply {
+            cornerRadius = 22f * resources.displayMetrics.density
+            setColor(palette.panel)
+        }
+        binding.clearAllScoresButton.setTextColor(palette.ink)
         binding.applyButton.background = GradientDrawable().apply {
             cornerRadius = 22f * resources.displayMetrics.density
             setColor(palette.accent)

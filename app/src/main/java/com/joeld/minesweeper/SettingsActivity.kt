@@ -84,9 +84,6 @@ class SettingsActivity : AppCompatActivity() {
         )
         repository.saveSettings(next)
         settings = next
-        AppCompatDelegate.setDefaultNightMode(
-            if (next.darkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        )
         finish()
     }
 

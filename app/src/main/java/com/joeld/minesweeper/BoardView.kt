@@ -581,8 +581,8 @@ class BoardView @JvmOverloads constructor(
         val cellSize = baseCellSize * scale
         val boardWidth = current.width() * cellSize
         val boardHeight = current.height() * cellSize
-        val horizontalPadding = width * 0.18f
-        val verticalPadding = height * 0.18f
+        val horizontalPadding = width * 0.40f
+        val verticalPadding = height * 0.40f
 
         offsetX = if (boardWidth + horizontalPadding * 2 <= width) {
             (width - boardWidth) / 2f

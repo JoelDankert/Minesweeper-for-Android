@@ -71,6 +71,16 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/clearAllScoresButton"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="@string/clear_all_scores"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
             <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/showBottomToggle"
                 android:layout_width="match_parent"

@@ -28,30 +28,38 @@
             android:contentDescription="@string/back"
             android:src="@drawable/ic_arrow_back_material" />
 
-        <LinearLayout
-            android:id="@+id/topCenterHit"
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:layout_weight="1">
 
-            <TextView
-                android:id="@+id/mineCountText"
+            <LinearLayout
+                android:id="@+id/topCenterHit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="10"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingStart="18dp"
+                android:paddingEnd="18dp">
 
-            <TextView
-                android:id="@+id/timerText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="0s"
-                android:textSize="13sp" />
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/mineCountText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/timerText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="0s"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </FrameLayout>
 
         <ImageButton
             android:id="@+id/settingsButton"

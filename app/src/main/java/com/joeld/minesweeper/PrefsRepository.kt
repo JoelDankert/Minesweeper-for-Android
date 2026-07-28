@@ -120,17 +120,11 @@ class PrefsRepository(context: Context) {
 
     fun restoreDefaultModes() {
         val existingModes = loadModes()
-        val currentDefaults = existingModes.filter { isDefaultModeId(it.id) }.associateBy { it.id }
-        val changedDefaultIds = defaultModes()
-            .filter { defaultMode -> currentDefaults[defaultMode.id] != defaultMode }
-            .map { it.id }
-
         val mergedModes = buildList {
             addAll(defaultModes())
             addAll(existingModes.filterNot { isDefaultModeId(it.id) })
         }
         saveModes(mergedModes)
-        changedDefaultIds.forEach(::clearModeData)
     }
 
     fun saveProgress(progress: GameProgress) {
@@ -202,6 +196,18 @@ class PrefsRepository(context: Context) {
         prefs.edit().remove(recentKey(modeId)).apply()
     }
 
+    fun clearScores(mode: GameMode) {
+        prefs.edit().remove(recentKey(scoreKey(mode))).apply()
+    }
+
+    fun clearAllScores() {
+        val editor = prefs.edit()
+        prefs.all.keys
+            .filter { it.startsWith(KEY_RECENT_PREFIX) }
+            .forEach(editor::remove)
+        editor.apply()
+    }
+
     fun clearModeData(modeId: String) {
         prefs.edit()
             .remove(progressKey(modeId))
@@ -241,6 +247,18 @@ class PrefsRepository(context: Context) {
                 )
             }
         }.getOrElse { emptyList() }
+    }
+
+    fun appendRecentGame(mode: GameMode, record: RecentGameRecord) {
+        appendRecentGame(record.copy(modeId = scoreKey(mode)))
+    }
+
+    fun loadRecentGames(mode: GameMode): List<RecentGameRecord> {
+        return loadRecentGames(scoreKey(mode))
+    }
+
+    fun scoreKey(mode: GameMode): String {
+        return "${mode.width}x${mode.height}_m${mode.mines}_ng${mode.noGuess}_nf${mode.noFlagMode}"
     }
 
     private fun parseModes(raw: String): List<GameMode>? {
@@ -297,9 +315,10 @@ class PrefsRepository(context: Context) {
         const val KEY_DARK_THEME = "dark_theme"
         const val KEY_THEME_ID = "theme_id"
         const val KEY_MODE_RECENCY = "mode_recency"
+        const val KEY_RECENT_PREFIX = "recent_"
 
         fun progressKey(modeId: String) = "progress_$modeId"
-        fun recentKey(modeId: String) = "recent_$modeId"
+        fun recentKey(modeId: String) = "$KEY_RECENT_PREFIX$modeId"
     }
 
     private fun clampLongPressDelay(value: Int): Int {

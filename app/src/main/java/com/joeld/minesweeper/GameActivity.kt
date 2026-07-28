@@ -89,14 +89,8 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         if (::game.isInitialized) {
             val latestSettings = repository.loadSettings()
             val flagModeDefaultChanged = latestSettings.flagModeDefault != settings.flagModeDefault
-            val themeChanged =
-                latestSettings.darkTheme != settings.darkTheme || latestSettings.themeId != settings.themeId
             settings = latestSettings
             palette = ThemeCatalog.resolve(settings.themeId, settings.darkTheme)
-            if (themeChanged) {
-                recreate()
-                return
-            }
             if (flagModeDefaultChanged) {
                 inputMode = defaultInputMode()
             }
@@ -187,7 +181,11 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
 
     private fun loadInitialGame() {
         val resume = intent.getBooleanExtra(EXTRA_RESUME, false)
-        val snapshot = if (resume) repository.loadProgress(selectedMode.id) else null
+        val snapshot = if (resume) {
+            repository.loadProgress(selectedMode.id)?.takeIf { it.cells.size == selectedMode.width * selectedMode.height }
+        } else {
+            null
+        }
         startNewGame(resetCamera = true, resetInputMode = snapshot == null, progress = snapshot)
     }
 
@@ -283,7 +281,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
     private fun updateHeader() {
         binding.mineCountText.text = game.remainingMines().toString()
         binding.timerText.text = formatElapsed(currentElapsedSeconds() * 1000L)
-        binding.recentModeText.text = selectedMode.name
+        binding.recentModeText.text = selectedMode.name.ifBlank { formatModeMeta(selectedMode) }
         binding.recentStatusText.text = when (game.state) {
             GameState.WON -> winHeadline()
             GameState.LOST -> lossHeadline()
@@ -296,6 +294,15 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         binding.inputToggleGroup.isVisible = settings.showInputToggle && !selectedMode.noFlagMode && !terminal
         styleToggle(binding.revealToggle, inputMode == InputMode.REVEAL)
         styleToggle(binding.flagToggle, inputMode == InputMode.FLAG)
+    }
+
+    private fun formatModeMeta(mode: GameMode): String {
+        val tags = listOfNotNull(
+            getString(R.string.no_guess_short).takeIf { mode.noGuess },
+            getString(R.string.no_flag_short).takeIf { mode.noFlagMode }
+        ).joinToString(" ")
+        val suffix = tags.takeIf { it.isNotEmpty() }?.let { " · $it" } ?: ""
+        return getString(R.string.mode_meta, mode.width, mode.height, mode.mines, suffix)
     }
 
     private fun defaultInputMode(): InputMode {
@@ -356,12 +363,12 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         if (gameResultRecorded) return
         if (game.state != GameState.WON && game.state != GameState.LOST) return
         val record = RecentGameRecord(
-            modeId = selectedMode.id,
+            modeId = repository.scoreKey(selectedMode),
             won = game.state == GameState.WON,
             elapsedSeconds = currentElapsedSeconds(),
             finishedAtEpochMs = System.currentTimeMillis()
         )
-        repository.appendRecentGame(record)
+        repository.appendRecentGame(selectedMode, record)
         latestFinishedRecord = record
         gameResultRecorded = true
     }
@@ -372,7 +379,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         if (!terminal) return
         if (!settings.showTopClears) return
         binding.recentList.removeAllViews()
-        repository.loadRecentGames(selectedMode.id)
+        repository.loadRecentGames(selectedMode)
             .filter { it.won }
             .sortedBy { it.elapsedSeconds }
             .take(5)

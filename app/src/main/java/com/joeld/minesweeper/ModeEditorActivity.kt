@@ -27,12 +27,14 @@ class ModeEditorActivity : AppCompatActivity() {
     private var existingMode: GameMode? = null
     private var pendingModeSave: GameMode? = null
     private var pendingDeleteModeId: String? = null
+    private var pendingClearScoresMode: GameMode? = null
 
     private val confirmLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode != Activity.RESULT_OK) {
                 pendingModeSave = null
                 pendingDeleteModeId = null
+                pendingClearScoresMode = null
                 return@registerForActivityResult
             }
             pendingModeSave?.let { confirmedMode ->
@@ -43,6 +45,11 @@ class ModeEditorActivity : AppCompatActivity() {
             pendingDeleteModeId?.let { modeId ->
                 persistDelete(modeId)
                 pendingDeleteModeId = null
+                return@registerForActivityResult
+            }
+            pendingClearScoresMode?.let { mode ->
+                repository.clearScores(mode)
+                pendingClearScoresMode = null
             }
         }
 
@@ -64,6 +71,7 @@ class ModeEditorActivity : AppCompatActivity() {
         binding.backButton.setOnClickListener { finish() }
         binding.saveButton.setOnClickListener { saveMode() }
         binding.deleteButton.setOnClickListener { deleteMode() }
+        binding.clearScoresButton.setOnClickListener { clearScores() }
     }
 
     private fun setupInsets() {
@@ -79,6 +87,7 @@ class ModeEditorActivity : AppCompatActivity() {
     private fun populate() {
         val mode = existingMode ?: repository.createMode("", 12, 12, 20, true)
         binding.titleText.text = if (existingMode == null) getString(R.string.create_mode) else getString(R.string.edit_mode)
+        binding.saveButton.text = getString(if (existingMode == null) R.string.new_game_short else R.string.save)
         binding.nameInput.setText(mode.name)
         binding.widthInput.setText(mode.width.toString())
         binding.heightInput.setText(mode.height.toString())
@@ -86,6 +95,7 @@ class ModeEditorActivity : AppCompatActivity() {
         binding.noGuessSwitch.isChecked = mode.noGuess
         binding.noFlagSwitch.isChecked = mode.noFlagMode
         binding.deleteButton.isVisible = existingMode != null
+        binding.clearScoresButton.isVisible = existingMode != null
     }
 
     private fun saveMode() {
@@ -102,7 +112,7 @@ class ModeEditorActivity : AppCompatActivity() {
         }
         val base = existingMode ?: repository.createMode("", width, height, mines, binding.noGuessSwitch.isChecked, binding.noFlagSwitch.isChecked)
         val updated = base.copy(
-            name = binding.nameInput.text.toString().trim().ifEmpty { "Mode" },
+            name = binding.nameInput.text.toString().trim(),
             width = width,
             height = height,
             mines = mines,
@@ -118,6 +128,7 @@ class ModeEditorActivity : AppCompatActivity() {
         if (requiresConfirmation) {
             pendingModeSave = updated
             pendingDeleteModeId = null
+            pendingClearScoresMode = null
             openModeConfirm()
             return
         }
@@ -133,7 +144,21 @@ class ModeEditorActivity : AppCompatActivity() {
         }
         pendingModeSave = null
         pendingDeleteModeId = mode.id
-        openModeConfirm()
+        pendingClearScoresMode = null
+        openDeleteConfirm()
+    }
+
+    private fun clearScores() {
+        val mode = existingMode ?: return
+        pendingModeSave = null
+        pendingDeleteModeId = null
+        pendingClearScoresMode = mode
+        confirmLauncher.launch(
+            Intent(this, ModeChangeConfirmActivity::class.java)
+                .putExtra(ModeChangeConfirmActivity.EXTRA_TITLE, getString(R.string.clear_scores))
+                .putExtra(ModeChangeConfirmActivity.EXTRA_MESSAGE, getString(R.string.clear_scores_confirm_message))
+                .putExtra(ModeChangeConfirmActivity.EXTRA_DESTRUCTIVE, true)
+        )
     }
 
     private fun persistMode(updated: GameMode) {
@@ -145,7 +170,15 @@ class ModeEditorActivity : AppCompatActivity() {
         repository.saveModes(finalModes)
         repository.saveSelectedModeId(updated.id)
         if (existingMode != null && modeRulesChanged(existingMode!!, updated)) {
-            repository.clearModeData(updated.id)
+            repository.clearProgress(updated.id)
+        }
+        if (existingMode == null) {
+            repository.markModeUsed(updated.id)
+            startActivity(
+                Intent(this, GameActivity::class.java)
+                    .putExtra(GameActivity.EXTRA_MODE_ID, updated.id)
+                    .putExtra(GameActivity.EXTRA_RESUME, false)
+            )
         }
         finish()
     }
@@ -160,13 +193,21 @@ class ModeEditorActivity : AppCompatActivity() {
 
     private fun persistDelete(modeId: String) {
         repository.saveModes(modes.filter { it.id != modeId })
-        repository.clearModeData(modeId)
         finish()
     }
 
     private fun openModeConfirm() {
         confirmLauncher.launch(
             Intent(this, ModeChangeConfirmActivity::class.java)
+                .putExtra(ModeChangeConfirmActivity.EXTRA_MESSAGE, getString(R.string.mode_change_confirm_message))
+        )
+    }
+
+    private fun openDeleteConfirm() {
+        confirmLauncher.launch(
+            Intent(this, ModeChangeConfirmActivity::class.java)
+                .putExtra(ModeChangeConfirmActivity.EXTRA_TITLE, getString(R.string.delete))
+                .putExtra(ModeChangeConfirmActivity.EXTRA_MESSAGE, getString(R.string.mode_delete_confirm_message))
         )
     }
 
@@ -198,6 +239,11 @@ class ModeEditorActivity : AppCompatActivity() {
             setColor(palette.panel)
         }
         binding.deleteButton.setTextColor(palette.ink)
+        binding.clearScoresButton.background = GradientDrawable().apply {
+            cornerRadius = 22f * resources.displayMetrics.density
+            setColor(palette.panel)
+        }
+        binding.clearScoresButton.setTextColor(palette.ink)
         binding.backButton.background = GradientDrawable().apply {
             shape = GradientDrawable.OVAL
             setColor(palette.panel)

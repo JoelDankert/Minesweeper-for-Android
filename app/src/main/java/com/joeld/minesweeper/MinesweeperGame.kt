@@ -197,14 +197,13 @@ class MinesweeperGame(private val mode: GameMode, private val cordingEnabled: Bo
         val safeCells = mode.width * mode.height - mode.mines
         if (revealedCount == safeCells) {
             state = GameState.WON
-            if (!mode.noFlagMode) {
-                cells.forEach { cell ->
-                    if (cell.isMine && !cell.flagged) {
-                        cell.flagged = true
-                    }
+            cells.forEach { cell ->
+                if (cell.isMine && !cell.flagged) {
+                    cell.flagged = true
                 }
-                flagsCount = mode.mines
             }
+            flagsCount = mode.mines
+            revealAllMines()
             return true
         }
         return false

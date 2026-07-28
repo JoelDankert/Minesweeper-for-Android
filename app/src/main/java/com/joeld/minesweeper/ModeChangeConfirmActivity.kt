@@ -11,6 +11,13 @@ import androidx.core.view.WindowInsetsCompat
 import com.joeld.minesweeper.databinding.ActivityModeChangeConfirmBinding
 
 class ModeChangeConfirmActivity : AppCompatActivity() {
+    companion object {
+        const val EXTRA_TITLE = "title"
+        const val EXTRA_MESSAGE = "message"
+        const val EXTRA_DESTRUCTIVE = "destructive"
+        private const val DANGER_COLOR = "#D94B4B"
+    }
+
     private lateinit var binding: ActivityModeChangeConfirmBinding
     private lateinit var palette: ThemePalette
 
@@ -27,6 +34,8 @@ class ModeChangeConfirmActivity : AppCompatActivity() {
         palette = ThemeCatalog.resolve(settings.themeId, settings.darkTheme)
         setupInsets()
         applyPalette()
+        binding.titleText.text = intent.getStringExtra(EXTRA_TITLE) ?: getString(R.string.mode_change_confirm_title)
+        binding.messageText.text = intent.getStringExtra(EXTRA_MESSAGE) ?: getString(R.string.mode_change_confirm_message)
 
         binding.backButton.setOnClickListener { finish() }
         binding.cancelButton.setOnClickListener { finish() }
@@ -63,10 +72,16 @@ class ModeChangeConfirmActivity : AppCompatActivity() {
         }
         binding.continueButton.background = GradientDrawable().apply {
             cornerRadius = 22f.dpF
-            setColor(palette.accent)
+            setColor(
+                if (intent.getBooleanExtra(EXTRA_DESTRUCTIVE, false)) {
+                    android.graphics.Color.parseColor(DANGER_COLOR)
+                } else {
+                    palette.accent
+                }
+            )
         }
         binding.cancelButton.setTextColor(palette.ink)
-        binding.continueButton.setTextColor(palette.revealedCell)
+        binding.continueButton.setTextColor(if (intent.getBooleanExtra(EXTRA_DESTRUCTIVE, false)) android.graphics.Color.WHITE else palette.revealedCell)
 
         binding.backButton.background = GradientDrawable().apply {
             shape = GradientDrawable.OVAL

@@ -51,13 +51,19 @@
     <string name="no_guess_failed_title">No guess failed</string>
     <string name="no_guess_failed_message">No valid no-guess board was found for this start. Try again.</string>
     <string name="mode_change_confirm_title">Mode change</string>
-    <string name="mode_change_confirm_message">This will delete all saved scores and current progress for this mode. Continue?</string>
+    <string name="mode_change_confirm_message">This will make achieved scores for the previous settings no longer show here. Continue?</string>
+    <string name="mode_delete_confirm_message">This will remove this mode. Achieved scores for these settings will no longer show here. Continue?</string>
+    <string name="clear_scores">Clear scores</string>
+    <string name="clear_scores_confirm_message">This will clear all scores for these settings. Continue?</string>
+    <string name="clear_all_scores">Clear all scores</string>
+    <string name="clear_all_scores_confirm_message">This will clear every saved score. Continue?</string>
     <string name="mode_error">Use at least 5 x 5, stay at 200 x 200 or less, and leave room for a safe opening.</string>
     <string name="save">Save</string>
     <string name="add">Add</string>
     <string name="delete">Delete</string>
     <string name="add_mode">Add mode</string>
-    <string name="mode_meta">%1$d x %2$d · %3$d %4$s</string>
+    <string name="mode_meta">%1$d x %2$d · %3$d%4$s</string>
     <string name="no_guess_short">NG</string>
+    <string name="no_flag_short">NF</string>
     <string name="mode_delete_error">At least one mode has to stay.</string>
 </resources>
