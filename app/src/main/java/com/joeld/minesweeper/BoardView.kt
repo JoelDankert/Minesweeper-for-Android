@@ -287,13 +287,7 @@ class BoardView @JvmOverloads constructor(
                 val inset = (cellSize * 0.024f).coerceAtLeast(0.8f)
                 val radius = cellSize * 0.22f
 
-                val currentState = CellVisualState(
-                    revealed = cell.revealed,
-                    flagged = cell.flagged,
-                    isMine = cell.isMine,
-                    adjacentMines = cell.adjacentMines,
-                    exploded = current.explodedCellIndex() == index
-                )
+                val currentState = visualStateForCell(cell, current.explodedCellIndex() == index)
                 val transition = cellTransitions[index]
                 if (transition != null && animationDurationMs > 0L) {
                     val progress = ((now - transition.startedAtMs).toFloat() / animationDurationMs.toFloat()).coerceIn(0f, 1f)
@@ -917,14 +911,27 @@ class BoardView @JvmOverloads constructor(
             val row = index / currentGame.width()
             val col = index % currentGame.width()
             val cell = currentGame.getCell(col, row)
-            CellVisualState(
-                revealed = cell.revealed,
+            visualStateForCell(cell, currentGame.explodedCellIndex() == index)
+        }
+    }
+
+    private fun visualStateForCell(cell: BoardCell, exploded: Boolean): CellVisualState {
+        if (!cell.revealed) {
+            return CellVisualState(
+                revealed = false,
                 flagged = cell.flagged,
-                isMine = cell.isMine,
-                adjacentMines = cell.adjacentMines,
-                exploded = currentGame.explodedCellIndex() == index
+                isMine = false,
+                adjacentMines = 0,
+                exploded = false
             )
         }
+        return CellVisualState(
+            revealed = true,
+            flagged = cell.flagged,
+            isMine = cell.isMine,
+            adjacentMines = cell.adjacentMines,
+            exploded = exploded
+        )
     }
 
     private fun shift(color: Int, factor: Float): Int {
