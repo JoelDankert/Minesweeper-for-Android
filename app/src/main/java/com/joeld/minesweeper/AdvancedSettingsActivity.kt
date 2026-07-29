@@ -65,7 +65,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
             updateMergeTilesState(isChecked)
         }
         binding.mergeTiles.setOnCheckedChangeListener { _, isChecked ->
-            updateFillGapsState(binding.roundCorners.isChecked || isChecked)
+            updateFillGapsState(!binding.roundCorners.isChecked || isChecked)
         }
         binding.longPressSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -113,7 +113,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         binding.mergeTiles.isChecked = settings.mergeTiles
         binding.fillGaps.isChecked = settings.fillGaps
         updateMergeTilesState(binding.roundCorners.isChecked)
-        updateFillGapsState(binding.roundCorners.isChecked || binding.mergeTiles.isChecked)
+        updateFillGapsState(!binding.roundCorners.isChecked || binding.mergeTiles.isChecked)
         binding.longPressSeekBar.progress = delayToProgress(settings.longPressDelayMs)
         binding.longPressValue.text = formatLongPressDelay(settings.longPressDelayMs)
         val snappedAnimationSpeed = snapAnimationSpeed(settings.animationSpeedPercent)
@@ -132,7 +132,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
                 showTopClears = binding.showTopClears.isChecked,
                 roundCorners = binding.roundCorners.isChecked,
                 mergeTiles = binding.roundCorners.isChecked && binding.mergeTiles.isChecked,
-                fillGaps = (binding.roundCorners.isChecked || binding.mergeTiles.isChecked) && binding.fillGaps.isChecked,
+                fillGaps = (!binding.roundCorners.isChecked || binding.mergeTiles.isChecked) && binding.fillGaps.isChecked,
                 longPressDelayMs = progressToDelay(binding.longPressSeekBar.progress),
                 animationSpeedPercent = snapAnimationSpeed(binding.animationSpeedSeekBar.progress)
             )
@@ -188,7 +188,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         binding.backButton.imageTintList = ColorStateList.valueOf(palette.ink)
         updateRestoreModesState()
         updateMergeTilesState(binding.roundCorners.isChecked)
-        updateFillGapsState(binding.roundCorners.isChecked || binding.mergeTiles.isChecked)
+        updateFillGapsState(!binding.roundCorners.isChecked || binding.mergeTiles.isChecked)
     }
 
     private fun updateRestoreModesState() {
@@ -203,13 +203,13 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         if (!roundCornersEnabled) {
             binding.mergeTiles.isChecked = false
         }
-        updateFillGapsState(roundCornersEnabled || binding.mergeTiles.isChecked)
+        updateFillGapsState(!roundCornersEnabled || binding.mergeTiles.isChecked)
     }
 
-    private fun updateFillGapsState(anyShapeFixEnabled: Boolean) {
-        binding.fillGaps.isEnabled = anyShapeFixEnabled
-        binding.fillGaps.alpha = if (anyShapeFixEnabled) 1f else 0.45f
-        if (!anyShapeFixEnabled) {
+    private fun updateFillGapsState(fillGapsAllowed: Boolean) {
+        binding.fillGaps.isEnabled = fillGapsAllowed
+        binding.fillGaps.alpha = if (fillGapsAllowed) 1f else 0.45f
+        if (!fillGapsAllowed) {
             binding.fillGaps.isChecked = false
         }
     }

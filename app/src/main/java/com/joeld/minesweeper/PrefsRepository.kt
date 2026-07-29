@@ -48,7 +48,7 @@ class PrefsRepository(context: Context) {
             showTopClears = prefs.getBoolean(KEY_SHOW_TOP_CLEARS, true),
             roundCorners = roundCorners,
             mergeTiles = mergeTiles,
-            fillGaps = (roundCorners || mergeTiles) && prefs.getBoolean(KEY_FILL_GAPS, true),
+            fillGaps = (!roundCorners || mergeTiles) && prefs.getBoolean(KEY_FILL_GAPS, true),
             cordingEnabled = prefs.getBoolean(KEY_CORDING_ENABLED, true),
             vibrateEnabled = prefs.getBoolean(KEY_VIBRATE_ENABLED, true),
             longPressDelayMs = clampLongPressDelay(prefs.getInt(KEY_LONG_PRESS_DELAY_MS, 250)),
@@ -60,7 +60,7 @@ class PrefsRepository(context: Context) {
 
     fun saveSettings(settings: AppSettings) {
         val sanitizedMergeTiles = settings.roundCorners && settings.mergeTiles
-        val sanitizedFillGaps = (settings.roundCorners || sanitizedMergeTiles) && settings.fillGaps
+        val sanitizedFillGaps = (!settings.roundCorners || sanitizedMergeTiles) && settings.fillGaps
         prefs.edit()
             .putBoolean(KEY_FLAG_MODE_DEFAULT, settings.flagModeDefault)
             .putBoolean(KEY_SHOW_INPUT_TOGGLE, settings.showInputToggle)
