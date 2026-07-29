@@ -96,7 +96,8 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
             }
             binding.boardView.setLongPressDelayMs(settings.longPressDelayMs)
             binding.boardView.setAnimationSpeedPercent(settings.animationSpeedPercent)
-            binding.boardView.setMergeTiles(settings.roundCorners && settings.mergeTiles)
+            binding.boardView.setRoundCorners(settings.roundCorners)
+            binding.boardView.setMergeTiles(settings.mergeTiles)
             binding.boardView.setFillGaps(settings.fillGaps)
             binding.boardView.setPalette(palette)
             applyPalette()
@@ -209,7 +210,8 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         binding.boardView.bind(game, this)
         binding.boardView.setLongPressDelayMs(settings.longPressDelayMs)
         binding.boardView.setAnimationSpeedPercent(settings.animationSpeedPercent)
-        binding.boardView.setMergeTiles(settings.roundCorners && settings.mergeTiles)
+        binding.boardView.setRoundCorners(settings.roundCorners)
+        binding.boardView.setMergeTiles(settings.mergeTiles)
         binding.boardView.setFillGaps(settings.fillGaps)
         binding.boardView.setPalette(palette)
         if (resetCamera) binding.boardView.post { binding.boardView.resetCamera() }

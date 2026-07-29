@@ -40,15 +40,15 @@ class PrefsRepository(context: Context) {
     }
 
     fun loadSettings(): AppSettings {
-        val mergeTiles = prefs.getBoolean(KEY_MERGE_TILES, true)
-        val roundCorners = prefs.getBoolean(KEY_ROUND_CORNERS, mergeTiles)
+        val roundCorners = prefs.getBoolean(KEY_ROUND_CORNERS, true)
+        val mergeTiles = roundCorners && prefs.getBoolean(KEY_MERGE_TILES, true)
         return AppSettings(
             flagModeDefault = prefs.getBoolean(KEY_FLAG_MODE_DEFAULT, false),
             showInputToggle = prefs.getBoolean(KEY_SHOW_INPUT_TOGGLE, true),
             showTopClears = prefs.getBoolean(KEY_SHOW_TOP_CLEARS, true),
             roundCorners = roundCorners,
             mergeTiles = mergeTiles,
-            fillGaps = prefs.getBoolean(KEY_FILL_GAPS, true),
+            fillGaps = mergeTiles && prefs.getBoolean(KEY_FILL_GAPS, true),
             cordingEnabled = prefs.getBoolean(KEY_CORDING_ENABLED, true),
             vibrateEnabled = prefs.getBoolean(KEY_VIBRATE_ENABLED, true),
             longPressDelayMs = clampLongPressDelay(prefs.getInt(KEY_LONG_PRESS_DELAY_MS, 250)),
@@ -59,13 +59,15 @@ class PrefsRepository(context: Context) {
     }
 
     fun saveSettings(settings: AppSettings) {
+        val sanitizedMergeTiles = settings.roundCorners && settings.mergeTiles
+        val sanitizedFillGaps = sanitizedMergeTiles && settings.fillGaps
         prefs.edit()
             .putBoolean(KEY_FLAG_MODE_DEFAULT, settings.flagModeDefault)
             .putBoolean(KEY_SHOW_INPUT_TOGGLE, settings.showInputToggle)
             .putBoolean(KEY_SHOW_TOP_CLEARS, settings.showTopClears)
             .putBoolean(KEY_ROUND_CORNERS, settings.roundCorners)
-            .putBoolean(KEY_MERGE_TILES, settings.mergeTiles)
-            .putBoolean(KEY_FILL_GAPS, settings.fillGaps)
+            .putBoolean(KEY_MERGE_TILES, sanitizedMergeTiles)
+            .putBoolean(KEY_FILL_GAPS, sanitizedFillGaps)
             .putBoolean(KEY_CORDING_ENABLED, settings.cordingEnabled)
             .putBoolean(KEY_VIBRATE_ENABLED, settings.vibrateEnabled)
             .putInt(KEY_LONG_PRESS_DELAY_MS, clampLongPressDelay(settings.longPressDelayMs))

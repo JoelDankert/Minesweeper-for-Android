@@ -77,6 +77,7 @@ class BoardView @JvmOverloads constructor(
     private var listener: Listener? = null
     private var interactionsEnabled = true
     private var palette = ThemeCatalog.resolve("sand", false)
+    private var roundCorners = true
     private var mergeTiles = true
     private var fillGaps = true
 
@@ -168,6 +169,11 @@ class BoardView @JvmOverloads constructor(
     fun setPalette(themePalette: ThemePalette) {
         palette = themePalette
         applyPalette(themePalette)
+        invalidate()
+    }
+
+    fun setRoundCorners(enabled: Boolean) {
+        roundCorners = enabled
         invalidate()
     }
 
@@ -728,6 +734,9 @@ class BoardView @JvmOverloads constructor(
         state: CellVisualState,
         radius: Float
     ): FloatArray {
+        if (!roundCorners) {
+            return FloatArray(8)
+        }
         if (!mergeTiles) {
             return FloatArray(8) { radius }
         }
@@ -760,7 +769,7 @@ class BoardView @JvmOverloads constructor(
         radius: Float,
         inset: Float
     ): FloatArray {
-        if (!mergeTiles || !fillGaps) return floatArrayOf(0f, 0f, 0f, 0f)
+        if (!roundCorners || !mergeTiles || !fillGaps) return floatArrayOf(0f, 0f, 0f, 0f)
         val row = index / boardWidth
         val col = index % boardWidth
         val group = mergeGroup(state)
