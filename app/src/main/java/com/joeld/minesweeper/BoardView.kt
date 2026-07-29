@@ -23,6 +23,10 @@ class BoardView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : View(context, attrs) {
+    private companion object {
+        const val ENDGAME_CAMERA_DURATION_MS = 420L
+    }
+
     private data class CellVisualState(
         val revealed: Boolean,
         val flagged: Boolean,
@@ -37,7 +41,20 @@ class BoardView @JvmOverloads constructor(
         val current: CellVisualState,
         val previousNeighborhood: Map<Int, CellVisualState>,
         val currentNeighborhood: Map<Int, CellVisualState>,
-        val startedAtMs: Long
+        val startedAtMs: Long,
+        val durationMs: Long
+    )
+
+    private data class CameraAnimation(
+        val startScale: Float,
+        val startOffsetX: Float,
+        val startOffsetY: Float,
+        val targetScale: Float,
+        val targetOffsetX: Float,
+        val targetOffsetY: Float,
+        val startedAtMs: Long,
+        val durationMs: Long,
+        val onFinished: (() -> Unit)?
     )
 
     private data class EdgeExpansion(
@@ -116,6 +133,7 @@ class BoardView @JvmOverloads constructor(
     private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop.toFloat()
     private var longPressDelayMs = 250L
     private var animationDurationMs = 126L
+    private var cameraAnimation: CameraAnimation? = null
 
     private val longPressRunnable = Runnable {
         val cell = downCell ?: return@Runnable
@@ -187,12 +205,13 @@ class BoardView @JvmOverloads constructor(
         invalidate()
     }
 
-    fun refresh() {
+    fun refresh(animationDurationScale: Float = 1f) {
         val current = game ?: return
         val currentStates = captureCurrentStates(current)
         val currentStateMap = currentStates.withIndex().associate { it.index to it.value }
         if (animationDurationMs > 0L) {
             val now = SystemClock.elapsedRealtime()
+            val transitionDuration = (animationDurationMs * animationDurationScale.coerceAtLeast(0.05f)).toLong().coerceAtLeast(1L)
             val transitionIndexes = linkedSetOf<Int>()
             currentStates.forEachIndexed { index, state ->
                 val previous = lastCellStates[index]
@@ -224,7 +243,8 @@ class BoardView @JvmOverloads constructor(
                         current = currentState,
                         previousNeighborhood = previousNeighborhood,
                         currentNeighborhood = currentNeighborhood,
-                        startedAtMs = now
+                        startedAtMs = now,
+                        durationMs = transitionDuration
                     )
                 }
             }
@@ -241,6 +261,32 @@ class BoardView @JvmOverloads constructor(
 
     fun performActionHaptic() {
         performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+    }
+
+    fun animateToFullBoard(onFinished: (() -> Unit)? = null) {
+        val current = game ?: run {
+            onFinished?.invoke()
+            return
+        }
+        if (width == 0 || height == 0 || baseCellSize == 0f) {
+            resetCamera()
+            onFinished?.invoke()
+            return
+        }
+        val boardWidth = current.width() * baseCellSize
+        val boardHeight = current.height() * baseCellSize
+        cameraAnimation = CameraAnimation(
+            startScale = scale,
+            startOffsetX = offsetX,
+            startOffsetY = offsetY,
+            targetScale = 1f,
+            targetOffsetX = (width - boardWidth) / 2f,
+            targetOffsetY = (height - boardHeight) / 2f,
+            startedAtMs = SystemClock.elapsedRealtime(),
+            durationMs = ENDGAME_CAMERA_DURATION_MS,
+            onFinished = onFinished
+        )
+        invalidate()
     }
 
     fun resetCamera() {
@@ -271,8 +317,9 @@ class BoardView @JvmOverloads constructor(
         val current = game ?: return
         if (baseCellSize == 0f) resetCamera()
 
-        val cellSize = baseCellSize * scale
         val now = SystemClock.elapsedRealtime()
+        val cameraStillAnimating = updateCameraAnimation(now)
+        val cellSize = baseCellSize * scale
         var hasActiveAnimations = false
         for (row in 0 until current.height()) {
             for (col in 0 until current.width()) {
@@ -290,7 +337,7 @@ class BoardView @JvmOverloads constructor(
                 val currentState = visualStateForCell(cell, current.explodedCellIndex() == index)
                 val transition = cellTransitions[index]
                 if (transition != null && animationDurationMs > 0L) {
-                    val progress = ((now - transition.startedAtMs).toFloat() / animationDurationMs.toFloat()).coerceIn(0f, 1f)
+                    val progress = ((now - transition.startedAtMs).toFloat() / transition.durationMs.toFloat()).coerceIn(0f, 1f)
                     if (progress < 1f) {
                         hasActiveAnimations = true
                         drawCellTransition(canvas, cellRect, inset, radius, transition, eased(progress), current.width(), current.height())
@@ -303,7 +350,7 @@ class BoardView @JvmOverloads constructor(
                 }
             }
         }
-        if (hasActiveAnimations) postInvalidateOnAnimation()
+        if (hasActiveAnimations || cameraStillAnimating) postInvalidateOnAnimation()
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -594,6 +641,25 @@ class BoardView @JvmOverloads constructor(
             (height - boardHeight) / 2f
         } else {
             offsetY.coerceIn(height - boardHeight - verticalPadding, verticalPadding)
+        }
+    }
+
+    private fun updateCameraAnimation(now: Long): Boolean {
+        val animation = cameraAnimation ?: return false
+        val rawProgress = ((now - animation.startedAtMs).toFloat() / animation.durationMs.toFloat()).coerceIn(0f, 1f)
+        val progress = eased(rawProgress)
+        scale = animation.startScale + (animation.targetScale - animation.startScale) * progress
+        offsetX = animation.startOffsetX + (animation.targetOffsetX - animation.startOffsetX) * progress
+        offsetY = animation.startOffsetY + (animation.targetOffsetY - animation.startOffsetY) * progress
+        return if (rawProgress >= 1f) {
+            scale = animation.targetScale
+            offsetX = animation.targetOffsetX
+            offsetY = animation.targetOffsetY
+            cameraAnimation = null
+            animation.onFinished?.invoke()
+            false
+        } else {
+            true
         }
     }
 

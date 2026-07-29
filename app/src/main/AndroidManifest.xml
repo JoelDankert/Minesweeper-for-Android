@@ -25,6 +25,10 @@
             android:screenOrientation="portrait"
             android:exported="false" />
         <activity
+            android:name=".RecentGamesActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
             android:name=".NoGuessFailedActivity"
             android:screenOrientation="portrait"
             android:exported="false" />

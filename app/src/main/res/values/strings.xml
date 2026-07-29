@@ -27,8 +27,10 @@
     <string name="fill_gaps">Fill gaps</string>
     <string name="enable_cording">Enable cording</string>
     <string name="vibrate_enabled">Vibrate</string>
+    <string name="screen_shake">Screen shake</string>
     <string name="dark_theme">Dark mode</string>
     <string name="theme_color">Theme color</string>
+    <string name="recent_games">Recent games</string>
     <string name="advanced">Advanced</string>
     <string name="restore_default_modes">Restore default modes</string>
     <string name="pending">Pending</string>
@@ -57,6 +59,7 @@
     <string name="clear_scores">Clear scores</string>
     <string name="clear_scores_confirm_message">This will clear all scores for these settings. Continue?</string>
     <string name="clear_all_scores">Clear all scores</string>
+    <string name="all_scores">All scores</string>
     <string name="clear_all_scores_confirm_message">This will clear every saved score. Continue?</string>
     <string name="mode_error">Use at least 5 x 5, stay at 200 x 200 or less, and leave room for a safe opening.</string>
     <string name="save">Save</string>

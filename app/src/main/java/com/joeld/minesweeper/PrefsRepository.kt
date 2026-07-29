@@ -51,6 +51,7 @@ class PrefsRepository(context: Context) {
             fillGaps = (!roundCorners || mergeTiles) && prefs.getBoolean(KEY_FILL_GAPS, true),
             cordingEnabled = prefs.getBoolean(KEY_CORDING_ENABLED, true),
             vibrateEnabled = prefs.getBoolean(KEY_VIBRATE_ENABLED, true),
+            screenShakeEnabled = prefs.getBoolean(KEY_SCREEN_SHAKE_ENABLED, true),
             longPressDelayMs = clampLongPressDelay(prefs.getInt(KEY_LONG_PRESS_DELAY_MS, 250)),
             animationSpeedPercent = clampAnimationSpeed(prefs.getInt(KEY_ANIMATION_SPEED_PERCENT, 50)),
             darkTheme = prefs.getBoolean(KEY_DARK_THEME, false),
@@ -70,6 +71,7 @@ class PrefsRepository(context: Context) {
             .putBoolean(KEY_FILL_GAPS, sanitizedFillGaps)
             .putBoolean(KEY_CORDING_ENABLED, settings.cordingEnabled)
             .putBoolean(KEY_VIBRATE_ENABLED, settings.vibrateEnabled)
+            .putBoolean(KEY_SCREEN_SHAKE_ENABLED, settings.screenShakeEnabled)
             .putInt(KEY_LONG_PRESS_DELAY_MS, clampLongPressDelay(settings.longPressDelayMs))
             .putInt(KEY_ANIMATION_SPEED_PERCENT, clampAnimationSpeed(settings.animationSpeedPercent))
             .putBoolean(KEY_DARK_THEME, settings.darkTheme)
@@ -222,9 +224,46 @@ class PrefsRepository(context: Context) {
     fun appendRecentGame(record: RecentGameRecord) {
         val history = loadRecentGames(record.modeId).toMutableList()
         history.add(0, record)
-        val trimmed = history.take(8)
+        saveRecentGames(record.modeId, history)
+    }
+
+    fun loadRecentGameEntries(offset: Int, limit: Int): List<RecentGameEntry> {
+        if (limit <= 0) return emptyList()
+        val modesByScoreKey = loadModes().associateBy { scoreKey(it) }
+        return prefs.all.keys
+            .filter { it.startsWith(KEY_RECENT_PREFIX) }
+            .flatMap { key ->
+                val modeId = key.removePrefix(KEY_RECENT_PREFIX)
+                loadRecentGames(modeId).map { record -> record.copy(modeId = modeId) }
+            }
+            .sortedByDescending { it.finishedAtEpochMs }
+            .drop(offset.coerceAtLeast(0))
+            .take(limit)
+            .map { record ->
+                val mode = modesByScoreKey[record.modeId]
+                RecentGameEntry(
+                    record = record,
+                    modeName = mode?.name?.takeIf { it.isNotBlank() }.orEmpty(),
+                    modeMeta = modeMetaForScoreKey(record.modeId, mode)
+                )
+            }
+    }
+
+    fun deleteRecentGame(record: RecentGameRecord) {
+        val history = loadRecentGames(record.modeId).toMutableList()
+        val index = history.indexOfFirst {
+            it.won == record.won &&
+                it.elapsedSeconds == record.elapsedSeconds &&
+                it.finishedAtEpochMs == record.finishedAtEpochMs
+        }
+        if (index < 0) return
+        history.removeAt(index)
+        saveRecentGames(record.modeId, history)
+    }
+
+    private fun saveRecentGames(modeId: String, history: List<RecentGameRecord>) {
         val array = JSONArray()
-        trimmed.forEach {
+        history.forEach {
             array.put(
                 JSONObject().apply {
                     put("modeId", it.modeId)
@@ -234,7 +273,7 @@ class PrefsRepository(context: Context) {
                 }
             )
         }
-        prefs.edit().putString(recentKey(record.modeId), array.toString()).apply()
+        prefs.edit().putString(recentKey(modeId), array.toString()).apply()
     }
 
     fun loadRecentGames(modeId: String): List<RecentGameRecord> {
@@ -263,6 +302,30 @@ class PrefsRepository(context: Context) {
 
     fun scoreKey(mode: GameMode): String {
         return "${mode.width}x${mode.height}_m${mode.mines}_ng${mode.noGuess}_nf${mode.noFlagMode}"
+    }
+
+    private fun modeMetaForScoreKey(scoreKey: String, mode: GameMode?): String {
+        mode?.let {
+            return formatModeMeta(it.width, it.height, it.mines, it.noGuess, it.noFlagMode)
+        }
+        val match = Regex("""(\d+)x(\d+)_m(\d+)_ng(true|false)_nf(true|false)""").matchEntire(scoreKey)
+            ?: return scoreKey
+        return formatModeMeta(
+            width = match.groupValues[1].toInt(),
+            height = match.groupValues[2].toInt(),
+            mines = match.groupValues[3].toInt(),
+            noGuess = match.groupValues[4].toBoolean(),
+            noFlagMode = match.groupValues[5].toBoolean()
+        )
+    }
+
+    private fun formatModeMeta(width: Int, height: Int, mines: Int, noGuess: Boolean, noFlagMode: Boolean): String {
+        val tags = listOfNotNull(
+            "NG".takeIf { noGuess },
+            "NF".takeIf { noFlagMode }
+        ).joinToString(" ")
+        val suffix = tags.takeIf { it.isNotEmpty() }?.let { " · $it" } ?: ""
+        return "$width x $height · $mines$suffix"
     }
 
     private fun parseModes(raw: String): List<GameMode>? {
@@ -315,6 +378,7 @@ class PrefsRepository(context: Context) {
         const val KEY_FILL_GAPS = "fill_gaps"
         const val KEY_CORDING_ENABLED = "cording_enabled"
         const val KEY_VIBRATE_ENABLED = "vibrate_enabled"
+        const val KEY_SCREEN_SHAKE_ENABLED = "screen_shake_enabled"
         const val KEY_LONG_PRESS_DELAY_MS = "long_press_delay_ms"
         const val KEY_ANIMATION_SPEED_PERCENT = "animation_speed_percent"
         const val KEY_DARK_THEME = "dark_theme"

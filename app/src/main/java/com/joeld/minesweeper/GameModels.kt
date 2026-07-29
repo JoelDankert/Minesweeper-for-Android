@@ -19,6 +19,7 @@ data class AppSettings(
     val fillGaps: Boolean = true,
     val cordingEnabled: Boolean = true,
     val vibrateEnabled: Boolean = true,
+    val screenShakeEnabled: Boolean = true,
     val longPressDelayMs: Int = 250,
     val animationSpeedPercent: Int = 50,
     val darkTheme: Boolean = false,
@@ -86,4 +87,10 @@ data class RecentGameRecord(
     val won: Boolean,
     val elapsedSeconds: Int,
     val finishedAtEpochMs: Long
+)
+
+data class RecentGameEntry(
+    val record: RecentGameRecord,
+    val modeName: String,
+    val modeMeta: String
 )

@@ -1,5 +1,6 @@
 package com.joeld.minesweeper
 
+import android.animation.ValueAnimator
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
@@ -24,11 +25,15 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.sin
 
 class GameActivity : AppCompatActivity(), BoardView.Listener {
     companion object {
         const val EXTRA_MODE_ID = "mode_id"
         const val EXTRA_RESUME = "resume"
+        private const val MINE_REVEAL_ANIMATION_SCALE = 0.2f
+        private const val MINE_SHAKE_DURATION_MS = 260L
+        private const val MINE_SHAKE_CYCLES = 5.5f
     }
 
     private lateinit var binding: ActivityGameBinding
@@ -45,6 +50,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
     private var carriedElapsedSeconds = 0
     private var boardBusy = false
     private var gameResultRecorded = false
+    private var endGameCameraStarted = false
     private var latestFinishedRecord: RecentGameRecord? = null
     private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
     private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -137,14 +143,15 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
             return
         } else {
             val revealsOnLongPress = selectedMode.noFlagMode || inputMode == InputMode.FLAG || game.state == GameState.READY
-            val didChange = if (revealsOnLongPress) {
+            val result = if (revealsOnLongPress) {
                 revealCellImmediate(col, row)
             } else {
-                game.toggleFlag(col, row)
+                RevealResult(changed = game.toggleFlag(col, row))
             }
-            if (didChange) {
+            if (result.changed) {
                 triggerActionHaptic()
-                refreshBoard()
+                if (result.exploded) triggerScreenShake()
+                refreshBoard(animationDurationScale = if (result.exploded) MINE_REVEAL_ANIMATION_SCALE else 1f)
             }
         }
     }
@@ -193,6 +200,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
     private fun startNewGame(resetCamera: Boolean, resetInputMode: Boolean, progress: GameProgress? = null) {
         timerJob?.cancel()
         boardBusy = false
+        endGameCameraStarted = false
         binding.boardLoading.isVisible = false
         binding.boardView.setInteractionsEnabled(true)
         game = MinesweeperGame(selectedMode, settings.cordingEnabled)
@@ -249,7 +257,10 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
                 if (game.state == GameState.WON || game.state == GameState.LOST) {
                     carriedElapsedSeconds = ((SystemClock.elapsedRealtime() - startedAtMs) / 1000L).toInt()
                 }
-                refreshBoard()
+                binding.boardLoading.isVisible = false
+                if (result.exploded) triggerScreenShake()
+                val zooming = refreshBoard(animationDurationScale = if (result.exploded) MINE_REVEAL_ANIMATION_SCALE else 1f)
+                if (zooming) return@launch
             }
             boardBusy = false
             binding.boardLoading.isVisible = false
@@ -257,7 +268,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         }
     }
 
-    private fun revealCellImmediate(col: Int, row: Int): Boolean {
+    private fun revealCellImmediate(col: Int, row: Int): RevealResult {
         val wasReady = game.state == GameState.READY
         val result = game.reveal(col, row)
         if (result.changed && wasReady && game.state == GameState.RUNNING) {
@@ -268,16 +279,47 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         if (result.changed && (game.state == GameState.WON || game.state == GameState.LOST)) {
             carriedElapsedSeconds = ((SystemClock.elapsedRealtime() - startedAtMs) / 1000L).toInt()
         }
-        return result.changed
+        return result
     }
 
-    private fun refreshBoard() {
-        binding.boardView.refresh()
+    private fun refreshBoard(animationDurationScale: Float = 1f): Boolean {
+        binding.boardView.refresh(animationDurationScale)
         maybeRecordFinishedGame()
         updateHeader()
         updateInputModeUi()
         updateRecentPanel()
         repository.saveProgress(game.exportProgress(currentElapsedSeconds(), inputMode))
+        return startEndGameCameraIfNeeded()
+    }
+
+    private fun triggerScreenShake() {
+        if (!settings.screenShakeEnabled) return
+        ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = MINE_SHAKE_DURATION_MS
+            addUpdateListener { animator ->
+                val progress = animator.animatedValue as Float
+                val falloff = 1f - progress
+                val easedFalloff = falloff * falloff * falloff
+                val amplitude = 18f.dpF * easedFalloff
+                binding.root.translationX = sin(progress * MINE_SHAKE_CYCLES * Math.PI.toFloat() * 2f) * amplitude
+                if (progress >= 1f) binding.root.translationX = 0f
+            }
+            start()
+        }
+    }
+
+    private fun startEndGameCameraIfNeeded(): Boolean {
+        if (endGameCameraStarted) return false
+        if (game.state != GameState.WON && game.state != GameState.LOST) return false
+        endGameCameraStarted = true
+        boardBusy = true
+        binding.boardView.setInteractionsEnabled(false)
+        binding.boardView.animateToFullBoard {
+            boardBusy = false
+            binding.boardLoading.isVisible = false
+            binding.boardView.setInteractionsEnabled(true)
+        }
+        return true
     }
 
     private fun updateHeader() {

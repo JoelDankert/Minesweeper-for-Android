@@ -42,6 +42,9 @@ class SettingsActivity : AppCompatActivity() {
         binding.backButton.setOnClickListener { finish() }
         binding.themeRow.setOnClickListener { cycleTheme() }
         binding.darkTheme.setOnCheckedChangeListener { _, _ -> refreshPreview() }
+        binding.recentGamesRow.setOnClickListener {
+            startActivity(Intent(this, RecentGamesActivity::class.java))
+        }
         binding.advancedRow.setOnClickListener {
             startActivity(Intent(this, AdvancedSettingsActivity::class.java))
         }
@@ -109,6 +112,8 @@ class SettingsActivity : AppCompatActivity() {
         binding.topBar.setBackgroundColor(palette.background)
         binding.content.setBackgroundColor(palette.background)
         binding.titleText.setTextColor(palette.ink)
+        binding.recentGamesText.setTextColor(palette.ink)
+        binding.recentGamesValue.setTextColor(palette.inkSoft)
         binding.advancedText.setTextColor(palette.ink)
         binding.advancedValue.setTextColor(palette.inkSoft)
         binding.themeLabel.setTextColor(palette.ink)
@@ -123,6 +128,10 @@ class SettingsActivity : AppCompatActivity() {
             applySwitchPalette(it)
         }
         binding.themeRow.background = GradientDrawable().apply {
+            cornerRadius = 22f * resources.displayMetrics.density
+            setColor(palette.panel)
+        }
+        binding.recentGamesRow.background = GradientDrawable().apply {
             cornerRadius = 22f * resources.displayMetrics.density
             setColor(palette.panel)
         }

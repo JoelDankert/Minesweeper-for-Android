@@ -112,6 +112,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         binding.roundCorners.isChecked = settings.roundCorners
         binding.mergeTiles.isChecked = settings.mergeTiles
         binding.fillGaps.isChecked = settings.fillGaps
+        binding.screenShake.isChecked = settings.screenShakeEnabled
         updateMergeTilesState(binding.roundCorners.isChecked)
         updateFillGapsState(!binding.roundCorners.isChecked || binding.mergeTiles.isChecked)
         binding.longPressSeekBar.progress = delayToProgress(settings.longPressDelayMs)
@@ -133,6 +134,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
                 roundCorners = binding.roundCorners.isChecked,
                 mergeTiles = binding.roundCorners.isChecked && binding.mergeTiles.isChecked,
                 fillGaps = (!binding.roundCorners.isChecked || binding.mergeTiles.isChecked) && binding.fillGaps.isChecked,
+                screenShakeEnabled = binding.screenShake.isChecked,
                 longPressDelayMs = progressToDelay(binding.longPressSeekBar.progress),
                 animationSpeedPercent = snapAnimationSpeed(binding.animationSpeedSeekBar.progress)
             )
@@ -151,11 +153,13 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         binding.content.setBackgroundColor(palette.background)
         binding.titleText.setTextColor(palette.ink)
         binding.restoreModesLabel.setTextColor(palette.ink)
+        binding.clearAllScoresLabel.setTextColor(palette.ink)
+        binding.clearAllScoresValue.setTextColor(palette.inkSoft)
         binding.longPressLabel.setTextColor(palette.ink)
         binding.longPressValue.setTextColor(palette.inkSoft)
         binding.animationSpeedLabel.setTextColor(palette.ink)
         binding.animationSpeedValue.setTextColor(palette.inkSoft)
-        listOf(binding.showBottomToggle, binding.showTopClears, binding.roundCorners, binding.mergeTiles, binding.fillGaps).forEach {
+        listOf(binding.showBottomToggle, binding.showTopClears, binding.roundCorners, binding.mergeTiles, binding.fillGaps, binding.screenShake).forEach {
             it.setTextColor(palette.ink)
             applySwitchPalette(it)
         }
@@ -175,7 +179,6 @@ class AdvancedSettingsActivity : AppCompatActivity() {
             cornerRadius = 22f * resources.displayMetrics.density
             setColor(palette.panel)
         }
-        binding.clearAllScoresButton.setTextColor(palette.ink)
         binding.applyButton.background = GradientDrawable().apply {
             cornerRadius = 22f * resources.displayMetrics.density
             setColor(palette.accent)
