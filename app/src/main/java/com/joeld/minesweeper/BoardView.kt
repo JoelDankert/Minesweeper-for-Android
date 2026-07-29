@@ -769,7 +769,7 @@ class BoardView @JvmOverloads constructor(
         radius: Float,
         inset: Float
     ): FloatArray {
-        if (!roundCorners || !mergeTiles || !fillGaps) return floatArrayOf(0f, 0f, 0f, 0f)
+        if (!fillGaps || (roundCorners && !mergeTiles)) return floatArrayOf(0f, 0f, 0f, 0f)
         val row = index / boardWidth
         val col = index % boardWidth
         val group = mergeGroup(state)
