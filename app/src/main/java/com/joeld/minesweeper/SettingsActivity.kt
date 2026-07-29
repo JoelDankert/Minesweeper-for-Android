@@ -61,6 +61,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun bindValues() {
         binding.flagModeDefault.isChecked = settings.flagModeDefault
         binding.enableCording.isChecked = settings.cordingEnabled
+        binding.vibrateEnabled.isChecked = settings.vibrateEnabled
         if (binding.darkTheme.isChecked != previewDarkTheme) {
             binding.darkTheme.isChecked = previewDarkTheme
         }
@@ -79,6 +80,7 @@ class SettingsActivity : AppCompatActivity() {
         val next = latest.copy(
             flagModeDefault = binding.flagModeDefault.isChecked,
             cordingEnabled = binding.enableCording.isChecked,
+            vibrateEnabled = binding.vibrateEnabled.isChecked,
             darkTheme = binding.darkTheme.isChecked,
             themeId = themeId
         )
@@ -114,6 +116,7 @@ class SettingsActivity : AppCompatActivity() {
         listOf(
             binding.flagModeDefault,
             binding.enableCording,
+            binding.vibrateEnabled,
             binding.darkTheme
         ).forEach {
             it.setTextColor(palette.ink)
