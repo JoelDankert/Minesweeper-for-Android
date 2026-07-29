@@ -14,6 +14,7 @@ data class AppSettings(
     val flagModeDefault: Boolean = false,
     val showInputToggle: Boolean = true,
     val showTopClears: Boolean = true,
+    val roundCorners: Boolean = true,
     val mergeTiles: Boolean = true,
     val fillGaps: Boolean = true,
     val cordingEnabled: Boolean = true,

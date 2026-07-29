@@ -22,6 +22,7 @@
     <string name="flag_mode_default">Default to flag mode</string>
     <string name="show_bottom_toggle">Show bottom input toggle</string>
     <string name="show_top_clears">Show top clears</string>
+    <string name="round_corners">Round corners</string>
     <string name="merge_tiles">Merge tiles</string>
     <string name="fill_gaps">Fill gaps</string>
     <string name="enable_cording">Enable cording</string>

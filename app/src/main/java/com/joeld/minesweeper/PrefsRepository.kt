@@ -41,12 +41,14 @@ class PrefsRepository(context: Context) {
 
     fun loadSettings(): AppSettings {
         val mergeTiles = prefs.getBoolean(KEY_MERGE_TILES, true)
+        val roundCorners = prefs.getBoolean(KEY_ROUND_CORNERS, mergeTiles)
         return AppSettings(
             flagModeDefault = prefs.getBoolean(KEY_FLAG_MODE_DEFAULT, false),
             showInputToggle = prefs.getBoolean(KEY_SHOW_INPUT_TOGGLE, true),
             showTopClears = prefs.getBoolean(KEY_SHOW_TOP_CLEARS, true),
+            roundCorners = roundCorners,
             mergeTiles = mergeTiles,
-            fillGaps = mergeTiles && prefs.getBoolean(KEY_FILL_GAPS, true),
+            fillGaps = prefs.getBoolean(KEY_FILL_GAPS, true),
             cordingEnabled = prefs.getBoolean(KEY_CORDING_ENABLED, true),
             vibrateEnabled = prefs.getBoolean(KEY_VIBRATE_ENABLED, true),
             longPressDelayMs = clampLongPressDelay(prefs.getInt(KEY_LONG_PRESS_DELAY_MS, 250)),
@@ -57,13 +59,13 @@ class PrefsRepository(context: Context) {
     }
 
     fun saveSettings(settings: AppSettings) {
-        val sanitizedFillGaps = settings.mergeTiles && settings.fillGaps
         prefs.edit()
             .putBoolean(KEY_FLAG_MODE_DEFAULT, settings.flagModeDefault)
             .putBoolean(KEY_SHOW_INPUT_TOGGLE, settings.showInputToggle)
             .putBoolean(KEY_SHOW_TOP_CLEARS, settings.showTopClears)
+            .putBoolean(KEY_ROUND_CORNERS, settings.roundCorners)
             .putBoolean(KEY_MERGE_TILES, settings.mergeTiles)
-            .putBoolean(KEY_FILL_GAPS, sanitizedFillGaps)
+            .putBoolean(KEY_FILL_GAPS, settings.fillGaps)
             .putBoolean(KEY_CORDING_ENABLED, settings.cordingEnabled)
             .putBoolean(KEY_VIBRATE_ENABLED, settings.vibrateEnabled)
             .putInt(KEY_LONG_PRESS_DELAY_MS, clampLongPressDelay(settings.longPressDelayMs))
@@ -306,6 +308,7 @@ class PrefsRepository(context: Context) {
         const val KEY_FLAG_MODE_DEFAULT = "flag_mode_default"
         const val KEY_SHOW_INPUT_TOGGLE = "show_input_toggle"
         const val KEY_SHOW_TOP_CLEARS = "show_top_clears"
+        const val KEY_ROUND_CORNERS = "round_corners"
         const val KEY_MERGE_TILES = "merge_tiles"
         const val KEY_FILL_GAPS = "fill_gaps"
         const val KEY_CORDING_ENABLED = "cording_enabled"
