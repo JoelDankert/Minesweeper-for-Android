@@ -4,6 +4,7 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.SystemClock
@@ -199,6 +200,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
 
     private fun startNewGame(resetCamera: Boolean, resetInputMode: Boolean, progress: GameProgress? = null) {
         timerJob?.cancel()
+        val hadGame = ::game.isInitialized
         boardBusy = false
         endGameCameraStarted = false
         binding.boardLoading.isVisible = false
@@ -209,7 +211,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         gameResultRecorded = progress?.state == GameState.WON || progress?.state == GameState.LOST
         latestFinishedRecord = null
         if (resetInputMode) {
-            inputMode = defaultInputMode()
+            inputMode = newGameInputMode(hadGame)
         }
         progress?.let {
             game.importProgress(it)
@@ -352,6 +354,14 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         return if (selectedMode.noFlagMode) InputMode.REVEAL else if (settings.flagModeDefault) InputMode.FLAG else InputMode.REVEAL
     }
 
+    private fun newGameInputMode(hadGame: Boolean): InputMode {
+        return if (!selectedMode.noFlagMode && settings.showInputToggle && hadGame) {
+            inputMode
+        } else {
+            defaultInputMode()
+        }
+    }
+
     private fun triggerActionHaptic() {
         if (settings.vibrateEnabled) {
             binding.boardView.performActionHaptic()
@@ -393,7 +403,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         binding.boardView.setPalette(palette)
         tintIconButton(binding.backButton)
         tintIconButton(binding.settingsButton)
-        styleCapsule(binding.inputToggleGroup, palette.panel)
+        styleCapsule(binding.inputToggleGroup, floatingControlColor())
         stylePanel(binding.recentPanel, palette.panel, 24f)
         updateInputModeUi()
         binding.mineCountText.setTextColor(palette.ink)
@@ -472,9 +482,18 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
     private fun tintIconButton(button: android.widget.ImageButton) {
         button.background = GradientDrawable().apply {
             shape = GradientDrawable.OVAL
-            setColor((palette.panel and 0x00FFFFFF) or (0xD0000000.toInt()))
+            setColor(floatingControlColor())
         }
         button.imageTintList = ColorStateList.valueOf(palette.ink)
+    }
+
+    private fun floatingControlColor(): Int {
+        return Color.argb(
+            0xD0,
+            (Color.red(palette.background) + Color.red(palette.revealedCell)) / 2,
+            (Color.green(palette.background) + Color.green(palette.revealedCell)) / 2,
+            (Color.blue(palette.background) + Color.blue(palette.revealedCell)) / 2
+        )
     }
 
     private fun stylePanel(view: View, color: Int, radiusDp: Float) {
