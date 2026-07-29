@@ -64,6 +64,16 @@
                 android:text="@string/enable_cording" />
 
             <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/vibrateEnabled"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:switchPadding="14dp"
+                android:text="@string/vibrate_enabled" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/darkTheme"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -100,16 +110,6 @@
                     android:text="Sand"
                     android:textSize="14sp" />
             </LinearLayout>
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/vibrateEnabled"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp"
-                android:switchPadding="14dp"
-                android:text="@string/vibrate_enabled" />
 
             <LinearLayout
                 android:id="@+id/advancedRow"
