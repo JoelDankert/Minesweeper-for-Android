@@ -131,8 +131,8 @@ class MinesweeperGame(private val mode: GameMode, private val cordingEnabled: Bo
         }
 
         val attempts = when {
-            mode.width * mode.height <= 256 -> 2400
-            else -> 1200
+            mode.width * mode.height <= 256 -> 9600
+            else -> 4800
         }
         repeat(attempts) { attempt ->
             clearBoard()
