@@ -1,5 +1,6 @@
 package com.joeld.minesweeper
 
+import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -51,6 +52,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
     private var boardBusy = false
     private var gameResultRecorded = false
     private var endGameCameraStarted = false
+    private var inputToggleAnimator: ValueAnimator? = null
     private var latestFinishedRecord: RecentGameRecord? = null
     private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
     private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -176,13 +178,11 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         binding.settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
-        binding.revealToggle.setOnClickListener {
-            inputMode = InputMode.REVEAL
-            updateInputModeUi()
-        }
-        binding.flagToggle.setOnClickListener {
+        binding.revealToggle.kind = InputModeIconView.Kind.MINE
+        binding.flagToggle.kind = InputModeIconView.Kind.FLAG
+        binding.inputToggleGroup.setOnClickListener {
             if (selectedMode.noFlagMode) return@setOnClickListener
-            inputMode = InputMode.FLAG
+            inputMode = if (inputMode == InputMode.FLAG) InputMode.REVEAL else InputMode.FLAG
             updateInputModeUi()
         }
     }
@@ -336,8 +336,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
     private fun updateInputModeUi() {
         val terminal = ::game.isInitialized && (game.state == GameState.WON || game.state == GameState.LOST)
         binding.inputToggleGroup.isVisible = settings.showInputToggle && !selectedMode.noFlagMode && !terminal
-        styleToggle(binding.revealToggle, inputMode == InputMode.REVEAL)
-        styleToggle(binding.flagToggle, inputMode == InputMode.FLAG)
+        styleInputToggle()
     }
 
     private fun formatModeMeta(mode: GameMode): String {
@@ -394,7 +393,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         binding.boardView.setPalette(palette)
         tintIconButton(binding.backButton)
         tintIconButton(binding.settingsButton)
-        stylePanel(binding.inputToggleGroup, palette.panel, 24f)
+        styleCapsule(binding.inputToggleGroup, palette.panel)
         stylePanel(binding.recentPanel, palette.panel, 24f)
         updateInputModeUi()
         binding.mineCountText.setTextColor(palette.ink)
@@ -485,12 +484,47 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         }
     }
 
-    private fun styleToggle(view: TextView, selected: Boolean) {
+    private fun styleCapsule(view: View, color: Int) {
         view.background = GradientDrawable().apply {
-            cornerRadius = 20f.dpF
-            setColor(if (selected) palette.accent else android.graphics.Color.TRANSPARENT)
+            cornerRadius = 1000f
+            setColor(color)
         }
-        view.setTextColor(if (selected) palette.revealedCell else palette.ink)
+    }
+
+    private fun styleInputToggle() {
+        binding.inputToggleThumb.background = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(palette.accent)
+        }
+        val travel = binding.inputToggleGroup.width -
+            binding.inputToggleGroup.paddingLeft -
+            binding.inputToggleGroup.paddingRight -
+            binding.inputToggleThumb.width
+        val target = if (inputMode == InputMode.FLAG) travel.takeIf { it > 0 }?.toFloat() ?: 60f.dpF else 0f
+        val revealTarget = if (inputMode == InputMode.REVEAL) palette.revealedCell else palette.ink
+        val flagTarget = if (inputMode == InputMode.FLAG) palette.revealedCell else palette.ink
+        if (binding.inputToggleGroup.width == 0 || binding.inputToggleGroup.height == 0) {
+            binding.inputToggleThumb.translationX = target
+            binding.revealToggle.iconColor = revealTarget
+            binding.flagToggle.iconColor = flagTarget
+            return
+        }
+        inputToggleAnimator?.cancel()
+        val startX = binding.inputToggleThumb.translationX
+        val startReveal = binding.revealToggle.iconColor.takeIf { it != 0 } ?: revealTarget
+        val startFlag = binding.flagToggle.iconColor.takeIf { it != 0 } ?: flagTarget
+        val colorEvaluator = ArgbEvaluator()
+        inputToggleAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 160L
+            interpolator = android.view.animation.DecelerateInterpolator(1.8f)
+            addUpdateListener { animator ->
+                val progress = animator.animatedValue as Float
+                binding.inputToggleThumb.translationX = startX + (target - startX) * progress
+                binding.revealToggle.iconColor = colorEvaluator.evaluate(progress, startReveal, revealTarget) as Int
+                binding.flagToggle.iconColor = colorEvaluator.evaluate(progress, startFlag, flagTarget) as Int
+            }
+            start()
+        }
     }
 
     private fun formatElapsed(elapsedMs: Long): String {
