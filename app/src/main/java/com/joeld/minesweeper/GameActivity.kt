@@ -132,7 +132,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
                 triggerActionHaptic()
                 refreshBoard()
             }
-            else -> revealCell(col, row)
+            else -> revealCell(col, row, hapticOnChange = true)
         }
     }
 
