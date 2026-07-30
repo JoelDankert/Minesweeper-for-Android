@@ -67,6 +67,9 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         binding.mergeTiles.setOnCheckedChangeListener { _, isChecked ->
             updateFillGapsState(!binding.roundCorners.isChecked || isChecked)
         }
+        binding.showMineDensity.setOnCheckedChangeListener { _, isChecked ->
+            updateMineDensityFadeState(isChecked)
+        }
         binding.longPressSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 binding.longPressValue.text = formatLongPressDelay(progressToDelay(progress))
@@ -109,10 +112,14 @@ class AdvancedSettingsActivity : AppCompatActivity() {
     private fun bindValues() {
         binding.showBottomToggle.isChecked = settings.showInputToggle
         binding.showTopClears.isChecked = settings.showTopClears
+        binding.showMineDensity.isChecked = settings.showMineDensity
+        binding.mineDensityMinFadeInput.setText(formatDensityFade(settings.mineDensityMinFade))
+        binding.mineDensityMaxFadeInput.setText(formatDensityFade(settings.mineDensityMaxFade))
         binding.roundCorners.isChecked = settings.roundCorners
         binding.mergeTiles.isChecked = settings.mergeTiles
         binding.fillGaps.isChecked = settings.fillGaps
         binding.screenShake.isChecked = settings.screenShakeEnabled
+        updateMineDensityFadeState(binding.showMineDensity.isChecked)
         updateMergeTilesState(binding.roundCorners.isChecked)
         updateFillGapsState(!binding.roundCorners.isChecked || binding.mergeTiles.isChecked)
         binding.longPressSeekBar.progress = delayToProgress(settings.longPressDelayMs)
@@ -127,10 +134,15 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         if (restorePending) {
             repository.restoreDefaultModes()
         }
+        val minFade = parseDensityFade(binding.mineDensityMinFadeInput.text.toString(), settings.mineDensityMinFade)
+        val maxFade = parseDensityFade(binding.mineDensityMaxFadeInput.text.toString(), settings.mineDensityMaxFade)
         repository.saveSettings(
             settings.copy(
                 showInputToggle = binding.showBottomToggle.isChecked,
                 showTopClears = binding.showTopClears.isChecked,
+                showMineDensity = binding.showMineDensity.isChecked,
+                mineDensityMinFade = minOf(minFade, maxFade),
+                mineDensityMaxFade = maxOf(minFade, maxFade),
                 roundCorners = binding.roundCorners.isChecked,
                 mergeTiles = binding.roundCorners.isChecked && binding.mergeTiles.isChecked,
                 fillGaps = (!binding.roundCorners.isChecked || binding.mergeTiles.isChecked) && binding.fillGaps.isChecked,
@@ -159,7 +171,15 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         binding.longPressValue.setTextColor(palette.inkSoft)
         binding.animationSpeedLabel.setTextColor(palette.ink)
         binding.animationSpeedValue.setTextColor(palette.inkSoft)
-        listOf(binding.showBottomToggle, binding.showTopClears, binding.roundCorners, binding.mergeTiles, binding.fillGaps, binding.screenShake).forEach {
+        listOf(binding.mineDensityMinFadeInput, binding.mineDensityMaxFadeInput).forEach {
+            it.background = GradientDrawable().apply {
+                cornerRadius = 18f * resources.displayMetrics.density
+                setColor(palette.input)
+            }
+            it.setTextColor(palette.ink)
+            it.setHintTextColor(palette.inkSoft)
+        }
+        listOf(binding.showBottomToggle, binding.showTopClears, binding.showMineDensity, binding.roundCorners, binding.mergeTiles, binding.fillGaps, binding.screenShake).forEach {
             it.setTextColor(palette.ink)
             applySwitchPalette(it)
         }
@@ -190,6 +210,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         }
         binding.backButton.imageTintList = ColorStateList.valueOf(palette.ink)
         updateRestoreModesState()
+        updateMineDensityFadeState(binding.showMineDensity.isChecked)
         updateMergeTilesState(binding.roundCorners.isChecked)
         updateFillGapsState(!binding.roundCorners.isChecked || binding.mergeTiles.isChecked)
     }
@@ -214,6 +235,13 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         binding.fillGaps.alpha = if (fillGapsAllowed) 1f else 0.45f
         if (!fillGapsAllowed) {
             binding.fillGaps.isChecked = false
+        }
+    }
+
+    private fun updateMineDensityFadeState(enabled: Boolean) {
+        listOf(binding.mineDensityMinFadeInput, binding.mineDensityMaxFadeInput).forEach {
+            it.isEnabled = enabled
+            it.alpha = if (enabled) 1f else 0.45f
         }
     }
 
@@ -246,6 +274,14 @@ class AdvancedSettingsActivity : AppCompatActivity() {
     private fun formatLongPressDelay(delayMs: Int): String = "$delayMs ms"
 
     private fun formatAnimationSpeed(percent: Int): String = "$percent%"
+
+    private fun formatDensityFade(value: Float): String {
+        return "%.2f".format(java.util.Locale.US, value).trimEnd('0').trimEnd('.')
+    }
+
+    private fun parseDensityFade(value: String, fallback: Float): Float {
+        return value.trim().replace(',', '.').toFloatOrNull()?.coerceIn(0f, 1f) ?: fallback
+    }
 
     private fun snapAnimationSpeed(value: Int): Int {
         return ((value.coerceIn(0, 100) + (ANIMATION_SPEED_STEP / 2)) / ANIMATION_SPEED_STEP) * ANIMATION_SPEED_STEP

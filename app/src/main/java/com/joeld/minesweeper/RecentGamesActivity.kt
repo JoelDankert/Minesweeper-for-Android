@@ -22,6 +22,7 @@ class RecentGamesActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRecentGamesBinding
     private lateinit var repository: PrefsRepository
     private lateinit var palette: ThemePalette
+    private lateinit var settings: AppSettings
     private lateinit var adapter: RecentGamesAdapter
     private val entries = mutableListOf<RecentGameEntry>()
     private var loading = false
@@ -29,7 +30,7 @@ class RecentGamesActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         repository = PrefsRepository(this)
-        val settings = repository.loadSettings()
+        settings = repository.loadSettings()
         AppCompatDelegate.setDefaultNightMode(
             if (settings.darkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
         )
@@ -133,9 +134,11 @@ class RecentGamesActivity : AppCompatActivity() {
                 }
                 rowBinding.dateText.text = formatDate(entry.record.finishedAtEpochMs)
                 rowBinding.dateText.setTextColor(palette.ink)
-                rowBinding.modeText.text = listOf(entry.modeName, entry.modeMeta)
+                val modeText = listOf(entry.modeName, entry.modeMeta)
                     .filter { it.isNotBlank() }
+                    .distinct()
                     .joinToString(" · ")
+                rowBinding.modeText.text = ModeTextFormatter.styleDensityInText(modeText, settings, palette, palette.inkSoft)
                 rowBinding.modeText.setTextColor(palette.inkSoft)
                 rowBinding.timeText.text = formatElapsed(entry.record.elapsedSeconds)
                 rowBinding.timeText.setTextColor(palette.ink)

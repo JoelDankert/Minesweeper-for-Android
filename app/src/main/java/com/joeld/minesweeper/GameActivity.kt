@@ -327,7 +327,9 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
     private fun updateHeader() {
         binding.mineCountText.text = game.remainingMines().toString()
         binding.timerText.text = formatElapsed(currentElapsedSeconds() * 1000L)
-        binding.recentModeText.text = selectedMode.name.ifBlank { formatModeMeta(selectedMode) }
+        binding.recentModeText.text = selectedMode.name.ifBlank {
+            ModeTextFormatter.compactStyled(this, selectedMode, settings, palette, palette.inkSoft)
+        }
         binding.recentStatusText.text = when (game.state) {
             GameState.WON -> winHeadline()
             GameState.LOST -> lossHeadline()
@@ -339,15 +341,6 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         val terminal = ::game.isInitialized && (game.state == GameState.WON || game.state == GameState.LOST)
         binding.inputToggleGroup.isVisible = settings.showInputToggle && !selectedMode.noFlagMode && !terminal
         styleInputToggle()
-    }
-
-    private fun formatModeMeta(mode: GameMode): String {
-        val tags = listOfNotNull(
-            getString(R.string.no_guess_short).takeIf { mode.noGuess },
-            getString(R.string.no_flag_short).takeIf { mode.noFlagMode }
-        ).joinToString(" ")
-        val suffix = tags.takeIf { it.isNotEmpty() }?.let { " · $it" } ?: ""
-        return getString(R.string.mode_meta, mode.width, mode.height, mode.mines, suffix)
     }
 
     private fun defaultInputMode(): InputMode {

@@ -72,9 +72,10 @@ class HomeActivity : AppCompatActivity() {
         val hasProgress = repository.hasContinuableProgress(mode.id)
         val continueButton = view.findViewById<TextView>(R.id.continueButton)
         val newGameButton = view.findViewById<TextView>(R.id.newGameButton)
-        val modeMeta = formatModeMeta(mode)
-        view.findViewById<TextView>(R.id.modeTitle).text = mode.name.ifBlank { modeMeta }
-        view.findViewById<TextView>(R.id.modeMeta).text = modeMeta
+        val modeMeta = ModeTextFormatter.compactStyled(this, mode, settings, palette, palette.inkSoft)
+        val modeTitle = mode.name.ifBlank { modeMeta }
+        view.findViewById<TextView>(R.id.modeTitle).text = modeTitle
+        view.findViewById<TextView>(R.id.modeMeta).text = if (modeTitle.toString() == modeMeta.toString()) "" else modeMeta
         continueButton.apply {
             visibility = if (hasProgress) View.VISIBLE else View.GONE
             setOnClickListener {
@@ -141,15 +142,6 @@ class HomeActivity : AppCompatActivity() {
             setColor(palette.panel)
         }
         button.imageTintList = ColorStateList.valueOf(palette.ink)
-    }
-
-    private fun formatModeMeta(mode: GameMode): String {
-        val tags = listOfNotNull(
-            getString(R.string.no_guess_short).takeIf { mode.noGuess },
-            getString(R.string.no_flag_short).takeIf { mode.noFlagMode }
-        ).joinToString(" ")
-        val suffix = tags.takeIf { it.isNotEmpty() }?.let { " · $it" } ?: ""
-        return getString(R.string.mode_meta, mode.width, mode.height, mode.mines, suffix)
     }
 
     private val Int.dp: Int

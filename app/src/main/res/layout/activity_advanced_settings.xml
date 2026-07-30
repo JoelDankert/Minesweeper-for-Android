@@ -120,6 +120,47 @@
                 android:text="@string/show_top_clears" />
 
             <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/showMineDensity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:switchPadding="14dp"
+                android:text="@string/show_mine_density" />
+
+            <LinearLayout
+                android:id="@+id/mineDensityFadeRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/mineDensityMinFadeInput"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/min_fade"
+                    android:inputType="numberDecimal"
+                    android:padding="14dp"
+                    android:singleLine="true"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/mineDensityMaxFadeInput"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:hint="@string/max_fade"
+                    android:inputType="numberDecimal"
+                    android:padding="14dp"
+                    android:singleLine="true"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/roundCorners"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

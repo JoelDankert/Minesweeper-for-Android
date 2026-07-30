@@ -72,6 +72,15 @@ class ModeEditorActivity : AppCompatActivity() {
         binding.saveButton.setOnClickListener { saveMode() }
         binding.deleteButton.setOnClickListener { deleteMode() }
         binding.clearScoresButton.setOnClickListener { clearScores() }
+        binding.minesInput.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) normalizeMineInput()
+        }
+        binding.widthInput.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) normalizeMineInput()
+        }
+        binding.heightInput.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) normalizeMineInput()
+        }
     }
 
     private fun setupInsets() {
@@ -99,10 +108,11 @@ class ModeEditorActivity : AppCompatActivity() {
     }
 
     private fun saveMode() {
+        normalizeMineInput()
         val width = binding.widthInput.text.toString().toIntOrNull() ?: 0
         val height = binding.heightInput.text.toString().toIntOrNull() ?: 0
         val cellCount = width * height
-        val mines = binding.minesInput.text.toString().toIntOrNull() ?: 0
+        val mines = ModeTextFormatter.parseMineInput(binding.minesInput.text.toString(), width, height) ?: 0
         val safeReserve = minOf(9, cellCount - 1)
         val maxMines = cellCount - safeReserve
         if (width < 5 || height < 5 || width > MAX_BOARD_DIMENSION || height > MAX_BOARD_DIMENSION || mines < 1 || mines > maxMines) {
@@ -133,6 +143,16 @@ class ModeEditorActivity : AppCompatActivity() {
             return
         }
         persistMode(updated)
+    }
+
+    private fun normalizeMineInput() {
+        val width = binding.widthInput.text.toString().toIntOrNull() ?: return
+        val height = binding.heightInput.text.toString().toIntOrNull() ?: return
+        val mines = ModeTextFormatter.parseMineInput(binding.minesInput.text.toString(), width, height) ?: return
+        if (binding.minesInput.text.toString() != mines.toString()) {
+            binding.minesInput.setText(mines.toString())
+            binding.minesInput.setSelection(binding.minesInput.text?.length ?: 0)
+        }
     }
 
     private fun deleteMode() {

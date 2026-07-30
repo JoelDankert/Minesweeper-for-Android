@@ -84,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:hint="@string/mines"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:padding="14dp" />
 
             <com.google.android.material.materialswitch.MaterialSwitch

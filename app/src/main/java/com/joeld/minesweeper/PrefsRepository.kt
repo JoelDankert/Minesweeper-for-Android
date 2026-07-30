@@ -46,6 +46,9 @@ class PrefsRepository(context: Context) {
             flagModeDefault = prefs.getBoolean(KEY_FLAG_MODE_DEFAULT, false),
             showInputToggle = prefs.getBoolean(KEY_SHOW_INPUT_TOGGLE, true),
             showTopClears = prefs.getBoolean(KEY_SHOW_TOP_CLEARS, true),
+            showMineDensity = prefs.getBoolean(KEY_SHOW_MINE_DENSITY, false),
+            mineDensityMinFade = clampMineDensityFade(prefs.getFloat(KEY_MINE_DENSITY_MIN_FADE, 0.1f)),
+            mineDensityMaxFade = clampMineDensityFade(prefs.getFloat(KEY_MINE_DENSITY_MAX_FADE, 0.4f)),
             roundCorners = roundCorners,
             mergeTiles = mergeTiles,
             fillGaps = (!roundCorners || mergeTiles) && prefs.getBoolean(KEY_FILL_GAPS, true),
@@ -66,6 +69,9 @@ class PrefsRepository(context: Context) {
             .putBoolean(KEY_FLAG_MODE_DEFAULT, settings.flagModeDefault)
             .putBoolean(KEY_SHOW_INPUT_TOGGLE, settings.showInputToggle)
             .putBoolean(KEY_SHOW_TOP_CLEARS, settings.showTopClears)
+            .putBoolean(KEY_SHOW_MINE_DENSITY, settings.showMineDensity)
+            .putFloat(KEY_MINE_DENSITY_MIN_FADE, clampMineDensityFade(settings.mineDensityMinFade))
+            .putFloat(KEY_MINE_DENSITY_MAX_FADE, clampMineDensityFade(settings.mineDensityMaxFade))
             .putBoolean(KEY_ROUND_CORNERS, settings.roundCorners)
             .putBoolean(KEY_MERGE_TILES, sanitizedMergeTiles)
             .putBoolean(KEY_FILL_GAPS, sanitizedFillGaps)
@@ -230,6 +236,7 @@ class PrefsRepository(context: Context) {
     fun loadRecentGameEntries(offset: Int, limit: Int): List<RecentGameEntry> {
         if (limit <= 0) return emptyList()
         val modesByScoreKey = loadModes().associateBy { scoreKey(it) }
+        val showMineDensity = loadSettings().showMineDensity
         return prefs.all.keys
             .filter { it.startsWith(KEY_RECENT_PREFIX) }
             .flatMap { key ->
@@ -244,7 +251,7 @@ class PrefsRepository(context: Context) {
                 RecentGameEntry(
                     record = record,
                     modeName = mode?.name?.takeIf { it.isNotBlank() }.orEmpty(),
-                    modeMeta = modeMetaForScoreKey(record.modeId, mode)
+                    modeMeta = modeMetaForScoreKey(record.modeId, mode, showMineDensity)
                 )
             }
     }
@@ -301,31 +308,32 @@ class PrefsRepository(context: Context) {
     }
 
     fun scoreKey(mode: GameMode): String {
-        return "${mode.width}x${mode.height}_m${mode.mines}_ng${mode.noGuess}_nf${mode.noFlagMode}"
+        val first = minOf(mode.width, mode.height)
+        val second = maxOf(mode.width, mode.height)
+        return "${first}x${second}_m${mode.mines}_ng${mode.noGuess}_nf${mode.noFlagMode}"
     }
 
-    private fun modeMetaForScoreKey(scoreKey: String, mode: GameMode?): String {
+    private fun modeMetaForScoreKey(scoreKey: String, mode: GameMode?, showMineDensity: Boolean): String {
         mode?.let {
-            return formatModeMeta(it.width, it.height, it.mines, it.noGuess, it.noFlagMode)
+            return ModeTextFormatter.compact(
+                width = it.width,
+                height = it.height,
+                mines = it.mines,
+                noGuess = it.noGuess,
+                noFlagMode = it.noFlagMode,
+                showMineDensity = showMineDensity
+            )
         }
         val match = Regex("""(\d+)x(\d+)_m(\d+)_ng(true|false)_nf(true|false)""").matchEntire(scoreKey)
             ?: return scoreKey
-        return formatModeMeta(
+        return ModeTextFormatter.compact(
             width = match.groupValues[1].toInt(),
             height = match.groupValues[2].toInt(),
             mines = match.groupValues[3].toInt(),
             noGuess = match.groupValues[4].toBoolean(),
-            noFlagMode = match.groupValues[5].toBoolean()
+            noFlagMode = match.groupValues[5].toBoolean(),
+            showMineDensity = showMineDensity
         )
-    }
-
-    private fun formatModeMeta(width: Int, height: Int, mines: Int, noGuess: Boolean, noFlagMode: Boolean): String {
-        val tags = listOfNotNull(
-            "NG".takeIf { noGuess },
-            "NF".takeIf { noFlagMode }
-        ).joinToString(" ")
-        val suffix = tags.takeIf { it.isNotEmpty() }?.let { " · $it" } ?: ""
-        return "$width x $height · $mines$suffix"
     }
 
     private fun parseModes(raw: String): List<GameMode>? {
@@ -373,6 +381,9 @@ class PrefsRepository(context: Context) {
         const val KEY_FLAG_MODE_DEFAULT = "flag_mode_default"
         const val KEY_SHOW_INPUT_TOGGLE = "show_input_toggle"
         const val KEY_SHOW_TOP_CLEARS = "show_top_clears"
+        const val KEY_SHOW_MINE_DENSITY = "show_mine_density"
+        const val KEY_MINE_DENSITY_MIN_FADE = "mine_density_min_fade"
+        const val KEY_MINE_DENSITY_MAX_FADE = "mine_density_max_fade"
         const val KEY_ROUND_CORNERS = "round_corners"
         const val KEY_MERGE_TILES = "merge_tiles"
         const val KEY_FILL_GAPS = "fill_gaps"
@@ -399,6 +410,8 @@ class PrefsRepository(context: Context) {
         val clamped = value.coerceIn(0, 100)
         return ((clamped + 2) / 5) * 5
     }
+
+    private fun clampMineDensityFade(value: Float): Float = value.coerceIn(0f, 1f)
 
     private fun loadModeRecency(): Map<String, Long> {
         val raw = prefs.getString(KEY_MODE_RECENCY, null) ?: return emptyMap()
