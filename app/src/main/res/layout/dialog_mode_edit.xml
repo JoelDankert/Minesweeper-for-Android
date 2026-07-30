@@ -28,12 +28,15 @@
     <EditText
         android:id="@+id/nameInput"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="52dp"
         android:layout_marginTop="18dp"
         android:background="@drawable/bg_input"
         android:hint="@string/name"
+        android:imeOptions="actionNext"
         android:inputType="textCapWords"
         android:padding="12dp"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
         android:textColor="@color/ink"
         android:textColorHint="@color/ink_soft" />
 
@@ -46,25 +49,31 @@
         <EditText
             android:id="@+id/widthInput"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:layout_weight="1"
             android:background="@drawable/bg_input"
             android:hint="@string/width"
+            android:imeOptions="actionNext"
             android:inputType="number"
             android:padding="12dp"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
             android:textColor="@color/ink"
             android:textColorHint="@color/ink_soft" />
 
         <EditText
             android:id="@+id/heightInput"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:layout_marginStart="10dp"
             android:layout_weight="1"
             android:background="@drawable/bg_input"
             android:hint="@string/height"
+            android:imeOptions="actionNext"
             android:inputType="number"
             android:padding="12dp"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
             android:textColor="@color/ink"
             android:textColorHint="@color/ink_soft" />
     </LinearLayout>
@@ -72,12 +81,15 @@
     <EditText
         android:id="@+id/minesInput"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="52dp"
         android:layout_marginTop="12dp"
         android:background="@drawable/bg_input"
         android:hint="@string/mines"
-        android:inputType="number"
+        android:imeOptions="actionDone"
+        android:inputType="numberDecimal"
         android:padding="12dp"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
         android:textColor="@color/ink"
         android:textColorHint="@color/ink_soft" />
 

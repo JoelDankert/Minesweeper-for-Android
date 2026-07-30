@@ -94,7 +94,7 @@ class ModeEditorActivity : AppCompatActivity() {
     }
 
     private fun populate() {
-        val mode = existingMode ?: repository.createMode("", 12, 12, 20, true)
+        val mode = existingMode ?: createModeTemplate()
         binding.titleText.text = if (existingMode == null) getString(R.string.create_mode) else getString(R.string.edit_mode)
         binding.saveButton.text = getString(if (existingMode == null) R.string.new_game_short else R.string.save)
         binding.nameInput.setText(mode.name)
@@ -105,6 +105,12 @@ class ModeEditorActivity : AppCompatActivity() {
         binding.noFlagSwitch.isChecked = mode.noFlagMode
         binding.deleteButton.isVisible = existingMode != null
         binding.clearScoresButton.isVisible = existingMode != null
+    }
+
+    private fun createModeTemplate(): GameMode {
+        val lastPlayed = repository.sortModesByRecency(modes).firstOrNull()
+        return lastPlayed?.copy(id = "", name = "")
+            ?: repository.createMode("", 12, 12, 20, true)
     }
 
     private fun saveMode() {
