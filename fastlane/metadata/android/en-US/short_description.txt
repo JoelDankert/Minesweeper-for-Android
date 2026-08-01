@@ -1,0 +1,1 @@
+Configurable offline Minesweeper for Android.
