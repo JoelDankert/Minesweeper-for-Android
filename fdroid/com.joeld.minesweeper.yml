@@ -12,8 +12,7 @@ AutoName: Minesweeper
 
 RepoType: git
 Repo: https://github.com/JoelDankert/Minesweeper-for-Android.git
-Binaries:
-  https://github.com/JoelDankert/Minesweeper-for-Android/releases/download/v%v/minesweeper-%v.apk
+Binaries: https://github.com/JoelDankert/Minesweeper-for-Android/releases/download/v%v/minesweeper-%v.apk
 
 Builds:
   - versionName: '1.0'
