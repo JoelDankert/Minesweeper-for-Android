@@ -1,20 +1,14 @@
 # Draft fdroiddata metadata. Copy this file to fdroiddata/metadata/com.joeld.minesweeper.yml
 # when opening a merge request against https://gitlab.com/fdroid/fdroiddata.
 Categories:
-  - Games
+  - Puzzle Game
 License: Apache-2.0
 AuthorName: Joel Dankert
+AuthorEmail: joel.dankert@gmail.com
 SourceCode: https://github.com/JoelDankert/Minesweeper-for-Android
 IssueTracker: https://github.com/JoelDankert/Minesweeper-for-Android/issues
 
 AutoName: Minesweeper
-Summary: Configurable offline Minesweeper for Android
-Description: |-
-    Minesweeper is a native Android implementation of the classic puzzle game with configurable modes and an offline-first design.
-
-    Features include custom board sizes and mine counts, optional no-guess and no-flag modes, saved in-progress games, recent games, score history, adjustable controls, and light and dark themes.
-
-    The app does not require network access and does not include ads, analytics, billing, or account features.
 
 RepoType: git
 Repo: https://github.com/JoelDankert/Minesweeper-for-Android.git
