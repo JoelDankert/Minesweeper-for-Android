@@ -44,10 +44,66 @@
             android:orientation="vertical"
             android:padding="20dp">
 
+            <LinearLayout
+                android:id="@+id/themeModeRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="22dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="16dp">
+
+                <TextView
+                    android:id="@+id/themeModeLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/theme_mode"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/themeModeValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/theme_mode_system"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/themeRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="22dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="16dp">
+
+                <TextView
+                    android:id="@+id/themeLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/theme_color"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/themeValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sand"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
             <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/flagModeDefault"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
                 android:paddingStart="6dp"
                 android:paddingEnd="6dp"
                 android:switchPadding="14dp"
@@ -72,44 +128,6 @@
                 android:paddingEnd="6dp"
                 android:switchPadding="14dp"
                 android:text="@string/vibrate_enabled" />
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/darkTheme"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp"
-                android:switchPadding="14dp"
-                android:text="@string/dark_theme" />
-
-            <LinearLayout
-                android:id="@+id/themeRow"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="22dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="16dp"
-                android:paddingBottom="16dp">
-
-                <TextView
-                    android:id="@+id/themeLabel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/theme_color"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/themeValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sand"
-                    android:textSize="14sp" />
-            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/recentGamesRow"

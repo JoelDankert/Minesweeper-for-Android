@@ -42,6 +42,10 @@ class PrefsRepository(context: Context) {
     fun loadSettings(): AppSettings {
         val roundCorners = prefs.getBoolean(KEY_ROUND_CORNERS, true)
         val mergeTiles = roundCorners && prefs.getBoolean(KEY_MERGE_TILES, true)
+        val rawThemeMode = prefs.getString(KEY_THEME_MODE, null)
+        val themeMode = rawThemeMode?.let(ThemeMode::fromId)
+            ?: if (prefs.getBoolean(KEY_DARK_THEME, false)) ThemeMode.DARK else ThemeMode.SYSTEM
+        val amoledTheme = prefs.getBoolean(KEY_AMOLED_THEME, rawThemeMode == "amoled")
         return AppSettings(
             flagModeDefault = prefs.getBoolean(KEY_FLAG_MODE_DEFAULT, false),
             showInputToggle = prefs.getBoolean(KEY_SHOW_INPUT_TOGGLE, true),
@@ -57,7 +61,8 @@ class PrefsRepository(context: Context) {
             screenShakeEnabled = prefs.getBoolean(KEY_SCREEN_SHAKE_ENABLED, true),
             longPressDelayMs = clampLongPressDelay(prefs.getInt(KEY_LONG_PRESS_DELAY_MS, 250)),
             animationSpeedPercent = clampAnimationSpeed(prefs.getInt(KEY_ANIMATION_SPEED_PERCENT, 50)),
-            darkTheme = prefs.getBoolean(KEY_DARK_THEME, false),
+            themeMode = themeMode,
+            amoledTheme = amoledTheme,
             themeId = prefs.getString(KEY_THEME_ID, "sand") ?: "sand"
         )
     }
@@ -80,7 +85,9 @@ class PrefsRepository(context: Context) {
             .putBoolean(KEY_SCREEN_SHAKE_ENABLED, settings.screenShakeEnabled)
             .putInt(KEY_LONG_PRESS_DELAY_MS, clampLongPressDelay(settings.longPressDelayMs))
             .putInt(KEY_ANIMATION_SPEED_PERCENT, clampAnimationSpeed(settings.animationSpeedPercent))
-            .putBoolean(KEY_DARK_THEME, settings.darkTheme)
+            .putBoolean(KEY_DARK_THEME, settings.themeMode == ThemeMode.DARK)
+            .putString(KEY_THEME_MODE, settings.themeMode.id)
+            .putBoolean(KEY_AMOLED_THEME, settings.amoledTheme)
             .putString(KEY_THEME_ID, settings.themeId)
             .apply()
     }
@@ -256,6 +263,26 @@ class PrefsRepository(context: Context) {
             }
     }
 
+    fun loadRecentModesNotSaved(savedModes: List<GameMode>): List<GameMode> {
+        val savedScoreKeys = savedModes.mapTo(mutableSetOf(), ::scoreKey)
+        return loadRecentModeKeys()
+            .filterNot(savedScoreKeys::contains)
+            .mapNotNull(::modeFromScoreKey)
+            .sortedByDescending(::modeLastUsedAt)
+    }
+
+    fun loadModesWithRecentTemplates(): MutableList<GameMode> {
+        val savedModes = loadModes()
+        val savedScoreKeys = savedModes.mapTo(mutableSetOf(), ::scoreKey)
+        val recentModes = loadRecentModeKeys()
+            .filterNot(savedScoreKeys::contains)
+            .mapNotNull(::modeFromScoreKey)
+        return (savedModes + recentModes)
+            .distinctBy { it.id }
+            .sortedByDescending(::modeLastUsedAt)
+            .toMutableList()
+    }
+
     fun deleteRecentGame(record: RecentGameRecord) {
         val history = loadRecentGames(record.modeId).toMutableList()
         val index = history.indexOfFirst {
@@ -313,6 +340,20 @@ class PrefsRepository(context: Context) {
         return "${first}x${second}_m${mode.mines}_ng${mode.noGuess}_nf${mode.noFlagMode}"
     }
 
+    fun modeFromScoreKey(scoreKey: String): GameMode? {
+        val match = Regex("""(\d+)x(\d+)_m(\d+)_ng(true|false)_nf(true|false)""").matchEntire(scoreKey)
+            ?: return null
+        return GameMode(
+            id = scoreKey,
+            name = "",
+            width = match.groupValues[1].toInt(),
+            height = match.groupValues[2].toInt(),
+            mines = match.groupValues[3].toInt(),
+            noGuess = match.groupValues[4].toBoolean(),
+            noFlagMode = match.groupValues[5].toBoolean()
+        )
+    }
+
     private fun modeMetaForScoreKey(scoreKey: String, mode: GameMode?, showMineDensity: Boolean): String {
         mode?.let {
             return ModeTextFormatter.compact(
@@ -324,15 +365,32 @@ class PrefsRepository(context: Context) {
                 showMineDensity = showMineDensity
             )
         }
-        val match = Regex("""(\d+)x(\d+)_m(\d+)_ng(true|false)_nf(true|false)""").matchEntire(scoreKey)
-            ?: return scoreKey
+        val parsed = modeFromScoreKey(scoreKey) ?: return scoreKey
         return ModeTextFormatter.compact(
-            width = match.groupValues[1].toInt(),
-            height = match.groupValues[2].toInt(),
-            mines = match.groupValues[3].toInt(),
-            noGuess = match.groupValues[4].toBoolean(),
-            noFlagMode = match.groupValues[5].toBoolean(),
+            width = parsed.width,
+            height = parsed.height,
+            mines = parsed.mines,
+            noGuess = parsed.noGuess,
+            noFlagMode = parsed.noFlagMode,
             showMineDensity = showMineDensity
+        )
+    }
+
+    private fun loadRecentModeKeys(): List<String> {
+        val recentScoreKeys = prefs.all.keys
+            .filter { it.startsWith(KEY_RECENT_PREFIX) }
+            .map { it.removePrefix(KEY_RECENT_PREFIX) }
+        val progressScoreKeys = prefs.all.keys
+            .filter { it.startsWith(KEY_PROGRESS_PREFIX) }
+            .map { it.removePrefix(KEY_PROGRESS_PREFIX) }
+        return (recentScoreKeys + progressScoreKeys).distinct()
+    }
+
+    private fun modeLastUsedAt(mode: GameMode): Long {
+        val recency = loadModeRecency()
+        return maxOf(
+            recency[mode.id] ?: Long.MIN_VALUE,
+            loadRecentGames(mode.id).maxOfOrNull { it.finishedAtEpochMs } ?: Long.MIN_VALUE
         )
     }
 
@@ -393,11 +451,14 @@ class PrefsRepository(context: Context) {
         const val KEY_LONG_PRESS_DELAY_MS = "long_press_delay_ms"
         const val KEY_ANIMATION_SPEED_PERCENT = "animation_speed_percent"
         const val KEY_DARK_THEME = "dark_theme"
+        const val KEY_THEME_MODE = "theme_mode"
+        const val KEY_AMOLED_THEME = "amoled_theme"
         const val KEY_THEME_ID = "theme_id"
         const val KEY_MODE_RECENCY = "mode_recency"
         const val KEY_RECENT_PREFIX = "recent_"
+        const val KEY_PROGRESS_PREFIX = "progress_"
 
-        fun progressKey(modeId: String) = "progress_$modeId"
+        fun progressKey(modeId: String) = "$KEY_PROGRESS_PREFIX$modeId"
         fun recentKey(modeId: String) = "$KEY_RECENT_PREFIX$modeId"
     }
 

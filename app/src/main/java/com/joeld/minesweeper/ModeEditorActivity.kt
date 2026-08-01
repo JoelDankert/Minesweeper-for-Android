@@ -26,42 +26,61 @@ class ModeEditorActivity : AppCompatActivity() {
     private lateinit var modes: MutableList<GameMode>
     private var existingMode: GameMode? = null
     private var pendingModeSave: GameMode? = null
+    private var pendingDuplicateModeSave: GameMode? = null
+    private var pendingDuplicateExistingMode: GameMode? = null
     private var pendingDeleteModeId: String? = null
     private var pendingClearScoresMode: GameMode? = null
 
     private val confirmLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_FIRST_USER) {
+                pendingDuplicateModeSave?.let { duplicateMode ->
+                    persistMode(duplicateMode)
+                    clearPendingActions()
+                    return@registerForActivityResult
+                }
+            }
             if (result.resultCode != Activity.RESULT_OK) {
-                pendingModeSave = null
-                pendingDeleteModeId = null
-                pendingClearScoresMode = null
+                clearPendingActions()
+                return@registerForActivityResult
+            }
+            pendingDuplicateExistingMode?.let { existingMode ->
+                repository.saveSelectedModeId(existingMode.id)
+                repository.markModeUsed(existingMode.id)
+                startActivity(
+                    Intent(this, GameActivity::class.java)
+                        .putExtra(GameActivity.EXTRA_MODE_ID, existingMode.id)
+                        .putExtra(GameActivity.EXTRA_RESUME, false)
+                )
+                clearPendingActions()
+                finish()
                 return@registerForActivityResult
             }
             pendingModeSave?.let { confirmedMode ->
                 persistMode(confirmedMode)
-                pendingModeSave = null
+                clearPendingActions()
                 return@registerForActivityResult
             }
             pendingDeleteModeId?.let { modeId ->
                 persistDelete(modeId)
-                pendingDeleteModeId = null
+                clearPendingActions()
                 return@registerForActivityResult
             }
             pendingClearScoresMode?.let { mode ->
                 repository.clearScores(mode)
-                pendingClearScoresMode = null
+                clearPendingActions()
             }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         repository = PrefsRepository(this)
         val settings = repository.loadSettings()
-        AppCompatDelegate.setDefaultNightMode(if (settings.darkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
+        AppCompatDelegate.setDefaultNightMode(settings.nightMode())
         super.onCreate(savedInstanceState)
         binding = ActivityModeEditorBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        palette = ThemeCatalog.resolve(settings.themeId, settings.darkTheme)
+        palette = ThemeCatalog.resolve(settings.themeId, settings.usesDarkPalette(this), settings.usesAmoledPalette(this))
         modes = repository.loadModes()
         existingMode = intent.getStringExtra(EXTRA_MODE_ID)?.let { id -> modes.firstOrNull { it.id == id } }
 
@@ -69,7 +88,10 @@ class ModeEditorActivity : AppCompatActivity() {
         applyPalette()
         populate()
         binding.backButton.setOnClickListener { finish() }
-        binding.saveButton.setOnClickListener { saveMode() }
+        binding.createButton.setOnClickListener { saveMode() }
+        binding.saveButton.setOnClickListener {
+            if (existingMode == null) startUnsavedGame() else saveMode()
+        }
         binding.deleteButton.setOnClickListener { deleteMode() }
         binding.clearScoresButton.setOnClickListener { clearScores() }
         binding.minesInput.setOnFocusChangeListener { _, hasFocus ->
@@ -97,6 +119,7 @@ class ModeEditorActivity : AppCompatActivity() {
         val mode = existingMode ?: createModeTemplate()
         binding.titleText.text = if (existingMode == null) getString(R.string.create_mode) else getString(R.string.edit_mode)
         binding.saveButton.text = getString(if (existingMode == null) R.string.new_game_short else R.string.save)
+        binding.createButton.isVisible = existingMode == null
         binding.nameInput.setText(mode.name)
         binding.widthInput.setText(mode.width.toString())
         binding.heightInput.setText(mode.height.toString())
@@ -108,12 +131,12 @@ class ModeEditorActivity : AppCompatActivity() {
     }
 
     private fun createModeTemplate(): GameMode {
-        val lastPlayed = repository.sortModesByRecency(modes).firstOrNull()
+        val lastPlayed = repository.loadModesWithRecentTemplates().firstOrNull()
         return lastPlayed?.copy(id = "", name = "")
             ?: repository.createMode("", 12, 12, 20, true)
     }
 
-    private fun saveMode() {
+    private fun readModeFromInputs(): GameMode? {
         normalizeMineInput()
         val width = binding.widthInput.text.toString().toIntOrNull() ?: 0
         val height = binding.heightInput.text.toString().toIntOrNull() ?: 0
@@ -124,10 +147,9 @@ class ModeEditorActivity : AppCompatActivity() {
         if (width < 5 || height < 5 || width > MAX_BOARD_DIMENSION || height > MAX_BOARD_DIMENSION || mines < 1 || mines > maxMines) {
             binding.errorText.text = getString(R.string.mode_error)
             binding.errorText.isVisible = true
-            return
+            return null
         }
-        val base = existingMode ?: repository.createMode("", width, height, mines, binding.noGuessSwitch.isChecked, binding.noFlagSwitch.isChecked)
-        val updated = base.copy(
+        return repository.createMode(
             name = binding.nameInput.text.toString().trim(),
             width = width,
             height = height,
@@ -135,14 +157,53 @@ class ModeEditorActivity : AppCompatActivity() {
             noGuess = binding.noGuessSwitch.isChecked,
             noFlagMode = binding.noFlagSwitch.isChecked
         )
+    }
+
+    private fun startUnsavedGame() {
+        val mode = readModeFromInputs() ?: return
+        val modeId = repository.scoreKey(mode)
+        repository.markModeUsed(modeId)
+        startActivity(
+            Intent(this, GameActivity::class.java)
+                .putExtra(GameActivity.EXTRA_MODE_ID, modeId)
+                .putExtra(GameActivity.EXTRA_RESUME, false)
+        )
+        finish()
+    }
+
+    private fun saveMode() {
+        val inputMode = readModeFromInputs() ?: return
+        val base = existingMode ?: repository.createMode("", inputMode.width, inputMode.height, inputMode.mines, inputMode.noGuess, inputMode.noFlagMode)
+        val updated = base.copy(
+            name = inputMode.name,
+            width = inputMode.width,
+            height = inputMode.height,
+            mines = inputMode.mines,
+            noGuess = inputMode.noGuess,
+            noFlagMode = inputMode.noFlagMode
+        )
         val finalModes = if (existingMode == null) {
             (modes + updated).toMutableList()
         } else {
             modes.map { if (it.id == updated.id) updated else it }.toMutableList()
         }
+        if (existingMode == null) {
+            val duplicate = modes.firstOrNull { hasExactSameRules(it, updated) }
+            if (duplicate != null) {
+                pendingDuplicateModeSave = updated
+                pendingDuplicateExistingMode = duplicate
+                pendingModeSave = null
+                pendingDeleteModeId = null
+                pendingClearScoresMode = null
+                openDuplicateModeConfirm(duplicate)
+                return
+            }
+        }
         val requiresConfirmation = existingMode != null && modeRulesChanged(existingMode!!, updated)
         if (requiresConfirmation) {
             pendingModeSave = updated
+            pendingDuplicateModeSave = null
+            pendingDuplicateExistingMode = null
             pendingDeleteModeId = null
             pendingClearScoresMode = null
             openModeConfirm()
@@ -169,6 +230,8 @@ class ModeEditorActivity : AppCompatActivity() {
             return
         }
         pendingModeSave = null
+        pendingDuplicateModeSave = null
+        pendingDuplicateExistingMode = null
         pendingDeleteModeId = mode.id
         pendingClearScoresMode = null
         openDeleteConfirm()
@@ -177,6 +240,8 @@ class ModeEditorActivity : AppCompatActivity() {
     private fun clearScores() {
         val mode = existingMode ?: return
         pendingModeSave = null
+        pendingDuplicateModeSave = null
+        pendingDuplicateExistingMode = null
         pendingDeleteModeId = null
         pendingClearScoresMode = mode
         confirmLauncher.launch(
@@ -210,11 +275,15 @@ class ModeEditorActivity : AppCompatActivity() {
     }
 
     private fun modeRulesChanged(previous: GameMode, updated: GameMode): Boolean {
-        return previous.width != updated.width ||
-            previous.height != updated.height ||
-            previous.mines != updated.mines ||
-            previous.noGuess != updated.noGuess ||
-            previous.noFlagMode != updated.noFlagMode
+        return !hasExactSameRules(previous, updated)
+    }
+
+    private fun hasExactSameRules(first: GameMode, second: GameMode): Boolean {
+        return first.width == second.width &&
+            first.height == second.height &&
+            first.mines == second.mines &&
+            first.noGuess == second.noGuess &&
+            first.noFlagMode == second.noFlagMode
     }
 
     private fun persistDelete(modeId: String) {
@@ -235,6 +304,28 @@ class ModeEditorActivity : AppCompatActivity() {
                 .putExtra(ModeChangeConfirmActivity.EXTRA_TITLE, getString(R.string.delete))
                 .putExtra(ModeChangeConfirmActivity.EXTRA_MESSAGE, getString(R.string.mode_delete_confirm_message))
         )
+    }
+
+    private fun openDuplicateModeConfirm(existingMode: GameMode) {
+        val label = existingMode.name.ifBlank {
+            ModeTextFormatter.compact(this, existingMode, repository.loadSettings().showMineDensity)
+        }
+        confirmLauncher.launch(
+            Intent(this, ModeChangeConfirmActivity::class.java)
+                .putExtra(ModeChangeConfirmActivity.EXTRA_TITLE, getString(R.string.mode_already_exists_title))
+                .putExtra(ModeChangeConfirmActivity.EXTRA_MESSAGE, getString(R.string.mode_already_exists_message, label))
+                .putExtra(ModeChangeConfirmActivity.EXTRA_CONTINUE_LABEL, getString(R.string.use_existing))
+                .putExtra(ModeChangeConfirmActivity.EXTRA_CANCEL_LABEL, getString(R.string.create_anyway))
+                .putExtra(ModeChangeConfirmActivity.EXTRA_CANCEL_RESULT, Activity.RESULT_FIRST_USER)
+        )
+    }
+
+    private fun clearPendingActions() {
+        pendingModeSave = null
+        pendingDuplicateModeSave = null
+        pendingDuplicateExistingMode = null
+        pendingDeleteModeId = null
+        pendingClearScoresMode = null
     }
 
     private fun applyPalette() {
@@ -260,6 +351,18 @@ class ModeEditorActivity : AppCompatActivity() {
             setColor(palette.accent)
         }
         binding.saveButton.setTextColor(palette.revealedCell)
+        binding.createButton.background = GradientDrawable().apply {
+            cornerRadius = 22f * resources.displayMetrics.density
+            setColor(palette.accent)
+        }
+        binding.createButton.setTextColor(palette.revealedCell)
+        if (existingMode == null) {
+            binding.saveButton.background = GradientDrawable().apply {
+                cornerRadius = 22f * resources.displayMetrics.density
+                setColor(palette.panel)
+            }
+            binding.saveButton.setTextColor(palette.ink)
+        }
         binding.deleteButton.background = GradientDrawable().apply {
             cornerRadius = 22f * resources.displayMetrics.density
             setColor(palette.panel)

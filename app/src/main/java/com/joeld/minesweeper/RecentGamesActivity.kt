@@ -31,13 +31,11 @@ class RecentGamesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         repository = PrefsRepository(this)
         settings = repository.loadSettings()
-        AppCompatDelegate.setDefaultNightMode(
-            if (settings.darkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        )
+        AppCompatDelegate.setDefaultNightMode(settings.nightMode())
         super.onCreate(savedInstanceState)
         binding = ActivityRecentGamesBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        palette = ThemeCatalog.resolve(settings.themeId, settings.darkTheme)
+        palette = ThemeCatalog.resolve(settings.themeId, settings.usesDarkPalette(this), settings.usesAmoledPalette(this))
         adapter = RecentGamesAdapter()
 
         setupInsets()

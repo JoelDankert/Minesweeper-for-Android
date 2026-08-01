@@ -33,6 +33,11 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
     companion object {
         const val EXTRA_MODE_ID = "mode_id"
         const val EXTRA_RESUME = "resume"
+        const val EXTRA_CUSTOM_MODE_WIDTH = "custom_mode_width"
+        const val EXTRA_CUSTOM_MODE_HEIGHT = "custom_mode_height"
+        const val EXTRA_CUSTOM_MODE_MINES = "custom_mode_mines"
+        const val EXTRA_CUSTOM_MODE_NO_GUESS = "custom_mode_no_guess"
+        const val EXTRA_CUSTOM_MODE_NO_FLAG = "custom_mode_no_flag"
         private const val MINE_REVEAL_ANIMATION_SCALE = 0.2f
         private const val MINE_SHAKE_DURATION_MS = 260L
         private const val MINE_SHAKE_CYCLES = 5.5f
@@ -61,20 +66,40 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
     override fun onCreate(savedInstanceState: Bundle?) {
         repository = PrefsRepository(this)
         settings = repository.loadSettings()
-        AppCompatDelegate.setDefaultNightMode(if (settings.darkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
+        AppCompatDelegate.setDefaultNightMode(settings.nightMode())
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val modes = repository.loadModes()
         val modeId = intent.getStringExtra(EXTRA_MODE_ID)
-        selectedMode = modes.firstOrNull { it.id == modeId } ?: modes.first()
-        palette = ThemeCatalog.resolve(settings.themeId, settings.darkTheme)
+        selectedMode = modes.firstOrNull { it.id == modeId }
+            ?: modeId?.let(repository::modeFromScoreKey)
+            ?: customModeFromIntent()
+            ?: modes.first()
+        palette = ThemeCatalog.resolve(settings.themeId, settings.usesDarkPalette(this), settings.usesAmoledPalette(this))
 
         setupInsets()
         setupClicks()
         applyPalette()
         loadInitialGame()
+    }
+
+    private fun customModeFromIntent(): GameMode? {
+        if (!intent.hasExtra(EXTRA_CUSTOM_MODE_WIDTH)) return null
+        val width = intent.getIntExtra(EXTRA_CUSTOM_MODE_WIDTH, 0)
+        val height = intent.getIntExtra(EXTRA_CUSTOM_MODE_HEIGHT, 0)
+        val mines = intent.getIntExtra(EXTRA_CUSTOM_MODE_MINES, 0)
+        if (width <= 0 || height <= 0 || mines <= 0) return null
+        val mode = repository.createMode(
+            name = "",
+            width = width,
+            height = height,
+            mines = mines,
+            noGuess = intent.getBooleanExtra(EXTRA_CUSTOM_MODE_NO_GUESS, true),
+            noFlagMode = intent.getBooleanExtra(EXTRA_CUSTOM_MODE_NO_FLAG, false)
+        )
+        return mode.copy(id = repository.scoreKey(mode))
     }
 
     override fun onPause() {
@@ -99,7 +124,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
             val latestSettings = repository.loadSettings()
             val flagModeDefaultChanged = latestSettings.flagModeDefault != settings.flagModeDefault
             settings = latestSettings
-            palette = ThemeCatalog.resolve(settings.themeId, settings.darkTheme)
+            palette = ThemeCatalog.resolve(settings.themeId, settings.usesDarkPalette(this), settings.usesAmoledPalette(this))
             if (flagModeDefaultChanged) {
                 inputMode = defaultInputMode()
             }

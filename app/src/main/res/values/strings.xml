@@ -20,7 +20,7 @@
     <string name="add_mode_title">Add Mode</string>
     <string name="edit_mode">Edit mode</string>
     <string name="flag_mode_default">Default to flag mode</string>
-    <string name="show_bottom_toggle">Show bottom input toggle</string>
+    <string name="show_bottom_toggle">Show reveal/flag toggle</string>
     <string name="show_top_clears">Show top clears</string>
     <string name="show_mine_density">Show mine density</string>
     <string name="min_fade">Min fade</string>
@@ -32,6 +32,11 @@
     <string name="vibrate_enabled">Vibrate</string>
     <string name="screen_shake">Screen shake</string>
     <string name="dark_theme">Dark mode</string>
+    <string name="theme_mode">Theme mode</string>
+    <string name="theme_mode_system">System</string>
+    <string name="theme_mode_light">Light</string>
+    <string name="theme_mode_dark">Dark</string>
+    <string name="amoled_theme">AMOLED dark surfaces</string>
     <string name="theme_color">Theme color</string>
     <string name="recent_games">Recent games</string>
     <string name="advanced">Advanced</string>
@@ -42,6 +47,8 @@
     <string name="long_press_delay">Long press delay</string>
     <string name="animation_speed">Animation speed</string>
     <string name="open">Open</string>
+    <string name="show_more">Show more</string>
+    <string name="show_less">Show less</string>
     <string name="apply">Apply</string>
     <string name="close">Close</string>
     <string name="cancel">Cancel</string>
@@ -58,8 +65,13 @@
     <string name="no_guess_failed_message">No valid no-guess board was found for this start. Try again.</string>
     <string name="mode_change_confirm_title">Mode change</string>
     <string name="mode_change_confirm_message">This will make achieved scores for the previous settings no longer show here. Continue?</string>
+    <string name="mode_already_exists_title">Mode exists</string>
+    <string name="mode_already_exists_message">%1$s already has these settings. Use that mode instead?</string>
+    <string name="use_existing">Use existing</string>
+    <string name="create_anyway">Create anyway</string>
     <string name="mode_delete_confirm_message">This will remove this mode. Achieved scores for these settings will no longer show here. Continue?</string>
     <string name="clear_scores">Clear scores</string>
+    <string name="clear">Clear</string>
     <string name="clear_scores_confirm_message">This will clear all scores for these settings. Continue?</string>
     <string name="clear_all_scores">Clear all scores</string>
     <string name="all_scores">All scores</string>

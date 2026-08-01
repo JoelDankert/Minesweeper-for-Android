@@ -60,14 +60,14 @@ object ThemeCatalog {
 
     fun themeIds(): List<String> = seeds.map { it.id }
 
-    fun resolve(themeId: String, dark: Boolean): ThemePalette {
+    fun resolve(themeId: String, dark: Boolean, amoled: Boolean = false): ThemePalette {
         val seed = seeds.firstOrNull { it.id == themeId } ?: seeds.first()
         val base = if (dark) baseDark else baseLight
         val baseHue = hueOf(base.accent)
         val targetHue = hueOf(seed.accent)
         val hueShift = shortestHueDelta(baseHue, targetHue)
 
-        return ThemePalette(
+        val palette = ThemePalette(
             id = seed.id,
             name = seed.name,
             background = shiftHue(base.background, hueShift),
@@ -83,6 +83,16 @@ object ThemeCatalog {
             flag = shiftHue(base.flag, hueShift),
             error = shiftHue(base.error, hueShift)
         )
+        return if (amoled) {
+            palette.copy(
+                background = Color.BLACK,
+                panel = Color.BLACK,
+                input = Color.BLACK,
+                revealedCell = Color.BLACK
+            )
+        } else {
+            palette
+        }
     }
 
     private fun hueOf(color: Int): Float {

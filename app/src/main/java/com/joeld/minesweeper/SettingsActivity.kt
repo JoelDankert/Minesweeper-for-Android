@@ -1,9 +1,12 @@
 package com.joeld.minesweeper
 
+import android.app.Activity
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
@@ -14,7 +17,8 @@ import com.joeld.minesweeper.databinding.ActivitySettingsBinding
 class SettingsActivity : AppCompatActivity() {
     companion object {
         private const val STATE_THEME_ID = "state_theme_id"
-        private const val STATE_DARK_THEME = "state_dark_theme"
+        private const val STATE_THEME_MODE = "state_theme_mode"
+        private const val STATE_RESTORE_MODES_PENDING = "state_restore_modes_pending"
     }
 
     private lateinit var binding: ActivitySettingsBinding
@@ -22,31 +26,53 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var palette: ThemePalette
     private var settings = AppSettings()
     private var themeId = "sand"
-    private var previewDarkTheme = false
+    private var themeMode = ThemeMode.SYSTEM
+    private var advancedSettings: AppSettings? = null
+    private var restoreModesPending = false
+
+    private val advancedLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                advancedSettings = AdvancedSettingsActivity.settingsFromIntent(
+                    result.data,
+                    advancedSettings ?: settings
+                )
+                restoreModesPending = result.data?.getBooleanExtra(
+                    AdvancedSettingsActivity.EXTRA_RESTORE_PENDING,
+                    restoreModesPending
+                ) ?: restoreModesPending
+                refreshPreview()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         repository = PrefsRepository(this)
         settings = repository.loadSettings()
         themeId = savedInstanceState?.getString(STATE_THEME_ID) ?: settings.themeId
-        previewDarkTheme = savedInstanceState?.getBoolean(STATE_DARK_THEME) ?: settings.darkTheme
-        AppCompatDelegate.setDefaultNightMode(
-            if (previewDarkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        )
+        themeMode = savedInstanceState?.getString(STATE_THEME_MODE)?.let(ThemeMode::fromId) ?: settings.themeMode
+        restoreModesPending = savedInstanceState?.getBoolean(STATE_RESTORE_MODES_PENDING) ?: false
+        AppCompatDelegate.setDefaultNightMode(themeMode.nightMode())
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        palette = ThemeCatalog.resolve(themeId, previewDarkTheme)
+        palette = ThemeCatalog.resolve(themeId, previewUsesDarkPalette(), previewUsesAmoledPalette())
 
         setupInsets()
         bindValues()
         binding.backButton.setOnClickListener { finish() }
+        binding.themeModeRow.setOnClickListener { cycleThemeMode() }
         binding.themeRow.setOnClickListener { cycleTheme() }
-        binding.darkTheme.setOnCheckedChangeListener { _, _ -> refreshPreview() }
         binding.recentGamesRow.setOnClickListener {
             startActivity(Intent(this, RecentGamesActivity::class.java))
         }
         binding.advancedRow.setOnClickListener {
-            startActivity(Intent(this, AdvancedSettingsActivity::class.java))
+            advancedLauncher.launch(
+                AdvancedSettingsActivity.addSettingsExtras(
+                    Intent(this, AdvancedSettingsActivity::class.java),
+                    advancedSettings ?: settings,
+                    restoreModesPending
+                )
+            )
         }
         binding.applyButton.setOnClickListener { applySettings() }
     }
@@ -65,9 +91,13 @@ class SettingsActivity : AppCompatActivity() {
         binding.flagModeDefault.isChecked = settings.flagModeDefault
         binding.enableCording.isChecked = settings.cordingEnabled
         binding.vibrateEnabled.isChecked = settings.vibrateEnabled
-        if (binding.darkTheme.isChecked != previewDarkTheme) {
-            binding.darkTheme.isChecked = previewDarkTheme
-        }
+        refreshPreview()
+    }
+
+    private fun cycleThemeMode() {
+        val modes = ThemeMode.values()
+        val nextIndex = (modes.indexOf(themeMode) + 1) % modes.size
+        themeMode = modes[nextIndex]
         refreshPreview()
     }
 
@@ -80,13 +110,34 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun applySettings() {
         val latest = repository.loadSettings()
+        if (restoreModesPending) {
+            repository.restoreDefaultModes()
+        }
+        val pendingAdvanced = advancedSettings
         val next = latest.copy(
             flagModeDefault = binding.flagModeDefault.isChecked,
             cordingEnabled = binding.enableCording.isChecked,
             vibrateEnabled = binding.vibrateEnabled.isChecked,
-            darkTheme = binding.darkTheme.isChecked,
+            themeMode = themeMode,
             themeId = themeId
-        )
+        ).let { base ->
+            pendingAdvanced?.let { advanced ->
+                base.copy(
+                    showInputToggle = advanced.showInputToggle,
+                    showTopClears = advanced.showTopClears,
+                    showMineDensity = advanced.showMineDensity,
+                    mineDensityMinFade = advanced.mineDensityMinFade,
+                    mineDensityMaxFade = advanced.mineDensityMaxFade,
+                    roundCorners = advanced.roundCorners,
+                    mergeTiles = advanced.mergeTiles,
+                    fillGaps = advanced.fillGaps,
+                    screenShakeEnabled = advanced.screenShakeEnabled,
+                    longPressDelayMs = advanced.longPressDelayMs,
+                    animationSpeedPercent = advanced.animationSpeedPercent,
+                    amoledTheme = advanced.amoledTheme
+                )
+            } ?: base
+        }
         repository.saveSettings(next)
         settings = next
         finish()
@@ -95,18 +146,23 @@ class SettingsActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(STATE_THEME_ID, themeId)
-        outState.putBoolean(STATE_DARK_THEME, binding.darkTheme.isChecked)
+        outState.putString(STATE_THEME_MODE, themeMode.id)
+        outState.putBoolean(STATE_RESTORE_MODES_PENDING, restoreModesPending)
     }
 
     private fun refreshPreview() {
-        previewDarkTheme = binding.darkTheme.isChecked
-        palette = ThemeCatalog.resolve(themeId, previewDarkTheme)
+        palette = ThemeCatalog.resolve(themeId, previewUsesDarkPalette(), previewUsesAmoledPalette())
+        binding.themeModeValue.text = themeModeLabel(themeMode)
         binding.themeValue.text = palette.name
+        binding.advancedValue.text = getString(
+            if (advancedSettings != null || restoreModesPending) R.string.pending else R.string.open
+        )
         applyPalette()
     }
 
     private fun applyPalette() {
-        val themeUnsaved = themeId != settings.themeId || binding.darkTheme.isChecked != settings.darkTheme
+        val themeModeUnsaved = themeMode != settings.themeMode
+        val themeColorUnsaved = themeId != settings.themeId
 
         binding.root.setBackgroundColor(palette.background)
         binding.topBar.setBackgroundColor(palette.background)
@@ -115,17 +171,22 @@ class SettingsActivity : AppCompatActivity() {
         binding.recentGamesText.setTextColor(palette.ink)
         binding.recentGamesValue.setTextColor(palette.inkSoft)
         binding.advancedText.setTextColor(palette.ink)
-        binding.advancedValue.setTextColor(palette.inkSoft)
+        binding.advancedValue.setTextColor(if (advancedSettings != null || restoreModesPending) palette.accent else palette.inkSoft)
+        binding.themeModeLabel.setTextColor(palette.ink)
+        binding.themeModeValue.setTextColor(if (themeModeUnsaved) palette.accent else palette.inkSoft)
         binding.themeLabel.setTextColor(palette.ink)
-        binding.themeValue.setTextColor(if (themeUnsaved) palette.accent else palette.inkSoft)
+        binding.themeValue.setTextColor(if (themeColorUnsaved) palette.accent else palette.inkSoft)
         listOf(
             binding.flagModeDefault,
             binding.enableCording,
-            binding.vibrateEnabled,
-            binding.darkTheme
+            binding.vibrateEnabled
         ).forEach {
             it.setTextColor(palette.ink)
             applySwitchPalette(it)
+        }
+        binding.themeModeRow.background = GradientDrawable().apply {
+            cornerRadius = 22f * resources.displayMetrics.density
+            setColor(palette.panel)
         }
         binding.themeRow.background = GradientDrawable().apply {
             cornerRadius = 22f * resources.displayMetrics.density
@@ -175,6 +236,31 @@ class SettingsActivity : AppCompatActivity() {
         val g = (android.graphics.Color.green(color) * factor).toInt().coerceIn(0, 255)
         val b = (android.graphics.Color.blue(color) * factor).toInt().coerceIn(0, 255)
         return android.graphics.Color.rgb(r, g, b)
+    }
+
+    private fun previewUsesDarkPalette(): Boolean {
+        return when (themeMode) {
+            ThemeMode.SYSTEM -> {
+                val mask = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+                mask == Configuration.UI_MODE_NIGHT_YES
+            }
+            ThemeMode.LIGHT -> false
+            ThemeMode.DARK -> true
+        }
+    }
+
+    private fun previewUsesAmoledPalette(): Boolean {
+        return (advancedSettings?.amoledTheme ?: settings.amoledTheme) && previewUsesDarkPalette()
+    }
+
+    private fun themeModeLabel(mode: ThemeMode): String {
+        return getString(
+            when (mode) {
+                ThemeMode.SYSTEM -> R.string.theme_mode_system
+                ThemeMode.LIGHT -> R.string.theme_mode_light
+                ThemeMode.DARK -> R.string.theme_mode_dark
+            }
+        )
     }
 
     private val Int.dp: Int

@@ -15,6 +15,9 @@ class ModeChangeConfirmActivity : AppCompatActivity() {
         const val EXTRA_TITLE = "title"
         const val EXTRA_MESSAGE = "message"
         const val EXTRA_DESTRUCTIVE = "destructive"
+        const val EXTRA_CONTINUE_LABEL = "continue_label"
+        const val EXTRA_CANCEL_LABEL = "cancel_label"
+        const val EXTRA_CANCEL_RESULT = "cancel_result"
         private const val DANGER_COLOR = "#D94B4B"
     }
 
@@ -24,21 +27,24 @@ class ModeChangeConfirmActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val repository = PrefsRepository(this)
         val settings = repository.loadSettings()
-        AppCompatDelegate.setDefaultNightMode(
-            if (settings.darkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        )
+        AppCompatDelegate.setDefaultNightMode(settings.nightMode())
         super.onCreate(savedInstanceState)
         binding = ActivityModeChangeConfirmBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        palette = ThemeCatalog.resolve(settings.themeId, settings.darkTheme)
+        palette = ThemeCatalog.resolve(settings.themeId, settings.usesDarkPalette(this), settings.usesAmoledPalette(this))
         setupInsets()
         applyPalette()
         binding.titleText.text = intent.getStringExtra(EXTRA_TITLE) ?: getString(R.string.mode_change_confirm_title)
         binding.messageText.text = intent.getStringExtra(EXTRA_MESSAGE) ?: getString(R.string.mode_change_confirm_message)
+        binding.continueButton.text = intent.getStringExtra(EXTRA_CONTINUE_LABEL) ?: getString(R.string.continue_label)
+        binding.cancelButton.text = intent.getStringExtra(EXTRA_CANCEL_LABEL) ?: getString(R.string.cancel)
 
         binding.backButton.setOnClickListener { finish() }
-        binding.cancelButton.setOnClickListener { finish() }
+        binding.cancelButton.setOnClickListener {
+            setResult(intent.getIntExtra(EXTRA_CANCEL_RESULT, Activity.RESULT_CANCELED))
+            finish()
+        }
         binding.continueButton.setOnClickListener {
             setResult(Activity.RESULT_OK)
             finish()

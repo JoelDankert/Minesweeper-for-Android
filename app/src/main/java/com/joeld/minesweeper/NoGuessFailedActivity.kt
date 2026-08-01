@@ -17,7 +17,7 @@ class NoGuessFailedActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         repository = PrefsRepository(this)
         val settings = repository.loadSettings()
-        palette = ThemeCatalog.resolve(settings.themeId, settings.darkTheme)
+        palette = ThemeCatalog.resolve(settings.themeId, settings.usesDarkPalette(this), settings.usesAmoledPalette(this))
 
         binding = ActivityNoGuessFailedBinding.inflate(layoutInflater)
         setContentView(binding.root)

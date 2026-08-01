@@ -127,7 +127,17 @@
                 android:layout_height="52dp"
                 android:layout_marginTop="18dp"
                 android:gravity="center"
-                android:text="@string/save"
+                android:text="@string/new_game_short"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/createButton"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="@string/create_mode"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 

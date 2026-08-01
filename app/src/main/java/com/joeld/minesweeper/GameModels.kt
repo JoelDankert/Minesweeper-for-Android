@@ -1,5 +1,9 @@
 package com.joeld.minesweeper
 
+import android.content.Context
+import android.content.res.Configuration
+import androidx.appcompat.app.AppCompatDelegate
+
 data class GameMode(
     val id: String,
     val name: String,
@@ -25,9 +29,52 @@ data class AppSettings(
     val screenShakeEnabled: Boolean = true,
     val longPressDelayMs: Int = 250,
     val animationSpeedPercent: Int = 50,
-    val darkTheme: Boolean = false,
+    val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    val amoledTheme: Boolean = false,
     val themeId: String = "sand"
-)
+) {
+    fun nightMode(): Int {
+        return when (themeMode) {
+            ThemeMode.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            ThemeMode.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+            ThemeMode.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+        }
+    }
+
+    fun usesDarkPalette(context: Context): Boolean {
+        return when (themeMode) {
+            ThemeMode.SYSTEM -> {
+                val mask = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+                mask == Configuration.UI_MODE_NIGHT_YES
+            }
+            ThemeMode.LIGHT -> false
+            ThemeMode.DARK -> true
+        }
+    }
+
+    fun usesAmoledPalette(context: Context): Boolean = amoledTheme && usesDarkPalette(context)
+}
+
+enum class ThemeMode(val id: String) {
+    SYSTEM("system"),
+    LIGHT("light"),
+    DARK("dark");
+
+    fun nightMode(): Int {
+        return when (this) {
+            SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+            DARK -> AppCompatDelegate.MODE_NIGHT_YES
+        }
+    }
+
+    companion object {
+        fun fromId(id: String?): ThemeMode = when (id) {
+            "amoled" -> DARK
+            else -> values().firstOrNull { it.id == id } ?: SYSTEM
+        }
+    }
+}
 
 enum class InputMode {
     REVEAL,

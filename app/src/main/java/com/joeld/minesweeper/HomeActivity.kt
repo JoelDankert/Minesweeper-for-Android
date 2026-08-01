@@ -6,6 +6,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -19,13 +20,13 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var palette: ThemePalette
     private var settings = AppSettings()
     private var modes = mutableListOf<GameMode>()
+    private var recentOnlyModes = emptyList<GameMode>()
+    private var showRecentModes = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         repository = PrefsRepository(this)
         settings = repository.loadSettings()
-        AppCompatDelegate.setDefaultNightMode(
-            if (settings.darkTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        )
+        AppCompatDelegate.setDefaultNightMode(settings.nightMode())
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -42,8 +43,9 @@ class HomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         settings = repository.loadSettings()
-        palette = ThemeCatalog.resolve(settings.themeId, settings.darkTheme)
+        palette = ThemeCatalog.resolve(settings.themeId, settings.usesDarkPalette(this), settings.usesAmoledPalette(this))
         modes = repository.sortModesByRecency(repository.loadModes())
+        recentOnlyModes = repository.loadRecentModesNotSaved(modes)
         if (modes.isEmpty()) modes = mutableListOf(repository.createMode("Easy", 8, 8, 8, true))
         applyPalette()
         rebuildModeList()
@@ -61,32 +63,61 @@ class HomeActivity : AppCompatActivity() {
 
     private fun rebuildModeList() {
         binding.modeStrip.removeAllViews()
+        val continuableRecentOnlyModes = recentOnlyModes.filter { repository.hasContinuableProgress(it.id) }
+        val historyRecentOnlyModes = recentOnlyModes.filterNot { repository.hasContinuableProgress(it.id) }
+        continuableRecentOnlyModes.forEach { mode ->
+            binding.modeStrip.addView(createModeCard(mode, dimmed = true, savedMode = false))
+        }
         modes.forEach { mode ->
-            binding.modeStrip.addView(createModeCard(mode))
+            binding.modeStrip.addView(createModeCard(mode, dimmed = false, savedMode = true))
+        }
+        if (historyRecentOnlyModes.isNotEmpty()) {
+            binding.modeStrip.addView(createShowMoreButton())
+        }
+        if (showRecentModes) {
+            historyRecentOnlyModes.forEach { mode ->
+                binding.modeStrip.addView(createModeCard(mode, dimmed = true, savedMode = false))
+            }
         }
         binding.createModeButton.visibility = View.VISIBLE
     }
 
-    private fun createModeCard(mode: GameMode): View {
+    private fun createModeCard(mode: GameMode, dimmed: Boolean, savedMode: Boolean): View {
         val view = LayoutInflater.from(this).inflate(R.layout.item_mode_card, binding.modeStrip, false)
+        view.alpha = if (dimmed) 0.62f else 1f
         val hasProgress = repository.hasContinuableProgress(mode.id)
         val continueButton = view.findViewById<TextView>(R.id.continueButton)
         val newGameButton = view.findViewById<TextView>(R.id.newGameButton)
+        val addModeButton = view.findViewById<ImageButton>(R.id.addModeButton)
         val modeMeta = ModeTextFormatter.compactStyled(this, mode, settings, palette, palette.inkSoft)
         val modeTitle = mode.name.ifBlank { modeMeta }
         view.findViewById<TextView>(R.id.modeTitle).text = modeTitle
         view.findViewById<TextView>(R.id.modeMeta).text = if (modeTitle.toString() == modeMeta.toString()) "" else modeMeta
+        addModeButton.visibility = if (savedMode) View.GONE else View.VISIBLE
+        addModeButton.imageTintList = ColorStateList.valueOf(palette.revealedCell)
+        addModeButton.background = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(palette.accent)
+        }
+        addModeButton.setOnClickListener {
+            addRecentModeAsSaved(mode)
+        }
         continueButton.apply {
             visibility = if (hasProgress) View.VISIBLE else View.GONE
             setOnClickListener {
                 if (repository.hasContinuableProgress(mode.id)) {
-                    openGame(mode.id, true)
+                    if (savedMode) openGame(mode.id, true) else openCustomGame(mode, true)
                 }
             }
         }
         newGameButton.setOnClickListener {
-            repository.clearProgress(mode.id)
-            openGame(mode.id, false)
+            if (savedMode) {
+                repository.clearProgress(mode.id)
+                openGame(mode.id, false)
+            } else {
+                repository.clearProgress(mode.id)
+                openCustomGame(mode, false)
+            }
         }
         (newGameButton.layoutParams as android.widget.LinearLayout.LayoutParams).apply {
             width = 0
@@ -94,10 +125,36 @@ class HomeActivity : AppCompatActivity() {
             marginStart = if (hasProgress) 8.dp else 0
         }
         view.setOnClickListener {
-            startActivity(Intent(this, ModeEditorActivity::class.java).putExtra(ModeEditorActivity.EXTRA_MODE_ID, mode.id))
+            if (savedMode) {
+                startActivity(Intent(this, ModeEditorActivity::class.java).putExtra(ModeEditorActivity.EXTRA_MODE_ID, mode.id))
+            } else {
+                openCustomGame(mode, false)
+            }
         }
         applyModeCardStyle(view)
         return view
+    }
+
+    private fun createShowMoreButton(): TextView {
+        return TextView(this).apply {
+            layoutParams = android.widget.LinearLayout.LayoutParams(
+                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                48.dp
+            ).also { it.bottomMargin = 12.dp }
+            gravity = android.view.Gravity.CENTER
+            text = getString(if (showRecentModes) R.string.show_less else R.string.show_more)
+            textSize = 14f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            background = GradientDrawable().apply {
+                cornerRadius = 18f.dpF
+                setColor(palette.panel)
+            }
+            setTextColor(palette.ink)
+            setOnClickListener {
+                showRecentModes = !showRecentModes
+                rebuildModeList()
+            }
+        }
     }
 
     private fun openGame(modeId: String, resume: Boolean) {
@@ -107,6 +164,23 @@ class HomeActivity : AppCompatActivity() {
                 .putExtra(GameActivity.EXTRA_MODE_ID, modeId)
                 .putExtra(GameActivity.EXTRA_RESUME, resume)
         )
+    }
+
+    private fun openCustomGame(mode: GameMode, resume: Boolean) {
+        repository.markModeUsed(mode.id)
+        startActivity(
+            Intent(this, GameActivity::class.java)
+                .putExtra(GameActivity.EXTRA_MODE_ID, mode.id)
+                .putExtra(GameActivity.EXTRA_RESUME, resume)
+        )
+    }
+
+    private fun addRecentModeAsSaved(mode: GameMode) {
+        val saved = repository.createMode("", mode.width, mode.height, mode.mines, mode.noGuess, mode.noFlagMode)
+        repository.saveModes(modes + saved)
+        repository.saveSelectedModeId(saved.id)
+        repository.markModeUsed(saved.id)
+        startActivity(Intent(this, ModeEditorActivity::class.java).putExtra(ModeEditorActivity.EXTRA_MODE_ID, saved.id))
     }
 
     private fun applyPalette() {
