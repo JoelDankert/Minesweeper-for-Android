@@ -20,7 +20,7 @@ data class AppSettings(
     val showTopClears: Boolean = true,
     val showMineDensity: Boolean = false,
     val mineDensityMinFade: Float = 0.1f,
-    val mineDensityMaxFade: Float = 0.4f,
+    val mineDensityMaxFade: Float = 0.3f,
     val roundCorners: Boolean = true,
     val mergeTiles: Boolean = true,
     val fillGaps: Boolean = true,

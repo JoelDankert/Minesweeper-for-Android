@@ -6,7 +6,6 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -88,20 +87,10 @@ class HomeActivity : AppCompatActivity() {
         val hasProgress = repository.hasContinuableProgress(mode.id)
         val continueButton = view.findViewById<TextView>(R.id.continueButton)
         val newGameButton = view.findViewById<TextView>(R.id.newGameButton)
-        val addModeButton = view.findViewById<ImageButton>(R.id.addModeButton)
         val modeMeta = ModeTextFormatter.compactStyled(this, mode, settings, palette, palette.inkSoft)
         val modeTitle = mode.name.ifBlank { modeMeta }
         view.findViewById<TextView>(R.id.modeTitle).text = modeTitle
         view.findViewById<TextView>(R.id.modeMeta).text = if (modeTitle.toString() == modeMeta.toString()) "" else modeMeta
-        addModeButton.visibility = if (savedMode) View.GONE else View.VISIBLE
-        addModeButton.imageTintList = ColorStateList.valueOf(palette.revealedCell)
-        addModeButton.background = GradientDrawable().apply {
-            shape = GradientDrawable.OVAL
-            setColor(palette.accent)
-        }
-        addModeButton.setOnClickListener {
-            addRecentModeAsSaved(mode)
-        }
         continueButton.apply {
             visibility = if (hasProgress) View.VISIBLE else View.GONE
             setOnClickListener {
@@ -124,11 +113,9 @@ class HomeActivity : AppCompatActivity() {
             weight = if (hasProgress) 1f else 2f
             marginStart = if (hasProgress) 8.dp else 0
         }
-        view.setOnClickListener {
-            if (savedMode) {
+        if (savedMode) {
+            view.setOnClickListener {
                 startActivity(Intent(this, ModeEditorActivity::class.java).putExtra(ModeEditorActivity.EXTRA_MODE_ID, mode.id))
-            } else {
-                openCustomGame(mode, false)
             }
         }
         applyModeCardStyle(view)
@@ -173,14 +160,6 @@ class HomeActivity : AppCompatActivity() {
                 .putExtra(GameActivity.EXTRA_MODE_ID, mode.id)
                 .putExtra(GameActivity.EXTRA_RESUME, resume)
         )
-    }
-
-    private fun addRecentModeAsSaved(mode: GameMode) {
-        val saved = repository.createMode("", mode.width, mode.height, mode.mines, mode.noGuess, mode.noFlagMode)
-        repository.saveModes(modes + saved)
-        repository.saveSelectedModeId(saved.id)
-        repository.markModeUsed(saved.id)
-        startActivity(Intent(this, ModeEditorActivity::class.java).putExtra(ModeEditorActivity.EXTRA_MODE_ID, saved.id))
     }
 
     private fun applyPalette() {

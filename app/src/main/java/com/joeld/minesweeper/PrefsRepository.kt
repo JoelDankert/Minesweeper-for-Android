@@ -52,7 +52,7 @@ class PrefsRepository(context: Context) {
             showTopClears = prefs.getBoolean(KEY_SHOW_TOP_CLEARS, true),
             showMineDensity = prefs.getBoolean(KEY_SHOW_MINE_DENSITY, false),
             mineDensityMinFade = clampMineDensityFade(prefs.getFloat(KEY_MINE_DENSITY_MIN_FADE, 0.1f)),
-            mineDensityMaxFade = clampMineDensityFade(prefs.getFloat(KEY_MINE_DENSITY_MAX_FADE, 0.4f)),
+            mineDensityMaxFade = clampMineDensityFade(prefs.getFloat(KEY_MINE_DENSITY_MAX_FADE, 0.3f)),
             roundCorners = roundCorners,
             mergeTiles = mergeTiles,
             fillGaps = (!roundCorners || mergeTiles) && prefs.getBoolean(KEY_FILL_GAPS, true),
@@ -202,6 +202,55 @@ class PrefsRepository(context: Context) {
 
     fun clearProgress(modeId: String) {
         prefs.edit().remove(progressKey(modeId)).apply()
+    }
+
+    fun moveProgress(fromModeId: String, toModeId: String): Boolean {
+        if (fromModeId == toModeId) return hasProgress(fromModeId)
+        val progress = loadProgress(fromModeId) ?: return false
+        val recency = loadModeRecency()
+        val movedProgress = progress.copy(modeId = toModeId)
+        val cells = JSONArray()
+        movedProgress.cells.forEach { cell ->
+            cells.put(
+                JSONObject().apply {
+                    put("mine", cell.isMine)
+                    put("adj", cell.adjacentMines)
+                    put("revealed", cell.revealed)
+                    put("flagged", cell.flagged)
+                }
+            )
+        }
+        val obj = JSONObject().apply {
+            put("modeId", movedProgress.modeId)
+            put("state", movedProgress.state.name)
+            put("boardGenerated", movedProgress.boardGenerated)
+            put("revealedCount", movedProgress.revealedCount)
+            put("flagsCount", movedProgress.flagsCount)
+            put("elapsedSeconds", movedProgress.elapsedSeconds)
+            put("inputMode", movedProgress.inputMode.name)
+            put("explodedCellIndex", movedProgress.explodedCellIndex)
+            put("cells", cells)
+        }
+        val editor = prefs.edit()
+            .remove(progressKey(fromModeId))
+            .putString(progressKey(toModeId), obj.toString())
+        val fromUsedAt = recency[fromModeId]
+        if (fromUsedAt != null) {
+            val updatedRecency = recency.toMutableMap()
+            updatedRecency.remove(fromModeId)
+            updatedRecency[toModeId] = maxOf(updatedRecency[toModeId] ?: Long.MIN_VALUE, fromUsedAt)
+            editor.putString(KEY_MODE_RECENCY, serializeModeRecency(updatedRecency))
+        }
+        editor.apply()
+        return true
+    }
+
+    fun moveProgressFromTemplateToMode(mode: GameMode): Boolean {
+        return moveProgress(scoreKey(mode), mode.id)
+    }
+
+    fun moveProgressFromModeToTemplate(mode: GameMode): Boolean {
+        return moveProgress(mode.id, scoreKey(mode))
     }
 
     fun hasProgress(modeId: String): Boolean = prefs.contains(progressKey(modeId))
@@ -496,6 +545,7 @@ class PrefsRepository(context: Context) {
 
     private fun pruneModeRecency(modes: List<GameMode>): String {
         val validIds = modes.mapTo(mutableSetOf()) { it.id }
+        validIds.addAll(loadRecentModeKeys())
         val pruned = loadModeRecency().filterKeys(validIds::contains)
         return serializeModeRecency(pruned)
     }

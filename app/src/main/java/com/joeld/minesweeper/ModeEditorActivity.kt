@@ -45,12 +45,13 @@ class ModeEditorActivity : AppCompatActivity() {
                 return@registerForActivityResult
             }
             pendingDuplicateExistingMode?.let { existingMode ->
+                val movedTemplateProgress = repository.moveProgressFromTemplateToMode(existingMode)
                 repository.saveSelectedModeId(existingMode.id)
                 repository.markModeUsed(existingMode.id)
                 startActivity(
                     Intent(this, GameActivity::class.java)
                         .putExtra(GameActivity.EXTRA_MODE_ID, existingMode.id)
-                        .putExtra(GameActivity.EXTRA_RESUME, false)
+                        .putExtra(GameActivity.EXTRA_RESUME, movedTemplateProgress)
                 )
                 clearPendingActions()
                 finish()
@@ -253,6 +254,7 @@ class ModeEditorActivity : AppCompatActivity() {
     }
 
     private fun persistMode(updated: GameMode) {
+        val movedTemplateProgress = existingMode == null && repository.moveProgressFromTemplateToMode(updated)
         val finalModes = if (existingMode == null) {
             (modes + updated).toMutableList()
         } else {
@@ -268,7 +270,7 @@ class ModeEditorActivity : AppCompatActivity() {
             startActivity(
                 Intent(this, GameActivity::class.java)
                     .putExtra(GameActivity.EXTRA_MODE_ID, updated.id)
-                    .putExtra(GameActivity.EXTRA_RESUME, false)
+                    .putExtra(GameActivity.EXTRA_RESUME, movedTemplateProgress)
             )
         }
         finish()
@@ -287,6 +289,7 @@ class ModeEditorActivity : AppCompatActivity() {
     }
 
     private fun persistDelete(modeId: String) {
+        modes.firstOrNull { it.id == modeId }?.let(repository::moveProgressFromModeToTemplate)
         repository.saveModes(modes.filter { it.id != modeId })
         finish()
     }
