@@ -16,11 +16,13 @@ Repo: https://github.com/JoelDankert/Minesweeper-for-Android.git
 Builds:
   - versionName: '1.0'
     versionCode: 1
-    commit: v1.0
+    commit: 7525544ed68638ae490f2c69cee187b30c310278
     subdir: app
     gradle:
       - yes
+    binary: https://raw.githubusercontent.com/JoelDankert/Minesweeper-for-Android/c4a824b841d6231995cea94dee654fa2597c3e5a/minesweeper-1.0.apk
 
+AllowedAPKSigningKeys: 49175f87f74c2bd9e8a0b0a78d972909438fae56b5ee9cfe47b701202482d630
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
 CurrentVersion: '1.0'

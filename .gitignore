@@ -2,6 +2,7 @@
 .gradle-home/
 .kotlin/
 local.properties
+release-signing/
 build/
 */build/
 !app/build/
