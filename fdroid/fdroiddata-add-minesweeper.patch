@@ -1,0 +1,50 @@
+From eff0195773cbfc31858aeac768715315afdd66d1 Mon Sep 17 00:00:00 2001
+From: Joel Dankert <joel.dankert@gmail.com>
+Date: Sat, 1 Aug 2026 12:49:12 +0200
+Subject: [PATCH] Add Minesweeper
+
+---
+ metadata/com.joeld.minesweeper.yml | 31 ++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+ create mode 100644 metadata/com.joeld.minesweeper.yml
+
+diff --git a/metadata/com.joeld.minesweeper.yml b/metadata/com.joeld.minesweeper.yml
+new file mode 100644
+index 0000000000..469f9dd706
+--- /dev/null
++++ b/metadata/com.joeld.minesweeper.yml
+@@ -0,0 +1,31 @@
++Categories:
++  - Games
++License: Apache-2.0
++AuthorName: Joel Dankert
++SourceCode: https://github.com/JoelDankert/Minesweeper-for-Android
++IssueTracker: https://github.com/JoelDankert/Minesweeper-for-Android/issues
++
++AutoName: Minesweeper
++Summary: Configurable offline Minesweeper for Android
++Description: |-
++    Minesweeper is a native Android implementation of the classic puzzle game with configurable modes and an offline-first design.
++
++    Features include custom board sizes and mine counts, optional no-guess and no-flag modes, saved in-progress games, recent games, score history, adjustable controls, and light and dark themes.
++
++    The app does not require network access and does not include ads, analytics, billing, or account features.
++
++RepoType: git
++Repo: https://github.com/JoelDankert/Minesweeper-for-Android.git
++
++Builds:
++  - versionName: '1.0'
++    versionCode: 1
++    commit: v1.0
++    subdir: app
++    gradle:
++      - yes
++
++AutoUpdateMode: Version
++UpdateCheckMode: Tags
++CurrentVersion: '1.0'
++CurrentVersionCode: 1
+-- 
+2.47.3
+
