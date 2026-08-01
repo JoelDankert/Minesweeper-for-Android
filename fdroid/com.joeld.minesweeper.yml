@@ -7,12 +7,13 @@ AuthorName: Joel Dankert
 AuthorEmail: joel.dankert@gmail.com
 SourceCode: https://github.com/JoelDankert/Minesweeper-for-Android
 IssueTracker: https://github.com/JoelDankert/Minesweeper-for-Android/issues
-Binaries: https://github.com/JoelDankert/Minesweeper-for-Android/releases/download/v%v/minesweeper-%v.apk
 
 AutoName: Minesweeper
 
 RepoType: git
 Repo: https://github.com/JoelDankert/Minesweeper-for-Android.git
+Binaries:
+  https://github.com/JoelDankert/Minesweeper-for-Android/releases/download/v%v/minesweeper-%v.apk
 
 Builds:
   - versionName: '1.0'
@@ -23,6 +24,7 @@ Builds:
       - yes
 
 AllowedAPKSigningKeys: 49175f87f74c2bd9e8a0b0a78d972909438fae56b5ee9cfe47b701202482d630
+
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
 CurrentVersion: '1.0'
