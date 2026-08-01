@@ -33,10 +33,11 @@ class SettingsActivity : AppCompatActivity() {
     private val advancedLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                advancedSettings = AdvancedSettingsActivity.settingsFromIntent(
+                val returnedSettings = AdvancedSettingsActivity.settingsFromIntent(
                     result.data,
                     advancedSettings ?: settings
                 )
+                advancedSettings = returnedSettings.takeIf(::advancedSettingsChanged)
                 restoreModesPending = result.data?.getBooleanExtra(
                     AdvancedSettingsActivity.EXTRA_RESTORE_PENDING,
                     restoreModesPending
@@ -140,7 +141,24 @@ class SettingsActivity : AppCompatActivity() {
         }
         repository.saveSettings(next)
         settings = next
+        advancedSettings = null
+        restoreModesPending = false
         finish()
+    }
+
+    private fun advancedSettingsChanged(candidate: AppSettings): Boolean {
+        return candidate.showInputToggle != settings.showInputToggle ||
+            candidate.showTopClears != settings.showTopClears ||
+            candidate.showMineDensity != settings.showMineDensity ||
+            candidate.mineDensityMinFade != settings.mineDensityMinFade ||
+            candidate.mineDensityMaxFade != settings.mineDensityMaxFade ||
+            candidate.roundCorners != settings.roundCorners ||
+            candidate.mergeTiles != settings.mergeTiles ||
+            candidate.fillGaps != settings.fillGaps ||
+            candidate.screenShakeEnabled != settings.screenShakeEnabled ||
+            candidate.longPressDelayMs != settings.longPressDelayMs ||
+            candidate.animationSpeedPercent != settings.animationSpeedPercent ||
+            candidate.amoledTheme != settings.amoledTheme
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
