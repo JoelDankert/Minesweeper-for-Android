@@ -131,6 +131,7 @@ class BoardView @JvmOverloads constructor(
     private var longPressTriggered = false
     private var downCell: Pair<Int, Int>? = null
     private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop.toFloat()
+    private val longPressTouchSlop = touchSlop * 0.4f
     private var longPressDelayMs = 250L
     private var animationDurationMs = 126L
     private var cameraAnimation: CameraAnimation? = null
@@ -386,9 +387,12 @@ class BoardView @JvmOverloads constructor(
                 val dx = x - lastTouchX
                 val dy = y - lastTouchY
 
+                if (abs(x - touchDownX) > longPressTouchSlop || abs(y - touchDownY) > longPressTouchSlop) {
+                    removeCallbacks(longPressRunnable)
+                }
+
                 if (!touchMoved && (abs(x - touchDownX) > touchSlop || abs(y - touchDownY) > touchSlop)) {
                     touchMoved = true
-                    removeCallbacks(longPressRunnable)
                 }
 
                 if (touchMoved || scaleDetector.isInProgress) {
