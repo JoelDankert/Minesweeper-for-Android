@@ -149,6 +149,17 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/endNewGameButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="@string/new_game"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
     </LinearLayout>
 
     <ProgressBar
@@ -158,5 +169,11 @@
         android:layout_height="44dp"
         android:layout_gravity="center"
         android:visibility="gone" />
+
+    <View
+        android:id="@+id/bottomSystemBarScrim"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom" />
 
 </FrameLayout>

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.joeld.minesweeper.databinding.ActivityHomeBinding
 
 class HomeActivity : AppCompatActivity() {
@@ -52,10 +53,18 @@ class HomeActivity : AppCompatActivity() {
 
     private fun setupInsets() {
         val topPadding = binding.homeTopBar.paddingTop
+        val createBottomMargin = (binding.createModeButton.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams).bottomMargin
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding.homeTopBar.setPadding(20.dp, topPadding + bars.top, 20.dp, 8.dp)
-            binding.modeScroll.setPadding(20.dp, 12.dp, 20.dp, 20.dp + bars.bottom)
+            binding.modeScroll.setPadding(20.dp, 12.dp, 20.dp, 20.dp)
+            (binding.createModeButton.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams).apply {
+                bottomMargin = createBottomMargin + bars.bottom
+                binding.createModeButton.layoutParams = this
+            }
+            binding.bottomSystemBarScrim.layoutParams = binding.bottomSystemBarScrim.layoutParams.apply {
+                height = bars.bottom
+            }
             insets
         }
     }
@@ -163,11 +172,26 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun applyPalette() {
+        applySystemBars()
         binding.root.setBackgroundColor(palette.background)
         binding.homeTopBar.setBackgroundColor(palette.background)
+        binding.bottomSystemBarScrim.setBackgroundColor(palette.background)
         tintIconButton(binding.settingsButton)
         binding.titleText.setTextColor(palette.ink)
         styleAction(binding.createModeButton)
+    }
+
+    private fun applySystemBars() {
+        window.statusBarColor = palette.background
+        window.navigationBarColor = palette.background
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
+        val darkBars = settings.usesDarkPalette(this) || settings.usesAmoledPalette(this)
+        WindowInsetsControllerCompat(window, binding.root).apply {
+            isAppearanceLightStatusBars = !darkBars
+            isAppearanceLightNavigationBars = !darkBars
+        }
     }
 
     private fun applyModeCardStyle(view: View) {

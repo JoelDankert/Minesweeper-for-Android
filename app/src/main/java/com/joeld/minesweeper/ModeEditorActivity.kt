@@ -336,6 +336,14 @@ class ModeEditorActivity : AppCompatActivity() {
         binding.topBar.setBackgroundColor(palette.background)
         binding.content.setBackgroundColor(palette.background)
         binding.titleText.setTextColor(palette.ink)
+        listOf(
+            binding.nameInputLabel,
+            binding.widthInputLabel,
+            binding.heightInputLabel,
+            binding.minesInputLabel
+        ).forEach {
+            it.setTextColor(palette.inkSoft)
+        }
         listOf(binding.nameInput, binding.widthInput, binding.heightInput, binding.minesInput).forEach {
             it.background = GradientDrawable().apply {
                 cornerRadius = 18f * resources.displayMetrics.density

@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
 import com.joeld.minesweeper.databinding.ActivityGameBinding
 import kotlinx.coroutines.Dispatchers
@@ -191,6 +192,9 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding.topOverlay.setPadding(16.dp, topPadding + bars.top, 16.dp, 0)
             binding.bottomOverlay.setPadding(16.dp, 0, 16.dp, bottomPadding + bars.bottom)
+            binding.bottomSystemBarScrim.layoutParams = binding.bottomSystemBarScrim.layoutParams.apply {
+                height = bars.bottom
+            }
             insets
         }
     }
@@ -198,6 +202,10 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
     private fun setupClicks() {
         binding.backButton.setOnClickListener { finish() }
         binding.topCenterHit.setOnClickListener {
+            repository.clearProgress(selectedMode.id)
+            startNewGame(resetCamera = false, resetInputMode = true)
+        }
+        binding.endNewGameButton.setOnClickListener {
             repository.clearProgress(selectedMode.id)
             startNewGame(resetCamera = false, resetInputMode = true)
         }
@@ -417,17 +425,33 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
     }
 
     private fun applyPalette() {
+        applySystemBars()
         binding.root.setBackgroundColor(palette.background)
+        binding.bottomSystemBarScrim.setBackgroundColor(palette.background)
         binding.boardView.setPalette(palette)
         tintIconButton(binding.backButton)
         tintIconButton(binding.settingsButton)
         styleCapsule(binding.inputToggleGroup, floatingControlColor())
         stylePanel(binding.recentPanel, palette.panel, 24f)
+        styleAction(binding.endNewGameButton)
         updateInputModeUi()
         binding.mineCountText.setTextColor(palette.ink)
         binding.timerText.setTextColor(palette.inkSoft)
         binding.recentStatusText.setTextColor(palette.ink)
         binding.recentModeText.setTextColor(palette.inkSoft)
+    }
+
+    private fun applySystemBars() {
+        window.statusBarColor = palette.background
+        window.navigationBarColor = palette.background
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
+        val darkBars = settings.usesDarkPalette(this) || settings.usesAmoledPalette(this)
+        WindowInsetsControllerCompat(window, binding.root).apply {
+            isAppearanceLightStatusBars = !darkBars
+            isAppearanceLightNavigationBars = !darkBars
+        }
     }
 
     private fun maybeRecordFinishedGame() {
@@ -446,6 +470,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
 
     private fun updateRecentPanel() {
         val terminal = game.state == GameState.WON || game.state == GameState.LOST
+        binding.endNewGameButton.isVisible = terminal
         binding.recentPanel.isVisible = terminal && settings.showTopClears
         if (!terminal) return
         if (!settings.showTopClears) return
@@ -526,6 +551,14 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
             cornerRadius = 1000f
             setColor(color)
         }
+    }
+
+    private fun styleAction(textView: TextView) {
+        textView.background = GradientDrawable().apply {
+            cornerRadius = 18f.dpF
+            setColor(palette.accent)
+        }
+        textView.setTextColor(palette.revealedCell)
     }
 
     private fun styleInputToggle() {

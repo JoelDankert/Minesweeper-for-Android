@@ -233,6 +233,9 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         binding.longPressValue.setTextColor(palette.inkSoft)
         binding.animationSpeedLabel.setTextColor(palette.ink)
         binding.animationSpeedValue.setTextColor(palette.inkSoft)
+        listOf(binding.mineDensityMinFadeLabel, binding.mineDensityMaxFadeLabel).forEach {
+            it.setTextColor(palette.inkSoft)
+        }
         listOf(binding.mineDensityMinFadeInput, binding.mineDensityMaxFadeInput).forEach {
             it.background = GradientDrawable().apply {
                 cornerRadius = 18f * resources.displayMetrics.density
@@ -296,6 +299,9 @@ class AdvancedSettingsActivity : AppCompatActivity() {
     }
 
     private fun updateMineDensityFadeState(enabled: Boolean) {
+        listOf(binding.mineDensityMinFadeLabel, binding.mineDensityMaxFadeLabel).forEach {
+            it.alpha = if (enabled) 1f else 0.45f
+        }
         listOf(binding.mineDensityMinFadeInput, binding.mineDensityMaxFadeInput).forEach {
             it.isEnabled = enabled
             it.alpha = if (enabled) 1f else 0.45f

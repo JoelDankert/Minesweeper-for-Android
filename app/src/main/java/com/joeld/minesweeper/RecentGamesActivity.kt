@@ -1,11 +1,14 @@
 package com.joeld.minesweeper
 
+import android.app.Activity
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
@@ -27,6 +30,16 @@ class RecentGamesActivity : AppCompatActivity() {
     private val entries = mutableListOf<RecentGameEntry>()
     private var loading = false
     private var hasMore = true
+    private var pendingDeleteRecord: RecentGameRecord? = null
+
+    private val confirmLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val record = pendingDeleteRecord
+            pendingDeleteRecord = null
+            if (result.resultCode == Activity.RESULT_OK && record != null) {
+                removeEntry(record)
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         repository = PrefsRepository(this)
@@ -76,7 +89,9 @@ class RecentGamesActivity : AppCompatActivity() {
         updateEmptyState()
     }
 
-    private fun removeEntry(position: Int) {
+    private fun removeEntry(record: RecentGameRecord) {
+        val position = entries.indexOfFirst { it.record == record }
+        if (position == -1) return
         val entry = entries.getOrNull(position) ?: return
         repository.deleteRecentGame(entry.record)
         entries.removeAt(position)
@@ -84,6 +99,18 @@ class RecentGamesActivity : AppCompatActivity() {
         adapter.notifyItemRangeChanged(position, entries.size - position)
         if (hasMore && entries.size < PAGE_SIZE) loadMore()
         updateEmptyState()
+    }
+
+    private fun confirmRemoveEntry(position: Int) {
+        val entry = entries.getOrNull(position) ?: return
+        pendingDeleteRecord = entry.record
+        confirmLauncher.launch(
+            Intent(this, ModeChangeConfirmActivity::class.java)
+                .putExtra(ModeChangeConfirmActivity.EXTRA_TITLE, getString(R.string.delete))
+                .putExtra(ModeChangeConfirmActivity.EXTRA_MESSAGE, getString(R.string.delete_recent_game_message))
+                .putExtra(ModeChangeConfirmActivity.EXTRA_CONTINUE_LABEL, getString(R.string.delete))
+                .putExtra(ModeChangeConfirmActivity.EXTRA_DESTRUCTIVE, true)
+        )
     }
 
     private fun updateEmptyState() {
@@ -144,7 +171,7 @@ class RecentGamesActivity : AppCompatActivity() {
                 rowBinding.deleteButton.imageTintList = ColorStateList.valueOf(Color.parseColor("#D94B4B"))
                 rowBinding.deleteButton.setOnClickListener {
                     val position = bindingAdapterPosition
-                    if (position != RecyclerView.NO_POSITION) removeEntry(position)
+                    if (position != RecyclerView.NO_POSITION) confirmRemoveEntry(position)
                 }
             }
         }

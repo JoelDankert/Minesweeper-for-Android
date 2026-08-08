@@ -44,10 +44,19 @@
             android:orientation="vertical"
             android:padding="20dp">
 
+            <TextView
+                android:id="@+id/nameInputLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/name"
+                android:textSize="12sp" />
+
             <EditText
                 android:id="@+id/nameInput"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
+                android:layout_marginTop="4dp"
                 android:hint="@string/name"
                 android:imeOptions="actionNext"
                 android:inputType="textCapWords"
@@ -61,37 +70,76 @@
                 android:layout_marginTop="12dp"
                 android:orientation="horizontal">
 
-                <EditText
-                    android:id="@+id/widthInput"
+                <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="52dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="@string/width"
-                    android:imeOptions="actionNext"
-                    android:inputType="number"
-                    android:padding="14dp"
-                    android:selectAllOnFocus="true"
-                    android:singleLine="true" />
+                    android:orientation="vertical">
 
-                <EditText
-                    android:id="@+id/heightInput"
+                    <TextView
+                        android:id="@+id/widthInputLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="@string/width"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/widthInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="4dp"
+                        android:hint="@string/width"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:padding="14dp"
+                        android:selectAllOnFocus="true"
+                        android:singleLine="true" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="52dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_weight="1"
-                    android:hint="@string/height"
-                    android:imeOptions="actionNext"
-                    android:inputType="number"
-                    android:padding="14dp"
-                    android:selectAllOnFocus="true"
-                    android:singleLine="true" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/heightInputLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="@string/height"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/heightInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="4dp"
+                        android:hint="@string/height"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:padding="14dp"
+                        android:selectAllOnFocus="true"
+                        android:singleLine="true" />
+                </LinearLayout>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/minesInputLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="12dp"
+                android:text="@string/mines_or_mine_density"
+                android:textSize="12sp" />
 
             <EditText
                 android:id="@+id/minesInput"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="4dp"
                 android:hint="@string/mines"
                 android:imeOptions="actionDone"
                 android:inputType="numberDecimal"
