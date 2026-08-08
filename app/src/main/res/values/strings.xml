@@ -39,6 +39,7 @@
     <string name="amoled_theme">AMOLED dark surfaces</string>
     <string name="theme_color">Theme color</string>
     <string name="recent_games">Recent games</string>
+    <string name="recent_game_lost">Lost</string>
     <string name="advanced">Advanced</string>
     <string name="restore_default_modes">Restore default modes</string>
     <string name="pending">Pending</string>

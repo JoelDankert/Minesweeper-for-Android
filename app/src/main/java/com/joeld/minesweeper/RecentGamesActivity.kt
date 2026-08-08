@@ -165,7 +165,11 @@ class RecentGamesActivity : AppCompatActivity() {
                     .joinToString(" · ")
                 rowBinding.modeText.text = ModeTextFormatter.styleDensityInText(modeText, settings, palette, palette.inkSoft)
                 rowBinding.modeText.setTextColor(palette.inkSoft)
-                rowBinding.timeText.text = formatElapsed(entry.record.elapsedSeconds)
+                rowBinding.timeText.text = if (entry.record.won) {
+                    formatElapsed(entry.record.elapsedSeconds)
+                } else {
+                    getString(R.string.recent_game_lost)
+                }
                 rowBinding.timeText.setTextColor(palette.ink)
                 rowBinding.deleteButton.background = null
                 rowBinding.deleteButton.imageTintList = ColorStateList.valueOf(Color.parseColor("#D94B4B"))
