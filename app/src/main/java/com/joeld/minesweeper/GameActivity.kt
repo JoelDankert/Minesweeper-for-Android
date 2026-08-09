@@ -612,12 +612,12 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
     }
 
     private fun winHeadline(): String {
-        val options = listOf("Nice!", "Great job!", "Clean!", "Strong!", "Perfect!")
+        val options = resources.getStringArray(R.array.game_win_headlines)
         return options[currentElapsedSeconds().mod(options.size)]
     }
 
     private fun lossHeadline(): String {
-        val options = listOf("Again!", "Next one!", "Close!", "Almost!", "Retry!")
+        val options = resources.getStringArray(R.array.game_loss_headlines)
         return options[currentElapsedSeconds().mod(options.size)]
     }
 

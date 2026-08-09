@@ -117,4 +117,18 @@
     <string name="info_restore_default_modes">Marks the default game modes to be restored when you tap Apply on the main settings screen.</string>
     <string name="info_clear_all_scores">Deletes every saved score after confirmation.</string>
     <string name="info_screen_shake">Shakes the board briefly when a mine is hit.</string>
+    <string-array name="game_win_headlines">
+        <item>Nice!</item>
+        <item>Great job!</item>
+        <item>Clean!</item>
+        <item>Strong!</item>
+        <item>Perfect!</item>
+    </string-array>
+    <string-array name="game_loss_headlines">
+        <item>Again!</item>
+        <item>Next one!</item>
+        <item>Close!</item>
+        <item>Almost!</item>
+        <item>Retry!</item>
+    </string-array>
 </resources>

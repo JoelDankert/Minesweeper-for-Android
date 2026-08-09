@@ -117,4 +117,18 @@
     <string name="info_restore_default_modes">Marca los modos predeterminados para restaurarlos al tocar Aplicar en la pantalla principal de ajustes.</string>
     <string name="info_clear_all_scores">Elimina todas las puntuaciones guardadas tras confirmación.</string>
     <string name="info_screen_shake">Sacude brevemente el tablero cuando se toca una mina.</string>
+    <string-array name="game_win_headlines">
+        <item>¡Bien!</item>
+        <item>¡Buen trabajo!</item>
+        <item>¡Limpio!</item>
+        <item>¡Fuerte!</item>
+        <item>¡Perfecto!</item>
+    </string-array>
+    <string-array name="game_loss_headlines">
+        <item>¡Otra vez!</item>
+        <item>¡La siguiente!</item>
+        <item>¡Cerca!</item>
+        <item>¡Casi!</item>
+        <item>¡Reintentar!</item>
+    </string-array>
 </resources>

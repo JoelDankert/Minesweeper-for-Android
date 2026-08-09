@@ -117,4 +117,18 @@
     <string name="info_restore_default_modes">Marque les modes par défaut à restaurer quand tu touches Appliquer dans les paramètres principaux.</string>
     <string name="info_clear_all_scores">Supprime tous les scores enregistrés après confirmation.</string>
     <string name="info_screen_shake">Secoue brièvement le plateau quand une mine est touchée.</string>
+    <string-array name="game_win_headlines">
+        <item>Bien !</item>
+        <item>Beau travail !</item>
+        <item>Net !</item>
+        <item>Fort !</item>
+        <item>Parfait !</item>
+    </string-array>
+    <string-array name="game_loss_headlines">
+        <item>Encore !</item>
+        <item>La suivante !</item>
+        <item>Presque !</item>
+        <item>Tout près !</item>
+        <item>Réessayer !</item>
+    </string-array>
 </resources>

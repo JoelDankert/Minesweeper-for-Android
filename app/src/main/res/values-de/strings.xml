@@ -117,4 +117,18 @@
     <string name="info_restore_default_modes">Merkt das Wiederherstellen der Standardmodi für Anwenden auf dem Haupt-Einstellungsbildschirm vor.</string>
     <string name="info_clear_all_scores">Löscht nach Bestätigung alle gespeicherten Punkte.</string>
     <string name="info_screen_shake">Schüttelt das Spielfeld kurz, wenn eine Mine getroffen wird.</string>
+    <string-array name="game_win_headlines">
+        <item>Stark!</item>
+        <item>Gut gemacht!</item>
+        <item>Sauber!</item>
+        <item>Sehr gut!</item>
+        <item>Perfekt!</item>
+    </string-array>
+    <string-array name="game_loss_headlines">
+        <item>Nochmal!</item>
+        <item>Nächstes!</item>
+        <item>Knapp!</item>
+        <item>Fast!</item>
+        <item>Erneut!</item>
+    </string-array>
 </resources>
