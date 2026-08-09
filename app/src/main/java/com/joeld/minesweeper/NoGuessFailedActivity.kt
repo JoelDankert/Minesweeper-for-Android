@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.joeld.minesweeper.databinding.ActivityNoGuessFailedBinding
@@ -14,9 +15,11 @@ class NoGuessFailedActivity : AppCompatActivity() {
     private lateinit var palette: ThemePalette
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         repository = PrefsRepository(this)
         val settings = repository.loadSettings()
+        AppCompatDelegate.setApplicationLocales(settings.languageMode.localeList())
+        AppCompatDelegate.setDefaultNightMode(settings.nightMode())
+        super.onCreate(savedInstanceState)
         palette = ThemeCatalog.resolve(settings.themeId, settings.usesDarkPalette(this), settings.usesAmoledPalette(this))
 
         binding = ActivityNoGuessFailedBinding.inflate(layoutInflater)

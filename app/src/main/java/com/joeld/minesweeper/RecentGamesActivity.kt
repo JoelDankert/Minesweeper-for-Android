@@ -44,6 +44,7 @@ class RecentGamesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         repository = PrefsRepository(this)
         settings = repository.loadSettings()
+        AppCompatDelegate.setApplicationLocales(settings.languageMode.localeList())
         AppCompatDelegate.setDefaultNightMode(settings.nightMode())
         super.onCreate(savedInstanceState)
         binding = ActivityRecentGamesBinding.inflate(layoutInflater)

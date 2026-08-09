@@ -27,6 +27,7 @@ class ModeChangeConfirmActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val repository = PrefsRepository(this)
         val settings = repository.loadSettings()
+        AppCompatDelegate.setApplicationLocales(settings.languageMode.localeList())
         AppCompatDelegate.setDefaultNightMode(settings.nightMode())
         super.onCreate(savedInstanceState)
         binding = ActivityModeChangeConfirmBinding.inflate(layoutInflater)

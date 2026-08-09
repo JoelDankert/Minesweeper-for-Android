@@ -67,6 +67,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
     override fun onCreate(savedInstanceState: Bundle?) {
         repository = PrefsRepository(this)
         settings = repository.loadSettings()
+        AppCompatDelegate.setApplicationLocales(settings.languageMode.localeList())
         AppCompatDelegate.setDefaultNightMode(settings.nightMode())
         super.onCreate(savedInstanceState)
         binding = ActivityGameBinding.inflate(layoutInflater)
@@ -123,6 +124,7 @@ class GameActivity : AppCompatActivity(), BoardView.Listener {
         super.onResume()
         if (::game.isInitialized) {
             val latestSettings = repository.loadSettings()
+            AppCompatDelegate.setApplicationLocales(latestSettings.languageMode.localeList())
             val flagModeDefaultChanged = latestSettings.flagModeDefault != settings.flagModeDefault
             settings = latestSettings
             palette = ThemeCatalog.resolve(settings.themeId, settings.usesDarkPalette(this), settings.usesAmoledPalette(this))

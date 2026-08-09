@@ -26,6 +26,7 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         repository = PrefsRepository(this)
         settings = repository.loadSettings()
+        AppCompatDelegate.setApplicationLocales(settings.languageMode.localeList())
         AppCompatDelegate.setDefaultNightMode(settings.nightMode())
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
@@ -43,6 +44,7 @@ class HomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         settings = repository.loadSettings()
+        AppCompatDelegate.setApplicationLocales(settings.languageMode.localeList())
         palette = ThemeCatalog.resolve(settings.themeId, settings.usesDarkPalette(this), settings.usesAmoledPalette(this))
         modes = repository.sortModesByRecency(repository.loadModes())
         recentOnlyModes = repository.loadRecentModesNotSaved(modes)

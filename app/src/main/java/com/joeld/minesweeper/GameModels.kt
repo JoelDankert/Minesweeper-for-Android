@@ -3,6 +3,8 @@ package com.joeld.minesweeper
 import android.content.Context
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
+import java.util.Locale
 
 data class GameMode(
     val id: String,
@@ -31,7 +33,8 @@ data class AppSettings(
     val animationSpeedPercent: Int = 50,
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val amoledTheme: Boolean = false,
-    val themeId: String = "sand"
+    val themeId: String = "sand",
+    val languageMode: LanguageMode = LanguageMode.SYSTEM
 ) {
     fun nightMode(): Int {
         return when (themeMode) {
@@ -53,6 +56,29 @@ data class AppSettings(
     }
 
     fun usesAmoledPalette(context: Context): Boolean = amoledTheme && usesDarkPalette(context)
+}
+
+enum class LanguageMode(val id: String, val label: String, val languageTag: String?) {
+    SYSTEM("system", "System", null),
+    ENGLISH("en", "English", "en"),
+    GERMAN("de", "Deutsch", "de"),
+    SPANISH("es", "Español", "es"),
+    FRENCH("fr", "Français", "fr");
+
+    fun localeList(): LocaleListCompat {
+        return languageTag?.let(LocaleListCompat::forLanguageTags) ?: LocaleListCompat.getEmptyLocaleList()
+    }
+
+    fun previewContext(context: Context): Context {
+        val tag = languageTag ?: return context
+        val config = Configuration(context.resources.configuration)
+        config.setLocale(Locale.forLanguageTag(tag))
+        return context.createConfigurationContext(config)
+    }
+
+    companion object {
+        fun fromId(id: String?): LanguageMode = values().firstOrNull { it.id == id } ?: SYSTEM
+    }
 }
 
 enum class ThemeMode(val id: String) {

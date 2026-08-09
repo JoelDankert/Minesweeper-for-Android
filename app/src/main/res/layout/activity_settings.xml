@@ -47,26 +47,33 @@
             <LinearLayout
                 android:id="@+id/themeModeRow"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="64dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingStart="22dp"
-                android:paddingTop="16dp"
                 android:paddingEnd="16dp"
-                android:paddingBottom="16dp">
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp">
 
                 <TextView
                     android:id="@+id/themeModeLabel"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
                     android:text="@string/theme_mode"
                     android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/themeModeValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical|end"
                     android:text="@string/theme_mode_system"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -74,27 +81,34 @@
             <LinearLayout
                 android:id="@+id/themeRow"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="64dp"
                 android:layout_marginTop="14dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingStart="22dp"
-                android:paddingTop="16dp"
                 android:paddingEnd="16dp"
-                android:paddingBottom="16dp">
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp">
 
                 <TextView
                     android:id="@+id/themeLabel"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
                     android:text="@string/theme_color"
                     android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/themeValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical|end"
                     android:text="Sand"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -132,55 +146,100 @@
             <LinearLayout
                 android:id="@+id/recentGamesRow"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="64dp"
                 android:layout_marginTop="14dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingStart="22dp"
-                android:paddingTop="16dp"
                 android:paddingEnd="16dp"
-                android:paddingBottom="16dp">
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp">
 
                 <TextView
                     android:id="@+id/recentGamesText"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:gravity="center_vertical"
                     android:text="@string/recent_games"
                     android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/recentGamesValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical|end"
                     android:text="@string/open"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/languageRow"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="14dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="22dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp">
+
+                <TextView
+                    android:id="@+id/languageText"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:text="@string/language"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/languageValue"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical|end"
+                    android:text="@string/language_system"
                     android:textSize="14sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/advancedRow"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="64dp"
                 android:layout_marginTop="14dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingStart="22dp"
-                android:paddingTop="16dp"
                 android:paddingEnd="16dp"
-                android:paddingBottom="16dp">
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp">
 
                 <TextView
                     android:id="@+id/advancedText"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:gravity="center_vertical"
                     android:text="@string/advanced"
                     android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/advancedValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical|end"
                     android:text="@string/open"
                     android:textSize="14sp" />
             </LinearLayout>

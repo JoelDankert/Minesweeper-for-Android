@@ -60,6 +60,20 @@ object ThemeCatalog {
 
     fun themeIds(): List<String> = seeds.map { it.id }
 
+    fun themeNameResId(themeId: String): Int {
+        return when (themeId) {
+            "sage" -> R.string.theme_color_sage
+            "mist" -> R.string.theme_color_mist
+            "rose" -> R.string.theme_color_rose
+            "apricot" -> R.string.theme_color_apricot
+            "lagoon" -> R.string.theme_color_lagoon
+            "ember" -> R.string.theme_color_ember
+            "iris" -> R.string.theme_color_iris
+            "citrus" -> R.string.theme_color_citrus
+            else -> R.string.theme_color_sand
+        }
+    }
+
     fun resolve(themeId: String, dark: Boolean, amoled: Boolean = false): ThemePalette {
         val seed = seeds.firstOrNull { it.id == themeId } ?: seeds.first()
         val base = if (dark) baseDark else baseLight

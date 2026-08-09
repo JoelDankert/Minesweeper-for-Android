@@ -63,7 +63,8 @@ class PrefsRepository(context: Context) {
             animationSpeedPercent = clampAnimationSpeed(prefs.getInt(KEY_ANIMATION_SPEED_PERCENT, 50)),
             themeMode = themeMode,
             amoledTheme = amoledTheme,
-            themeId = prefs.getString(KEY_THEME_ID, "sand") ?: "sand"
+            themeId = prefs.getString(KEY_THEME_ID, "sand") ?: "sand",
+            languageMode = LanguageMode.fromId(prefs.getString(KEY_LANGUAGE_MODE, null))
         )
     }
 
@@ -89,6 +90,7 @@ class PrefsRepository(context: Context) {
             .putString(KEY_THEME_MODE, settings.themeMode.id)
             .putBoolean(KEY_AMOLED_THEME, settings.amoledTheme)
             .putString(KEY_THEME_ID, settings.themeId)
+            .putString(KEY_LANGUAGE_MODE, settings.languageMode.id)
             .apply()
     }
 
@@ -503,6 +505,7 @@ class PrefsRepository(context: Context) {
         const val KEY_THEME_MODE = "theme_mode"
         const val KEY_AMOLED_THEME = "amoled_theme"
         const val KEY_THEME_ID = "theme_id"
+        const val KEY_LANGUAGE_MODE = "language_mode"
         const val KEY_MODE_RECENCY = "mode_recency"
         const val KEY_RECENT_PREFIX = "recent_"
         const val KEY_PROGRESS_PREFIX = "progress_"

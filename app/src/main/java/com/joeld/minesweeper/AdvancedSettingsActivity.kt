@@ -87,6 +87,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         settings = settingsFromIntent(intent, savedSettings)
         restorePending = savedInstanceState?.getBoolean(STATE_RESTORE_PENDING)
             ?: intent.getBooleanExtra(EXTRA_RESTORE_PENDING, false)
+        androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(savedSettings.languageMode.localeList())
         androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(savedSettings.nightMode())
         super.onCreate(savedInstanceState)
         binding = ActivityAdvancedSettingsBinding.inflate(layoutInflater)
@@ -96,17 +97,18 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         setupInsets()
         applyPalette()
         bindValues()
+        setupInfoBubbles()
         binding.backButton.setOnClickListener { finishWithResult() }
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 finishWithResult()
             }
         })
-        binding.restoreModesButton.setOnClickListener {
+        binding.restoreModesValue.setOnClickListener {
             restorePending = !restorePending
             updateRestoreModesState()
         }
-        binding.clearAllScoresButton.setOnClickListener {
+        binding.clearAllScoresValue.setOnClickListener {
             confirmLauncher.launch(
                 Intent(this, ModeChangeConfirmActivity::class.java)
                     .putExtra(ModeChangeConfirmActivity.EXTRA_TITLE, getString(R.string.clear_all_scores))
@@ -153,6 +155,21 @@ class AdvancedSettingsActivity : AppCompatActivity() {
                 binding.animationSpeedValue.text = formatAnimationSpeed(snapped)
             }
         })
+    }
+
+    private fun setupInfoBubbles() {
+        InfoBubble.attachSwitchTextTap(binding.amoledTheme, { getString(R.string.info_amoled_theme) }, { palette })
+        InfoBubble.attachSwitchTextTap(binding.showBottomToggle, { getString(R.string.info_show_bottom_toggle) }, { palette })
+        InfoBubble.attachSwitchTextTap(binding.showTopClears, { getString(R.string.info_show_top_clears) }, { palette })
+        InfoBubble.attachSwitchTextTap(binding.showMineDensity, { getString(R.string.info_show_mine_density) }, { palette })
+        InfoBubble.attachSwitchTextTap(binding.roundCorners, { getString(R.string.info_round_corners) }, { palette })
+        InfoBubble.attachSwitchTextTap(binding.mergeTiles, { getString(R.string.info_merge_tiles) }, { palette })
+        InfoBubble.attachSwitchTextTap(binding.fillGaps, { getString(R.string.info_fill_gaps) }, { palette })
+        InfoBubble.attachSwitchTextTap(binding.screenShake, { getString(R.string.info_screen_shake) }, { palette })
+        InfoBubble.attachTextTap(binding.longPressLabel, { getString(R.string.info_long_press_delay) }, { palette })
+        InfoBubble.attachTextTap(binding.animationSpeedLabel, { getString(R.string.info_animation_speed) }, { palette })
+        InfoBubble.attachTextTap(binding.restoreModesLabel, { getString(R.string.info_restore_default_modes) }, { palette })
+        InfoBubble.attachTextTap(binding.clearAllScoresLabel, { getString(R.string.info_clear_all_scores) }, { palette })
     }
 
     private fun setupInsets() {
