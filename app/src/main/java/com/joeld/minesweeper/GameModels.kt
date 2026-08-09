@@ -2,6 +2,7 @@ package com.joeld.minesweeper
 
 import android.content.Context
 import android.content.res.Configuration
+import android.content.res.Resources
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import java.util.Locale
@@ -23,8 +24,8 @@ data class AppSettings(
     val showMineDensity: Boolean = false,
     val mineDensityMinFade: Float = 0.1f,
     val mineDensityMaxFade: Float = 0.3f,
-    val roundCorners: Boolean = true,
-    val mergeTiles: Boolean = true,
+    val roundCorners: Boolean = false,
+    val mergeTiles: Boolean = false,
     val fillGaps: Boolean = true,
     val cordingEnabled: Boolean = true,
     val vibrateEnabled: Boolean = true,
@@ -70,14 +71,21 @@ enum class LanguageMode(val id: String, val label: String, val languageTag: Stri
     }
 
     fun previewContext(context: Context): Context {
-        val tag = languageTag ?: return context
+        val tag = languageTag ?: systemPreviewLanguageTag()
         val config = Configuration(context.resources.configuration)
         config.setLocale(Locale.forLanguageTag(tag))
         return context.createConfigurationContext(config)
     }
 
     companion object {
+        private val supportedPreviewLanguageTags = values().mapNotNull { it.languageTag }.toSet()
+
         fun fromId(id: String?): LanguageMode = values().firstOrNull { it.id == id } ?: SYSTEM
+
+        private fun systemPreviewLanguageTag(): String {
+            val systemLocale = Resources.getSystem().configuration.locales.get(0)
+            return systemLocale.language.takeIf { it in supportedPreviewLanguageTags } ?: "en"
+        }
     }
 }
 

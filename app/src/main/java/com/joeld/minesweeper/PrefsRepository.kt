@@ -40,8 +40,8 @@ class PrefsRepository(context: Context) {
     }
 
     fun loadSettings(): AppSettings {
-        val roundCorners = prefs.getBoolean(KEY_ROUND_CORNERS, true)
-        val mergeTiles = roundCorners && prefs.getBoolean(KEY_MERGE_TILES, true)
+        val roundCorners = prefs.getBoolean(KEY_ROUND_CORNERS, false)
+        val mergeTiles = roundCorners && prefs.getBoolean(KEY_MERGE_TILES, false)
         val rawThemeMode = prefs.getString(KEY_THEME_MODE, null)
         val themeMode = rawThemeMode?.let(ThemeMode::fromId)
             ?: if (prefs.getBoolean(KEY_DARK_THEME, false)) ThemeMode.DARK else ThemeMode.SYSTEM

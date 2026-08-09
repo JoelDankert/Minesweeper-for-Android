@@ -31,14 +31,14 @@ The Android package is `com.joeld.minesweeper`.
 
 The current release version is configured in [app/build.gradle.kts](app/build.gradle.kts):
 
-- `versionCode = 4`
-- `versionName = "1.3"`
+- `versionCode = 5`
+- `versionName = "1.4"`
 
 For an F-Droid submission, create a matching git tag for the release, for example:
 
 ```sh
-git tag v1.3
-git push origin v1.3
+git tag v1.4
+git push origin v1.4
 ```
 
 ## F-Droid
