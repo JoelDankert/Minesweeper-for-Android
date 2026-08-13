@@ -150,6 +150,7 @@ class SettingsActivity : AppCompatActivity() {
                     showInputToggle = advanced.showInputToggle,
                     showTopClears = advanced.showTopClears,
                     showMineDensity = advanced.showMineDensity,
+                    showRecentModesButton = advanced.showRecentModesButton,
                     mineDensityMinFade = advanced.mineDensityMinFade,
                     mineDensityMaxFade = advanced.mineDensityMaxFade,
                     roundCorners = advanced.roundCorners,
@@ -174,6 +175,7 @@ class SettingsActivity : AppCompatActivity() {
         return candidate.showInputToggle != settings.showInputToggle ||
             candidate.showTopClears != settings.showTopClears ||
             candidate.showMineDensity != settings.showMineDensity ||
+            candidate.showRecentModesButton != settings.showRecentModesButton ||
             candidate.mineDensityMinFade != settings.mineDensityMinFade ||
             candidate.mineDensityMaxFade != settings.mineDensityMaxFade ||
             candidate.roundCorners != settings.roundCorners ||

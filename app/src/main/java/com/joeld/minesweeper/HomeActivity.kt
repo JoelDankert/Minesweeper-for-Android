@@ -81,10 +81,13 @@ class HomeActivity : AppCompatActivity() {
         modes.forEach { mode ->
             binding.modeStrip.addView(createModeCard(mode, dimmed = false, savedMode = true))
         }
-        if (historyRecentOnlyModes.isNotEmpty()) {
+        if (!settings.showRecentModesButton) {
+            showRecentModes = false
+        }
+        if (settings.showRecentModesButton && historyRecentOnlyModes.isNotEmpty()) {
             binding.modeStrip.addView(createShowMoreButton())
         }
-        if (showRecentModes) {
+        if (settings.showRecentModesButton && showRecentModes) {
             historyRecentOnlyModes.forEach { mode ->
                 binding.modeStrip.addView(createModeCard(mode, dimmed = true, savedMode = false))
             }

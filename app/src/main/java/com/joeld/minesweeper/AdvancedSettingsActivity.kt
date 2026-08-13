@@ -22,6 +22,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         const val EXTRA_SHOW_INPUT_TOGGLE = "show_input_toggle"
         const val EXTRA_SHOW_TOP_CLEARS = "show_top_clears"
         const val EXTRA_SHOW_MINE_DENSITY = "show_mine_density"
+        const val EXTRA_SHOW_RECENT_MODES_BUTTON = "show_recent_modes_button"
         const val EXTRA_MINE_DENSITY_MIN_FADE = "mine_density_min_fade"
         const val EXTRA_MINE_DENSITY_MAX_FADE = "mine_density_max_fade"
         const val EXTRA_ROUND_CORNERS = "round_corners"
@@ -38,6 +39,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
                 .putExtra(EXTRA_SHOW_INPUT_TOGGLE, settings.showInputToggle)
                 .putExtra(EXTRA_SHOW_TOP_CLEARS, settings.showTopClears)
                 .putExtra(EXTRA_SHOW_MINE_DENSITY, settings.showMineDensity)
+                .putExtra(EXTRA_SHOW_RECENT_MODES_BUTTON, settings.showRecentModesButton)
                 .putExtra(EXTRA_MINE_DENSITY_MIN_FADE, settings.mineDensityMinFade)
                 .putExtra(EXTRA_MINE_DENSITY_MAX_FADE, settings.mineDensityMaxFade)
                 .putExtra(EXTRA_ROUND_CORNERS, settings.roundCorners)
@@ -55,6 +57,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
                 showInputToggle = intent.getBooleanExtra(EXTRA_SHOW_INPUT_TOGGLE, fallback.showInputToggle),
                 showTopClears = intent.getBooleanExtra(EXTRA_SHOW_TOP_CLEARS, fallback.showTopClears),
                 showMineDensity = intent.getBooleanExtra(EXTRA_SHOW_MINE_DENSITY, fallback.showMineDensity),
+                showRecentModesButton = intent.getBooleanExtra(EXTRA_SHOW_RECENT_MODES_BUTTON, fallback.showRecentModesButton),
                 mineDensityMinFade = intent.getFloatExtra(EXTRA_MINE_DENSITY_MIN_FADE, fallback.mineDensityMinFade),
                 mineDensityMaxFade = intent.getFloatExtra(EXTRA_MINE_DENSITY_MAX_FADE, fallback.mineDensityMaxFade),
                 roundCorners = intent.getBooleanExtra(EXTRA_ROUND_CORNERS, fallback.roundCorners),
@@ -162,6 +165,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         InfoBubble.attachSwitchTextTap(binding.showBottomToggle, { getString(R.string.info_show_bottom_toggle) }, { palette })
         InfoBubble.attachSwitchTextTap(binding.showTopClears, { getString(R.string.info_show_top_clears) }, { palette })
         InfoBubble.attachSwitchTextTap(binding.showMineDensity, { getString(R.string.info_show_mine_density) }, { palette })
+        InfoBubble.attachSwitchTextTap(binding.showRecentModesButton, { getString(R.string.info_show_recent_modes_button) }, { palette })
         InfoBubble.attachSwitchTextTap(binding.roundCorners, { getString(R.string.info_round_corners) }, { palette })
         InfoBubble.attachSwitchTextTap(binding.mergeTiles, { getString(R.string.info_merge_tiles) }, { palette })
         InfoBubble.attachSwitchTextTap(binding.fillGaps, { getString(R.string.info_fill_gaps) }, { palette })
@@ -187,6 +191,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         binding.showBottomToggle.isChecked = settings.showInputToggle
         binding.showTopClears.isChecked = settings.showTopClears
         binding.showMineDensity.isChecked = settings.showMineDensity
+        binding.showRecentModesButton.isChecked = settings.showRecentModesButton
         binding.mineDensityMinFadeInput.setText(formatDensityFade(settings.mineDensityMinFade))
         binding.mineDensityMaxFadeInput.setText(formatDensityFade(settings.mineDensityMaxFade))
         binding.roundCorners.isChecked = settings.roundCorners
@@ -211,6 +216,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
             showInputToggle = binding.showBottomToggle.isChecked,
             showTopClears = binding.showTopClears.isChecked,
             showMineDensity = binding.showMineDensity.isChecked,
+            showRecentModesButton = binding.showRecentModesButton.isChecked,
             mineDensityMinFade = minOf(minFade, maxFade),
             mineDensityMaxFade = maxOf(minFade, maxFade),
             roundCorners = binding.roundCorners.isChecked,
@@ -261,7 +267,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
             it.setTextColor(palette.ink)
             it.setHintTextColor(palette.inkSoft)
         }
-        listOf(binding.amoledTheme, binding.showBottomToggle, binding.showTopClears, binding.showMineDensity, binding.roundCorners, binding.mergeTiles, binding.fillGaps, binding.screenShake).forEach {
+        listOf(binding.amoledTheme, binding.showBottomToggle, binding.showTopClears, binding.showMineDensity, binding.showRecentModesButton, binding.roundCorners, binding.mergeTiles, binding.fillGaps, binding.screenShake).forEach {
             it.setTextColor(palette.ink)
             applySwitchPalette(it)
         }

@@ -23,6 +23,7 @@
     <string name="show_bottom_toggle">Aufdecken/Markieren-Umschalter anzeigen</string>
     <string name="show_top_clears">Top-Lösungen anzeigen</string>
     <string name="show_mine_density">Minendichte anzeigen</string>
+    <string name="show_recent_modes_button">Mehr-anzeigen-Knopf anzeigen</string>
     <string name="min_fade">Min Fade</string>
     <string name="max_fade">Max Fade</string>
     <string name="round_corners">Runde Ecken</string>
@@ -109,6 +110,7 @@
     <string name="info_show_bottom_toggle">Zeigt den Aufdecken/Markieren-Umschalter unten im Spiel.</string>
     <string name="info_show_top_clears">Zeigt die besten gelösten Zeiten im Spielende-Bereich.</string>
     <string name="info_show_mine_density">Zeigt Minendichte statt nur Minenanzahl in Modus-Zusammenfassungen. Min Fade und Max Fade steuern den Dichtebereich für den Farbverlauf.</string>
+    <string name="info_show_recent_modes_button">Zeigt den Mehr-anzeigen-Knopf auf dem Home-Screen für zuvor gespielte, aber nicht gespeicherte Modi.</string>
     <string name="info_round_corners">Rundet die sichtbaren Ecken der Felder.</string>
     <string name="info_merge_tiles">Verbindet berührende aufgedeckte Felder zu größeren Formen, wenn runde Ecken aktiv sind.</string>
     <string name="info_fill_gaps">Füllt kleine sichtbare Lücken zwischen verbundenen oder quadratischen Feldern.</string>

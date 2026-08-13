@@ -228,6 +228,11 @@ class BoardView @JvmOverloads constructor(
                 val previousNeighborhood = captureNeighborhoodStates(index, current.width(), current.height(), previousStateMap)
                 val currentNeighborhood = captureNeighborhoodStates(index, current.width(), current.height(), currentStateMap)
                 val existing = cellTransitions[index]
+                if (existing != null && existing.current == currentState) {
+                    if (!neighborhoodsEqual(existing.currentNeighborhood, currentNeighborhood)) {
+                        return@forEach
+                    }
+                }
                 val shouldKeepExisting = existing != null &&
                     existing.current == currentState &&
                     neighborhoodsEqual(existing.currentNeighborhood, currentNeighborhood)
@@ -343,8 +348,15 @@ class BoardView @JvmOverloads constructor(
                         hasActiveAnimations = true
                         drawCellTransition(canvas, cellRect, inset, radius, transition, eased(progress), current.width(), current.height())
                     } else {
-                        cellTransitions.remove(index)
-                        drawCellState(canvas, cellRect, inset, radius, currentState, 255, index, current.width(), current.height(), lastCellStates)
+                        val rebase = rebaseFinishedTransition(transition, currentState, now, current.width(), current.height())
+                        if (rebase != null) {
+                            cellTransitions[index] = rebase
+                            hasActiveAnimations = true
+                            drawCellTransition(canvas, cellRect, inset, radius, rebase, 0f, current.width(), current.height())
+                        } else {
+                            cellTransitions.remove(index)
+                            drawCellState(canvas, cellRect, inset, radius, currentState, 255, index, current.width(), current.height(), lastCellStates)
+                        }
                     }
                 } else {
                     drawCellState(canvas, cellRect, inset, radius, currentState, 255, index, current.width(), current.height(), lastCellStates)
@@ -535,6 +547,27 @@ class BoardView @JvmOverloads constructor(
             previous == current -> TransitionKind.MORPH
             else -> TransitionKind.SNAP
         }
+    }
+
+    private fun rebaseFinishedTransition(
+        transition: CellTransition,
+        currentState: CellVisualState,
+        now: Long,
+        boardWidth: Int,
+        boardHeight: Int
+    ): CellTransition? {
+        if (transition.current != currentState) return null
+        val latestNeighborhood = captureNeighborhoodStates(transition.index, boardWidth, boardHeight, lastCellStates)
+        if (neighborhoodsEqual(transition.currentNeighborhood, latestNeighborhood)) return null
+        return CellTransition(
+            index = transition.index,
+            previous = currentState,
+            current = currentState,
+            previousNeighborhood = transition.currentNeighborhood,
+            currentNeighborhood = latestNeighborhood,
+            startedAtMs = now,
+            durationMs = transition.durationMs
+        )
     }
 
     private fun drawRevealTransition(

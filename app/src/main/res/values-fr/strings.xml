@@ -23,6 +23,7 @@
     <string name="show_bottom_toggle">Afficher le bascule révéler/drapeau</string>
     <string name="show_top_clears">Afficher les meilleurs scores</string>
     <string name="show_mine_density">Afficher la densité de mines</string>
+    <string name="show_recent_modes_button">Afficher le bouton des modes récents</string>
     <string name="min_fade">Fondu min.</string>
     <string name="max_fade">Fondu max.</string>
     <string name="round_corners">Coins arrondis</string>
@@ -109,6 +110,7 @@
     <string name="info_show_bottom_toggle">Affiche le bascule révéler/drapeau en bas de l’écran de jeu.</string>
     <string name="info_show_top_clears">Affiche les meilleurs scores réussis dans le panneau de fin de partie.</string>
     <string name="info_show_mine_density">Affiche la densité de mines au lieu du seul nombre de mines dans les résumés de mode. Fondu min. et Fondu max. contrôlent la plage utilisée pour le dégradé de couleur.</string>
+    <string name="info_show_recent_modes_button">Affiche le bouton Afficher plus sur l’écran d’accueil pour les modes déjà joués mais non enregistrés.</string>
     <string name="info_round_corners">Arrondit les coins visibles des cases.</string>
     <string name="info_merge_tiles">Fusionne les cases révélées qui se touchent en formes plus grandes quand les coins arrondis sont activés.</string>
     <string name="info_fill_gaps">Remplit les petits espaces visuels entre les cases fusionnées ou carrées.</string>

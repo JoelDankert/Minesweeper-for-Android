@@ -22,6 +22,7 @@ data class AppSettings(
     val showInputToggle: Boolean = true,
     val showTopClears: Boolean = true,
     val showMineDensity: Boolean = false,
+    val showRecentModesButton: Boolean = true,
     val mineDensityMinFade: Float = 0.1f,
     val mineDensityMaxFade: Float = 0.3f,
     val roundCorners: Boolean = false,

@@ -51,6 +51,7 @@ class PrefsRepository(context: Context) {
             showInputToggle = prefs.getBoolean(KEY_SHOW_INPUT_TOGGLE, true),
             showTopClears = prefs.getBoolean(KEY_SHOW_TOP_CLEARS, true),
             showMineDensity = prefs.getBoolean(KEY_SHOW_MINE_DENSITY, false),
+            showRecentModesButton = prefs.getBoolean(KEY_SHOW_RECENT_MODES_BUTTON, true),
             mineDensityMinFade = clampMineDensityFade(prefs.getFloat(KEY_MINE_DENSITY_MIN_FADE, 0.1f)),
             mineDensityMaxFade = clampMineDensityFade(prefs.getFloat(KEY_MINE_DENSITY_MAX_FADE, 0.3f)),
             roundCorners = roundCorners,
@@ -76,6 +77,7 @@ class PrefsRepository(context: Context) {
             .putBoolean(KEY_SHOW_INPUT_TOGGLE, settings.showInputToggle)
             .putBoolean(KEY_SHOW_TOP_CLEARS, settings.showTopClears)
             .putBoolean(KEY_SHOW_MINE_DENSITY, settings.showMineDensity)
+            .putBoolean(KEY_SHOW_RECENT_MODES_BUTTON, settings.showRecentModesButton)
             .putFloat(KEY_MINE_DENSITY_MIN_FADE, clampMineDensityFade(settings.mineDensityMinFade))
             .putFloat(KEY_MINE_DENSITY_MAX_FADE, clampMineDensityFade(settings.mineDensityMaxFade))
             .putBoolean(KEY_ROUND_CORNERS, settings.roundCorners)
@@ -491,6 +493,7 @@ class PrefsRepository(context: Context) {
         const val KEY_SHOW_INPUT_TOGGLE = "show_input_toggle"
         const val KEY_SHOW_TOP_CLEARS = "show_top_clears"
         const val KEY_SHOW_MINE_DENSITY = "show_mine_density"
+        const val KEY_SHOW_RECENT_MODES_BUTTON = "show_recent_modes_button"
         const val KEY_MINE_DENSITY_MIN_FADE = "mine_density_min_fade"
         const val KEY_MINE_DENSITY_MAX_FADE = "mine_density_max_fade"
         const val KEY_ROUND_CORNERS = "round_corners"

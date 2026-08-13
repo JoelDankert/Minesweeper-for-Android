@@ -23,6 +23,7 @@
     <string name="show_bottom_toggle">Show reveal/flag toggle</string>
     <string name="show_top_clears">Show top clears</string>
     <string name="show_mine_density">Show mine density</string>
+    <string name="show_recent_modes_button">Show recent modes button</string>
     <string name="min_fade">Min Fade</string>
     <string name="max_fade">Max Fade</string>
     <string name="round_corners">Round corners</string>
@@ -109,6 +110,7 @@
     <string name="info_show_bottom_toggle">Shows the reveal/flag input toggle at the bottom of the game screen.</string>
     <string name="info_show_top_clears">Shows the best cleared scores in the game end panel.</string>
     <string name="info_show_mine_density">Shows mine density instead of only mine count where modes are summarized. Min Fade and Max Fade control the density range used for the color fade.</string>
+    <string name="info_show_recent_modes_button">Shows the Show more button on the home screen for modes played before but not saved.</string>
     <string name="info_round_corners">Rounds the visible tile corners.</string>
     <string name="info_merge_tiles">Merges touching revealed tiles into larger shapes when rounded corners are enabled.</string>
     <string name="info_fill_gaps">Fills tiny visual gaps between merged or square tiles.</string>

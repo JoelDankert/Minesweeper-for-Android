@@ -23,6 +23,7 @@
     <string name="show_bottom_toggle">Mostrar cambio revelar/bandera</string>
     <string name="show_top_clears">Mostrar mejores tiempos</string>
     <string name="show_mine_density">Mostrar densidad de minas</string>
+    <string name="show_recent_modes_button">Mostrar botón de modos recientes</string>
     <string name="min_fade">Fundido mín.</string>
     <string name="max_fade">Fundido máx.</string>
     <string name="round_corners">Esquinas redondeadas</string>
@@ -109,6 +110,7 @@
     <string name="info_show_bottom_toggle">Muestra el cambio revelar/bandera abajo en la pantalla de juego.</string>
     <string name="info_show_top_clears">Muestra las mejores partidas resueltas en el panel final.</string>
     <string name="info_show_mine_density">Muestra densidad de minas en vez de solo cantidad de minas en los resúmenes de modo. Fundido mín. y Fundido máx. controlan el rango usado para el color.</string>
+    <string name="info_show_recent_modes_button">Muestra el botón Mostrar más en la pantalla inicial para modos jugados antes pero no guardados.</string>
     <string name="info_round_corners">Redondea las esquinas visibles de las casillas.</string>
     <string name="info_merge_tiles">Une casillas reveladas que se tocan en formas más grandes cuando las esquinas redondeadas están activas.</string>
     <string name="info_fill_gaps">Rellena pequeños huecos visuales entre casillas unidas o cuadradas.</string>
