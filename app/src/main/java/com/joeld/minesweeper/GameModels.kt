@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
 import java.util.Locale
 
@@ -84,7 +85,8 @@ enum class LanguageMode(val id: String, val label: String, val languageTag: Stri
         fun fromId(id: String?): LanguageMode = values().firstOrNull { it.id == id } ?: SYSTEM
 
         private fun systemPreviewLanguageTag(): String {
-            val systemLocale = Resources.getSystem().configuration.locales.get(0)
+            val systemLocale = ConfigurationCompat.getLocales(Resources.getSystem().configuration).get(0)
+                ?: Locale.ENGLISH
             return systemLocale.language.takeIf { it in supportedPreviewLanguageTags } ?: "en"
         }
     }
