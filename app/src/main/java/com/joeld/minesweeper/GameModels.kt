@@ -34,6 +34,7 @@ data class AppSettings(
     val screenShakeEnabled: Boolean = true,
     val longPressDelayMs: Int = 250,
     val animationSpeedPercent: Int = 50,
+    val donationDailyPromptEnabled: Boolean = true,
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val amoledTheme: Boolean = false,
     val themeId: String = "sand",

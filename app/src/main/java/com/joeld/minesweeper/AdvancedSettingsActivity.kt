@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.joeld.minesweeper.databinding.ActivityAdvancedSettingsBinding
 
 class AdvancedSettingsActivity : AppCompatActivity() {
@@ -32,6 +33,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         const val EXTRA_LONG_PRESS_DELAY_MS = "long_press_delay_ms"
         const val EXTRA_ANIMATION_SPEED_PERCENT = "animation_speed_percent"
         const val EXTRA_AMOLED_THEME = "amoled_theme"
+        const val EXTRA_DONATION_DAILY_PROMPT_ENABLED = "donation_daily_prompt_enabled"
 
         fun addSettingsExtras(intent: Intent, settings: AppSettings, restorePending: Boolean): Intent {
             return intent
@@ -49,6 +51,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
                 .putExtra(EXTRA_LONG_PRESS_DELAY_MS, settings.longPressDelayMs)
                 .putExtra(EXTRA_ANIMATION_SPEED_PERCENT, settings.animationSpeedPercent)
                 .putExtra(EXTRA_AMOLED_THEME, settings.amoledTheme)
+                .putExtra(EXTRA_DONATION_DAILY_PROMPT_ENABLED, settings.donationDailyPromptEnabled)
         }
 
         fun settingsFromIntent(intent: Intent?, fallback: AppSettings): AppSettings {
@@ -66,7 +69,11 @@ class AdvancedSettingsActivity : AppCompatActivity() {
                 screenShakeEnabled = intent.getBooleanExtra(EXTRA_SCREEN_SHAKE_ENABLED, fallback.screenShakeEnabled),
                 longPressDelayMs = intent.getIntExtra(EXTRA_LONG_PRESS_DELAY_MS, fallback.longPressDelayMs),
                 animationSpeedPercent = intent.getIntExtra(EXTRA_ANIMATION_SPEED_PERCENT, fallback.animationSpeedPercent),
-                amoledTheme = intent.getBooleanExtra(EXTRA_AMOLED_THEME, fallback.amoledTheme)
+                amoledTheme = intent.getBooleanExtra(EXTRA_AMOLED_THEME, fallback.amoledTheme),
+                donationDailyPromptEnabled = intent.getBooleanExtra(
+                    EXTRA_DONATION_DAILY_PROMPT_ENABLED,
+                    fallback.donationDailyPromptEnabled
+                )
             )
         }
     }
@@ -76,6 +83,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
     private lateinit var palette: ThemePalette
     private var settings = AppSettings()
     private var restorePending = false
+    private var updatingDonationPromptSwitch = false
 
     private val confirmLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -131,6 +139,9 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         }
         binding.showMineDensity.setOnCheckedChangeListener { _, isChecked ->
             updateMineDensityFadeState(isChecked)
+        }
+        binding.donationDailyPrompt.setOnCheckedChangeListener { _, isChecked ->
+            if (!updatingDonationPromptSwitch && !isChecked) showDonationOptOutConfirmation()
         }
         binding.longPressSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -198,6 +209,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         binding.mergeTiles.isChecked = settings.mergeTiles
         binding.fillGaps.isChecked = settings.fillGaps
         binding.screenShake.isChecked = settings.screenShakeEnabled
+        binding.donationDailyPrompt.isChecked = settings.donationDailyPromptEnabled
         updateMineDensityFadeState(binding.showMineDensity.isChecked)
         updateMergeTilesState(binding.roundCorners.isChecked)
         updateFillGapsState(!binding.roundCorners.isChecked || binding.mergeTiles.isChecked)
@@ -225,8 +237,27 @@ class AdvancedSettingsActivity : AppCompatActivity() {
             screenShakeEnabled = binding.screenShake.isChecked,
             longPressDelayMs = progressToDelay(binding.longPressSeekBar.progress),
             animationSpeedPercent = snapAnimationSpeed(binding.animationSpeedSeekBar.progress),
-            amoledTheme = binding.amoledTheme.isChecked
+            amoledTheme = binding.amoledTheme.isChecked,
+            donationDailyPromptEnabled = binding.donationDailyPrompt.isChecked
         )
+    }
+
+    private fun showDonationOptOutConfirmation() {
+        updatingDonationPromptSwitch = true
+        binding.donationDailyPrompt.isChecked = true
+        updatingDonationPromptSwitch = false
+        MaterialAlertDialogBuilder(this)
+            .setMessage(R.string.donation_daily_prompt_disable_confirmation)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.disable) { _, _ ->
+                updatingDonationPromptSwitch = true
+                binding.donationDailyPrompt.isChecked = DonationPromptPolicy.resolveEnabledAfterOptOut(
+                    currentEnabled = true,
+                    confirmed = true
+                )
+                updatingDonationPromptSwitch = false
+            }
+            .show()
     }
 
     private fun finishWithResult() {
@@ -267,7 +298,7 @@ class AdvancedSettingsActivity : AppCompatActivity() {
             it.setTextColor(palette.ink)
             it.setHintTextColor(palette.inkSoft)
         }
-        listOf(binding.amoledTheme, binding.showBottomToggle, binding.showTopClears, binding.showMineDensity, binding.showRecentModesButton, binding.roundCorners, binding.mergeTiles, binding.fillGaps, binding.screenShake).forEach {
+        listOf(binding.amoledTheme, binding.showBottomToggle, binding.showTopClears, binding.showMineDensity, binding.showRecentModesButton, binding.roundCorners, binding.mergeTiles, binding.fillGaps, binding.screenShake, binding.donationDailyPrompt).forEach {
             it.setTextColor(palette.ink)
             applySwitchPalette(it)
         }

@@ -8,6 +8,11 @@
     <string name="donation_action">Auf Ko-fi unterstützen</string>
     <string name="donation_card_description">Minesweeper auf Ko-fi unterstützen. Öffnet eine externe Website.</string>
     <string name="donation_unavailable">Kein Browser zum Öffnen von Ko-fi verfügbar.</string>
+    <string name="donation_banner_text">Gefällt dir Minesweeper? Unterstütze es auf Ko-fi</string>
+    <string name="donation_banner_dismiss">Ko-fi-Hinweis für heute schließen</string>
+    <string name="donation_daily_prompt">Täglichen Ko-fi-Hinweis anzeigen</string>
+    <string name="donation_daily_prompt_disable_confirmation">Schade – freiwillige Spenden helfen, das Spiel weiterzuentwickeln. Möchtest du den täglichen Hinweis wirklich ausschalten?</string>
+    <string name="disable">Ausschalten</string>
     <string name="settings">Einstellungen</string>
     <string name="settings_subtitle">Design, Steuerung und Standardwerte.</string>
     <string name="timer_idle">0s</string>

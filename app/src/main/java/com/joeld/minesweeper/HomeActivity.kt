@@ -1,18 +1,24 @@
 package com.joeld.minesweeper
 
 import android.content.Intent
+import android.content.ActivityNotFoundException
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.joeld.minesweeper.databinding.ActivityHomeBinding
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
@@ -39,6 +45,11 @@ class HomeActivity : AppCompatActivity() {
         binding.createModeButton.setOnClickListener {
             startActivity(Intent(this, ModeEditorActivity::class.java))
         }
+        binding.donationBanner.setOnClickListener { openDonationPage() }
+        binding.donationBannerClose.setOnClickListener {
+            repository.dismissDonationPrompt(todayLocalDate())
+            binding.donationBanner.visibility = View.GONE
+        }
     }
 
     override fun onResume() {
@@ -50,6 +61,11 @@ class HomeActivity : AppCompatActivity() {
         recentOnlyModes = repository.loadRecentModesNotSaved(modes)
         if (modes.isEmpty()) modes = mutableListOf(repository.createMode("Easy", 8, 8, 8, true))
         applyPalette()
+        binding.donationBanner.visibility = if (repository.shouldShowDonationPrompt(todayLocalDate())) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
         rebuildModeList()
     }
 
@@ -176,6 +192,17 @@ class HomeActivity : AppCompatActivity() {
         )
     }
 
+    private fun openDonationPage() {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://ko-fi.com/joeldankert")))
+        } catch (_: ActivityNotFoundException) {
+            Toast.makeText(this, R.string.donation_unavailable, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun todayLocalDate(): String =
+        SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).format(Date())
+
     private fun applyPalette() {
         applySystemBars()
         binding.root.setBackgroundColor(palette.background)
@@ -183,6 +210,12 @@ class HomeActivity : AppCompatActivity() {
         binding.bottomSystemBarScrim.setBackgroundColor(palette.background)
         tintIconButton(binding.settingsButton)
         binding.titleText.setTextColor(palette.ink)
+        binding.donationBannerText.setTextColor(palette.ink)
+        binding.donationBanner.background = GradientDrawable().apply {
+            cornerRadius = 16f.dpF
+            setColor(palette.panel)
+        }
+        binding.donationBannerClose.imageTintList = ColorStateList.valueOf(palette.inkSoft)
         styleAction(binding.createModeButton)
     }
 

@@ -169,7 +169,8 @@ class SettingsActivity : AppCompatActivity() {
                     screenShakeEnabled = advanced.screenShakeEnabled,
                     longPressDelayMs = advanced.longPressDelayMs,
                     animationSpeedPercent = advanced.animationSpeedPercent,
-                    amoledTheme = advanced.amoledTheme
+                    amoledTheme = advanced.amoledTheme,
+                    donationDailyPromptEnabled = advanced.donationDailyPromptEnabled
                 )
             } ?: base
         }
@@ -194,7 +195,8 @@ class SettingsActivity : AppCompatActivity() {
             candidate.screenShakeEnabled != settings.screenShakeEnabled ||
             candidate.longPressDelayMs != settings.longPressDelayMs ||
             candidate.animationSpeedPercent != settings.animationSpeedPercent ||
-            candidate.amoledTheme != settings.amoledTheme
+            candidate.amoledTheme != settings.amoledTheme ||
+            candidate.donationDailyPromptEnabled != settings.donationDailyPromptEnabled
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -244,15 +246,11 @@ class SettingsActivity : AppCompatActivity() {
         binding.titleText.setTextColor(palette.ink)
         binding.donationTitle.setTextColor(palette.ink)
         binding.donationSubtitle.setTextColor(palette.inkSoft)
-        binding.donationIcon.setTextColor(palette.revealedCell)
+        binding.donationIcon.imageTintList = ColorStateList.valueOf(palette.accent)
         binding.donationAction.setTextColor(palette.revealedCell)
         binding.donationCard.background = GradientDrawable().apply {
             cornerRadius = 22f * resources.displayMetrics.density
             setColor(palette.panel)
-        }
-        binding.donationIcon.background = GradientDrawable().apply {
-            shape = GradientDrawable.OVAL
-            setColor(palette.accent)
         }
         binding.donationAction.background = GradientDrawable().apply {
             cornerRadius = 16f * resources.displayMetrics.density

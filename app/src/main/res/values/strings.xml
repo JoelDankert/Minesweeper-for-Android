@@ -8,6 +8,11 @@
     <string name="donation_action">Support on Ko-fi</string>
     <string name="donation_card_description">Support Minesweeper on Ko-fi. Opens an external website.</string>
     <string name="donation_unavailable">No browser available to open Ko-fi.</string>
+    <string name="donation_banner_text">Enjoying Minesweeper? Support it on Ko-fi</string>
+    <string name="donation_banner_dismiss">Dismiss Ko-fi reminder for today</string>
+    <string name="donation_daily_prompt">Show daily Ko-fi reminder</string>
+    <string name="donation_daily_prompt_disable_confirmation">That’s a pity – voluntary donations help keep the game in development. Do you really want to turn off the daily reminder?</string>
+    <string name="disable">Turn off</string>
     <string name="settings">Settings</string>
     <string name="settings_subtitle">Theme, controls and defaults.</string>
     <string name="timer_idle">0s</string>
