@@ -70,7 +70,7 @@ enum class LanguageMode(val id: String, val label: String, val languageTag: Stri
     FRENCH("fr", "Français", "fr"),
     POLISH("pl", "Polski", "pl"),
     ITALIAN("it", "Italiano", "it"),
-    PORTUGUESE_BRAZILIAN("pt-BR", "Português (Brasil)", "pt-BR");
+    PORTUGUESE_BRAZILIAN("pt-BR", "Português", "pt-BR");
 
     fun localeList(): LocaleListCompat {
         return languageTag?.let(LocaleListCompat::forLanguageTags) ?: LocaleListCompat.getEmptyLocaleList()

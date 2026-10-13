@@ -27,16 +27,6 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/donationTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/donation_title"
-                    android:textColor="@color/ink"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
                 <ImageView
                     android:id="@+id/donationIcon"
                     android:layout_width="20dp"
@@ -44,6 +34,17 @@
                     android:importantForAccessibility="no"
                     android:padding="1dp"
                     android:src="@drawable/ic_favorite_material" />
+
+                <TextView
+                    android:id="@+id/donationTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/donation_title"
+                    android:textColor="@color/ink"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <TextView
