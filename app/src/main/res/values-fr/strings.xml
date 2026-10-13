@@ -6,6 +6,7 @@
     <string name="donation_title">Soutenir Minesweeper</string>
 
     <string name="donation_action">En savoir plus</string>
+    <string name="donation_subtitle">un café me ferait vraiment plaisir ;)</string>
     <string name="donation_card_description">En savoir plus sur le soutien à Minesweeper.</string>
     <string name="donation_unavailable">Aucun navigateur disponible pour ouvrir la page de soutien.</string>
 
@@ -143,11 +144,11 @@
         <item>Tout près !</item>
         <item>Réessayer !</item>
     </string-array>
-    <string name="donation_info_title">Un petit jeu fait avec soin.</string>
-    <string name="donation_info_intro">J’ai créé cette version de Minesweeper parce que j’aime y jouer. Je continue à l’améliorer pendant mon temps libre.</string>
+    <string name="donation_info_title">Pourquoi j’ai créé Minesweeper</string>
+    <string name="donation_info_intro">J’ai créé cette appli pour moi, car je voulais le Démineur classique avec plus de choix : plateaux personnalisés, modes sans devinette ou sans drapeau et parties sauvegardées. Elle fonctionne entièrement hors ligne et son code est ouvert.</string>
     <string name="donation_info_why_title">Pourquoi ton soutien compte</string>
-    <string name="donation_info_why_body">Ton soutien m’aide à corriger les bugs et à adapter le jeu aux nouvelles versions d’Android, sans ajouter de publicités.</string>
-    <string name="donation_info_thanks">Si tu veux m’aider, tu peux m’offrir un café. Sinon, profite simplement du jeu.</string>
+    <string name="donation_info_why_body">Il n’y a ni pubs, ni analyse de données, ni comptes, ni achats intégrés. Je travaille sur le jeu pendant mon temps libre ; un café m’aide à corriger les bugs et à ajouter des fonctions utiles.</string>
+    <string name="donation_info_thanks">Les retours et signalements de bugs aident aussi. Merci de jouer.</string>
     <string name="donation_back">Retour</string>
     <string name="donation_buy_coffee">Buy Me A Coffee</string>
 </resources>

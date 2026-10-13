@@ -6,6 +6,7 @@
     <string name="donation_title">Support Minesweeper</string>
 
     <string name="donation_action">More Info</string>
+    <string name="donation_subtitle">a coffee would really hit the spot ;)</string>
     <string name="donation_card_description">More information about supporting Minesweeper.</string>
     <string name="donation_unavailable">No browser available to open the support page.</string>
 
@@ -143,11 +144,11 @@
         <item>Almost!</item>
         <item>Retry!</item>
     </string-array>
-    <string name="donation_info_title">A little game, made with care.</string>
-    <string name="donation_info_intro">I made this version of Minesweeper because I enjoy playing it. I still work on it in my spare time.</string>
+    <string name="donation_info_title">Why I made Minesweeper</string>
+    <string name="donation_info_intro">I built this app for myself because I wanted classic Minesweeper with more options: custom boards, no-guess and no-flag modes, and saved games. It works fully offline and is open source.</string>
     <string name="donation_info_why_title">Why your support matters</string>
-    <string name="donation_info_why_body">Support helps me fix bugs and keep the game working on new Android versions, without adding ads.</string>
-    <string name="donation_info_thanks">If you’d like to help, you can buy me a coffee. If not, just enjoy the game.</string>
+    <string name="donation_info_why_body">There are no ads, analytics, accounts or in-app purchases. I work on the game in my spare time; a coffee helps me fix bugs and add features that fit.</string>
+    <string name="donation_info_thanks">Feedback and bug reports help too. Thanks for playing.</string>
     <string name="donation_back">Back</string>
     <string name="donation_buy_coffee">Buy Me A Coffee</string>
 </resources>

@@ -7,9 +7,11 @@ import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -63,6 +65,22 @@ class DonationInfoActivity : AppCompatActivity() {
         binding.titleText.setTextColor(palette.ink)
         listOf(binding.storyTitle, binding.storyWhyTitle).forEach { it.setTextColor(palette.ink) }
         listOf(binding.storyIntro, binding.storyWhyBody, binding.storyThanks).forEach { it.setTextColor(palette.inkSoft) }
+        binding.heroPanel.background = GradientDrawable(
+            GradientDrawable.Orientation.TL_BR,
+            intArrayOf(palette.panel, ColorUtils.blendARGB(palette.panel, palette.accent, 0.20f))
+        ).apply { cornerRadius = 30f * resources.displayMetrics.density }
+        listOf(binding.heroTileLeft, binding.heroTileRight).forEach { tile: TextView ->
+            tile.background = GradientDrawable().apply {
+                cornerRadius = 16f * resources.displayMetrics.density
+                setColor(palette.input)
+            }
+            tile.setTextColor(palette.accent)
+        }
+        binding.heroHeart.background = GradientDrawable().apply {
+            cornerRadius = 22f * resources.displayMetrics.density
+            setColor(palette.accent)
+        }
+        binding.heroHeart.imageTintList = ColorStateList.valueOf(palette.revealedCell)
         binding.backButton.background = GradientDrawable().apply {
             shape = GradientDrawable.OVAL
             setColor(palette.panel)

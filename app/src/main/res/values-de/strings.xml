@@ -6,6 +6,7 @@
     <string name="donation_title">Minesweeper unterstützen</string>
 
     <string name="donation_action">Mehr erfahren</string>
+    <string name="donation_subtitle">ein kaffe würd mir echt gut tun ;)</string>
     <string name="donation_card_description">Mehr über die Unterstützung von Minesweeper erfahren.</string>
     <string name="donation_unavailable">Kein Browser zum Öffnen der Unterstützungsseite verfügbar.</string>
 
@@ -143,11 +144,11 @@
         <item>Fast!</item>
         <item>Erneut!</item>
     </string-array>
-    <string name="donation_info_title">Ein kleines Spiel, mit Liebe gemacht.</string>
-    <string name="donation_info_intro">Ich habe diese Minesweeper-Version gebaut, weil ich das Spiel gern spiele. In meiner Freizeit arbeite ich weiter daran.</string>
+    <string name="donation_info_title">Warum ich Minesweeper gebaut habe</string>
+    <string name="donation_info_intro">Ich wollte klassisches Minesweeper mit mehr Möglichkeiten: eigenen Spielfeldern, Modi ohne Raten oder Flaggen und gespeicherten Spielen. Deshalb habe ich die App erst mal für mich gebaut. Sie funktioniert komplett offline und ist Open Source.</string>
     <string name="donation_info_why_title">Warum Unterstützung hilft</string>
-    <string name="donation_info_why_body">Unterstützung hilft mir, Fehler zu beheben und das Spiel für neue Android-Versionen fit zu halten – ohne Werbung einzubauen.</string>
-    <string name="donation_info_thanks">Wenn du helfen möchtest, kannst du mir einen Kaffee ausgeben. Wenn nicht, hab einfach Spaß am Spiel.</string>
+    <string name="donation_info_why_body">Es gibt keine Werbung, Analyse, Konten oder In-App-Käufe. Ich arbeite in meiner Freizeit am Spiel; ein Kaffee hilft mir, Fehler zu beheben und passende Funktionen hinzuzufügen.</string>
+    <string name="donation_info_thanks">Feedback und Fehlermeldungen helfen auch. Danke fürs Spielen.</string>
     <string name="donation_back">Zurück</string>
     <string name="donation_buy_coffee">Buy Me A Coffee</string>
 </resources>

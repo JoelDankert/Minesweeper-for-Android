@@ -42,6 +42,16 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/donationSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_marginTop="27dp"
+            android:paddingEnd="44dp"
+            android:text="@string/donation_subtitle"
+            android:textSize="12sp" />
+
         <ImageButton
             android:id="@+id/donationBannerClose"
             android:layout_width="44dp"

@@ -45,6 +45,49 @@
             android:orientation="vertical"
             android:padding="20dp">
 
+            <FrameLayout
+                android:id="@+id/heroPanel"
+                android:layout_width="match_parent"
+                android:layout_height="184dp"
+                android:layout_marginBottom="24dp"
+                android:importantForAccessibility="noHideDescendants">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/heroTileLeft"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:gravity="center"
+                        android:text="1"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/heroHeart"
+                        android:layout_width="76dp"
+                        android:layout_height="76dp"
+                        android:layout_marginStart="9dp"
+                        android:layout_marginEnd="9dp"
+                        android:padding="18dp"
+                        android:src="@drawable/ic_favorite_material" />
+
+                    <TextView
+                        android:id="@+id/heroTileRight"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:gravity="center"
+                        android:text="2"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </FrameLayout>
+
             <TextView
                 android:id="@+id/storyTitle"
                 android:layout_width="match_parent"
