@@ -36,42 +36,6 @@
             android:src="@drawable/ic_settings_material" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/donationBanner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:minHeight="56dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="20dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/homeTopBar">
-
-        <TextView
-            android:id="@+id/donationBannerText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:text="@string/donation_banner_text"
-            android:textSize="14sp" />
-
-        <ImageButton
-            android:id="@+id/donationBannerClose"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/donation_banner_dismiss"
-            android:src="@drawable/ic_close_material" />
-    </LinearLayout>
-
     <ScrollView
         android:id="@+id/modeScroll"
         android:layout_width="0dp"
@@ -82,7 +46,7 @@
         app:layout_constraintBottom_toTopOf="@id/createModeButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/donationBanner">
+        app:layout_constraintTop_toBottomOf="@id/homeTopBar">
 
         <LinearLayout
             android:id="@+id/modeStrip"

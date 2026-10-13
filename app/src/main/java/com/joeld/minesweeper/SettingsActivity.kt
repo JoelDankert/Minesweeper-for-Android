@@ -68,7 +68,7 @@ class SettingsActivity : AppCompatActivity() {
         setupInsets()
         bindValues()
         binding.backButton.setOnClickListener { finish() }
-        binding.donationCard.setOnClickListener {
+        binding.donationCard.root.setOnClickListener {
             try {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://ko-fi.com/joeldankert")))
             } catch (_: ActivityNotFoundException) {
@@ -211,10 +211,10 @@ class SettingsActivity : AppCompatActivity() {
         palette = ThemeCatalog.resolve(themeId, previewUsesDarkPalette(), previewUsesAmoledPalette())
         val textContext = languageMode.previewContext(this)
         binding.titleText.text = textContext.getString(R.string.settings)
-        binding.donationTitle.text = textContext.getString(R.string.donation_title)
-        binding.donationSubtitle.text = textContext.getString(R.string.donation_subtitle)
-        binding.donationAction.text = textContext.getString(R.string.donation_action)
-        binding.donationCard.contentDescription = textContext.getString(R.string.donation_card_description)
+        binding.donationCard.donationTitle.text = textContext.getString(R.string.donation_title)
+        binding.donationCard.donationSubtitle.text = textContext.getString(R.string.donation_subtitle)
+        binding.donationCard.donationAction.text = textContext.getString(R.string.donation_action)
+        binding.donationCard.root.contentDescription = textContext.getString(R.string.donation_card_description)
         binding.themeModeLabel.text = textContext.getString(R.string.theme_mode)
         binding.themeModeValue.text = themeModeLabel(themeMode)
         binding.themeLabel.text = textContext.getString(R.string.theme_color)
@@ -244,18 +244,7 @@ class SettingsActivity : AppCompatActivity() {
         binding.topBar.setBackgroundColor(palette.background)
         binding.content.setBackgroundColor(palette.background)
         binding.titleText.setTextColor(palette.ink)
-        binding.donationTitle.setTextColor(palette.ink)
-        binding.donationSubtitle.setTextColor(palette.inkSoft)
-        binding.donationIcon.imageTintList = ColorStateList.valueOf(palette.accent)
-        binding.donationAction.setTextColor(palette.revealedCell)
-        binding.donationCard.background = GradientDrawable().apply {
-            cornerRadius = 22f * resources.displayMetrics.density
-            setColor(palette.panel)
-        }
-        binding.donationAction.background = GradientDrawable().apply {
-            cornerRadius = 16f * resources.displayMetrics.density
-            setColor(palette.accent)
-        }
+        styleDonationCard(binding.donationCard, palette, resources.displayMetrics.density)
         binding.recentGamesText.setTextColor(palette.ink)
         binding.recentGamesValue.setTextColor(palette.inkSoft)
         binding.languageText.setTextColor(palette.ink)

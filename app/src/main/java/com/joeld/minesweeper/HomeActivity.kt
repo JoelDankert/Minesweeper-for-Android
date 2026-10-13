@@ -16,6 +16,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.joeld.minesweeper.databinding.ActivityHomeBinding
+import com.joeld.minesweeper.databinding.ItemDonationCardBinding
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -45,11 +46,6 @@ class HomeActivity : AppCompatActivity() {
         binding.createModeButton.setOnClickListener {
             startActivity(Intent(this, ModeEditorActivity::class.java))
         }
-        binding.donationBanner.setOnClickListener { openDonationPage() }
-        binding.donationBannerClose.setOnClickListener {
-            repository.dismissDonationPrompt(todayLocalDate())
-            binding.donationBanner.visibility = View.GONE
-        }
     }
 
     override fun onResume() {
@@ -61,11 +57,6 @@ class HomeActivity : AppCompatActivity() {
         recentOnlyModes = repository.loadRecentModesNotSaved(modes)
         if (modes.isEmpty()) modes = mutableListOf(repository.createMode("Easy", 8, 8, 8, true))
         applyPalette()
-        binding.donationBanner.visibility = if (repository.shouldShowDonationPrompt(todayLocalDate())) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
         rebuildModeList()
     }
 
@@ -89,6 +80,9 @@ class HomeActivity : AppCompatActivity() {
 
     private fun rebuildModeList() {
         binding.modeStrip.removeAllViews()
+        if (repository.shouldShowDonationPrompt(todayLocalDate())) {
+            binding.modeStrip.addView(createDonationCard())
+        }
         val continuableRecentOnlyModes = recentOnlyModes.filter { repository.hasContinuableProgress(it.id) }
         val historyRecentOnlyModes = recentOnlyModes.filterNot { repository.hasContinuableProgress(it.id) }
         continuableRecentOnlyModes.forEach { mode ->
@@ -109,6 +103,18 @@ class HomeActivity : AppCompatActivity() {
             }
         }
         binding.createModeButton.visibility = View.VISIBLE
+    }
+
+    private fun createDonationCard(): View {
+        val card = ItemDonationCardBinding.inflate(layoutInflater, binding.modeStrip, false)
+        card.donationBannerClose.visibility = View.VISIBLE
+        card.root.setOnClickListener { openDonationPage() }
+        card.donationBannerClose.setOnClickListener {
+            repository.dismissDonationPrompt(todayLocalDate())
+            binding.modeStrip.removeView(card.root)
+        }
+        styleDonationCard(card, palette, resources.displayMetrics.density)
+        return card.root
     }
 
     private fun createModeCard(mode: GameMode, dimmed: Boolean, savedMode: Boolean): View {
@@ -210,12 +216,6 @@ class HomeActivity : AppCompatActivity() {
         binding.bottomSystemBarScrim.setBackgroundColor(palette.background)
         tintIconButton(binding.settingsButton)
         binding.titleText.setTextColor(palette.ink)
-        binding.donationBannerText.setTextColor(palette.ink)
-        binding.donationBanner.background = GradientDrawable().apply {
-            cornerRadius = 16f.dpF
-            setColor(palette.panel)
-        }
-        binding.donationBannerClose.imageTintList = ColorStateList.valueOf(palette.inkSoft)
         styleAction(binding.createModeButton)
     }
 
