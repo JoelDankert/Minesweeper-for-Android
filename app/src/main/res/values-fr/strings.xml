@@ -150,5 +150,5 @@
     <string name="donation_info_why_body">Il n’y a ni pubs, ni analyse de données, ni comptes, ni achats intégrés. Je travaille sur le jeu pendant mon temps libre ; un café m’aide à corriger les bugs et à ajouter des fonctions utiles.</string>
     <string name="donation_info_thanks">Les retours et signalements de bugs aident aussi. Merci de jouer.</string>
     <string name="donation_back">Retour</string>
-    <string name="donation_buy_coffee">Buy Me A Coffee</string>
+    <string name="donation_buy_coffee">Offre-moi un café</string>
 </resources>

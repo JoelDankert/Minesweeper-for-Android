@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Minesweeper</string>
+    <string name="new_game">Nowa gra</string>
+    <string name="new_game_short">Nowa gra</string>
+    <string name="donation_title">Wesprzyj Minesweeper</string>
+
+    <string name="donation_action">Więcej informacji</string>
+    <string name="donation_subtitle">Przydałaby mi się teraz kawa ;)</string>
+    <string name="donation_card_description">Więcej informacji o wspieraniu Minesweeper.</string>
+    <string name="donation_unavailable">Brak przeglądarki, w której można otworzyć stronę wsparcia.</string>
+
+    <string name="donation_banner_dismiss">Ukryj przypomnienie o wsparciu na dziś</string>
+    <string name="donation_daily_prompt">Pokazuj codzienne przypomnienie o wsparciu</string>
+    <string name="donation_daily_prompt_disable_confirmation">Szkoda – dobrowolne wpłaty pomagają mi dalej rozwijać grę. Na pewno wyłączyć codzienne przypomnienie?</string>
+    <string name="disable">Wyłącz</string>
+    <string name="settings">Ustawienia</string>
+    <string name="settings_subtitle">Motyw, sterowanie i ustawienia domyślne.</string>
+    <string name="timer_idle">0 s</string>
+    <string name="status_won">Oczyszczono</string>
+    <string name="status_lost">Mina</string>
+    <string name="scoreboard_title_default">Wyniki</string>
+    <string name="scoreboard_title_won">Top 5</string>
+    <string name="scoreboard_title_lost">Top 5</string>
+    <string name="scoreboard_empty">Brak ukończonych gier</string>
+    <string name="reveal">Odkryj</string>
+    <string name="flag">Oznacz</string>
+    <string name="back">Wstecz</string>
+    <string name="continue_game">Kontynuuj</string>
+    <string name="create_mode">Utwórz</string>
+    <string name="add_mode_title">Dodaj tryb</string>
+    <string name="edit_mode">Edytuj tryb</string>
+    <string name="flag_mode_default">Domyślnie włącz tryb oznaczania</string>
+    <string name="show_bottom_toggle">Pokaż przełącznik odkrywania/oznaczania</string>
+    <string name="show_top_clears">Pokaż najlepsze wyniki</string>
+    <string name="show_mine_density">Pokaż gęstość min</string>
+    <string name="show_recent_modes_button">Pokaż przycisk ostatnich trybów</string>
+    <string name="min_fade">Początek gradientu</string>
+    <string name="max_fade">Koniec gradientu</string>
+    <string name="round_corners">Zaokrąglone rogi</string>
+    <string name="merge_tiles">Łącz pola</string>
+    <string name="fill_gaps">Wypełniaj szczeliny</string>
+    <string name="enable_cording">Włącz odkrywanie sąsiednich pól</string>
+    <string name="vibrate_enabled">Wibracje</string>
+    <string name="screen_shake">Potrząsanie ekranem</string>
+    <string name="dark_theme">Tryb ciemny</string>
+    <string name="theme_mode">Tryb motywu</string>
+    <string name="theme_mode_system">Systemowy</string>
+    <string name="theme_mode_light">Jasny</string>
+    <string name="theme_mode_dark">Ciemny</string>
+    <string name="amoled_theme">Czarne tło AMOLED</string>
+    <string name="theme_color">Kolor motywu</string>
+    <string name="theme_color_sand">Piaskowy</string>
+    <string name="theme_color_sage">Szałwiowy</string>
+    <string name="theme_color_mist">Mglisty</string>
+    <string name="theme_color_rose">Różany</string>
+    <string name="theme_color_apricot">Morelowy</string>
+    <string name="theme_color_lagoon">Lazurowy</string>
+    <string name="theme_color_ember">Żar</string>
+    <string name="theme_color_iris">Irysowy</string>
+    <string name="theme_color_citrus">Cytrusowy</string>
+    <string name="language">Język</string>
+    <string name="language_system">Systemowy</string>
+    <string name="recent_games">Ostatnie gry</string>
+    <string name="recent_game_lost">Przegrana</string>
+    <string name="advanced">Zaawansowane</string>
+    <string name="restore_default_modes">Przywróć domyślne tryby</string>
+    <string name="pending">Oczekuje</string>
+    <string name="default_modes">Domyślne tryby</string>
+    <string name="restore">Przywróć</string>
+    <string name="long_press_delay">Opóźnienie długiego naciśnięcia</string>
+    <string name="animation_speed">Szybkość animacji</string>
+    <string name="open">Otwórz</string>
+    <string name="show_more">Pokaż więcej</string>
+    <string name="show_less">Pokaż mniej</string>
+    <string name="apply">Zastosuj</string>
+    <string name="close">Zamknij</string>
+    <string name="cancel">Anuluj</string>
+    <string name="continue_label">Kontynuuj</string>
+    <string name="mode">Tryb</string>
+    <string name="mode_subtitle">Wszystkie tryby w jednym miejscu. Dodawaj, edytuj i usuwaj je według uznania.</string>
+    <string name="name">Nazwa</string>
+    <string name="width">Szerokość</string>
+    <string name="height">Wysokość</string>
+    <string name="mines">Miny</string>
+    <string name="mines_or_mine_density">Miny / gęstość min</string>
+    <string name="no_guess_mode">Tryb bez zgadywania</string>
+    <string name="no_flag_mode">Tryb bez flag</string>
+    <string name="no_guess_failed_title">Nie udało się utworzyć planszy bez zgadywania</string>
+    <string name="no_guess_failed_message">Nie znaleziono odpowiedniej planszy bez zgadywania dla tego startu. Spróbuj ponownie.</string>
+    <string name="mode_change_confirm_title">Zmiana trybu</string>
+    <string name="mode_change_confirm_message">Wyniki uzyskane przy poprzednich ustawieniach nie będą już tutaj widoczne. Kontynuować?</string>
+    <string name="mode_already_exists_title">Tryb już istnieje</string>
+    <string name="mode_already_exists_message">%1$s ma już takie ustawienia. Użyć tego trybu?</string>
+    <string name="use_existing">Użyj istniejącego</string>
+    <string name="create_anyway">Utwórz mimo to</string>
+    <string name="mode_delete_confirm_message">Ten tryb zostanie usunięty. Wyniki uzyskane przy tych ustawieniach nie będą już tutaj widoczne. Kontynuować?</string>
+    <string name="clear_scores">Wyczyść wyniki</string>
+    <string name="clear">Wyczyść</string>
+    <string name="clear_scores_confirm_message">Wszystkie wyniki dla tych ustawień zostaną usunięte. Kontynuować?</string>
+    <string name="clear_all_scores">Wyczyść wszystkie wyniki</string>
+    <string name="all_scores">Wszystkie wyniki</string>
+    <string name="clear_all_scores_confirm_message">Wszystkie zapisane wyniki zostaną usunięte. Kontynuować?</string>
+    <string name="mode_error">Ustaw wymiary od 5 x 5 do 200 x 200 i zostaw miejsce na bezpieczne pierwsze odkrycie.</string>
+    <string name="save">Zapisz</string>
+    <string name="add">Dodaj</string>
+    <string name="delete">Usuń</string>
+    <string name="delete_recent_game_message">Ten wynik zostanie usunięty z ostatnich gier.</string>
+    <string name="add_mode">Dodaj tryb</string>
+    <string name="mode_meta">%1$d x %2$d · %3$d%4$s</string>
+    <string name="no_guess_short">NG</string>
+    <string name="no_flag_short">NF</string>
+    <string name="mode_delete_error">Musi pozostać co najmniej jeden tryb.</string>
+    <string name="info_theme_mode">Wybierz motyw systemowy, zawsze jasny albo zawsze ciemny.</string>
+    <string name="info_theme_color">Zmienia kolor planszy i akcentów interfejsu. Podgląd pojawi się od razu, a zapis nastąpi po naciśnięciu Zastosuj.</string>
+    <string name="info_language">Zmienia język aplikacji. Opcja Systemowy używa języka urządzenia, a jeśli nie jest dostępny – angielskiego.</string>
+    <string name="info_flag_mode_default">Nowe gry zaczynają się w trybie oznaczania zamiast odkrywania.</string>
+    <string name="info_enable_cording">Naciśnięcie odkrytej liczby odsłania sąsiednie ukryte pola, gdy ustawiono właściwą liczbę flag.</string>
+    <string name="info_vibrate_enabled">Dodaje reakcję dotykową do działań w grze.</string>
+    <string name="info_amoled_theme">Używa całkowicie czarnego tła, gdy włączony jest tryb ciemny.</string>
+    <string name="info_show_bottom_toggle">Pokazuje przełącznik odkrywania i oznaczania na dole ekranu gry.</string>
+    <string name="info_show_top_clears">Pokazuje najlepsze wyniki ukończonych gier na ekranie końcowym.</string>
+    <string name="info_show_mine_density">W podsumowaniach trybów pokazuje gęstość min zamiast samej ich liczby. Początek i koniec gradientu określają zakres gęstości używany do zmiany koloru.</string>
+    <string name="info_show_recent_modes_button">Pokazuje na ekranie głównym przycisk Pokaż więcej dla trybów używanych wcześniej, lecz niezapisanych.</string>
+    <string name="info_round_corners">Zaokrągla widoczne rogi pól.</string>
+    <string name="info_merge_tiles">Łączy sąsiadujące odkryte pola w większe kształty, gdy zaokrąglanie rogów jest włączone.</string>
+    <string name="info_fill_gaps">Wypełnia drobne przerwy między połączonymi lub kwadratowymi polami.</string>
+    <string name="info_long_press_delay">Ustawia czas przytrzymania pola wymagany do długiego naciśnięcia. Długie naciśnięcie wykonuje przeciwną czynność: oznacza w trybie odkrywania i odkrywa w trybie oznaczania.</string>
+    <string name="info_animation_speed">Określa szybkość animacji odkrywania pól i min.</string>
+    <string name="info_restore_default_modes">Oznacza domyślne tryby do przywrócenia po naciśnięciu Zastosuj na głównym ekranie ustawień.</string>
+    <string name="info_clear_all_scores">Usuwa wszystkie zapisane wyniki po potwierdzeniu.</string>
+    <string name="info_screen_shake">Na chwilę potrząsa planszą po trafieniu na minę.</string>
+    <string-array name="game_win_headlines">
+        <item>Brawo!</item>
+        <item>Świetna robota!</item>
+        <item>Czysto!</item>
+        <item>Doskonale!</item>
+        <item>Perfekcyjnie!</item>
+    </string-array>
+    <string-array name="game_loss_headlines">
+        <item>Jeszcze raz!</item>
+        <item>Następna!</item>
+        <item>Blisko!</item>
+        <item>Prawie!</item>
+        <item>Spróbuj ponownie!</item>
+    </string-array>
+    <string name="donation_info_title">Dlaczego stworzyłem Minesweeper</string>
+    <string name="donation_info_intro">Stworzyłem tę aplikację dla siebie, bo chciałem klasycznego Sapera z większą liczbą opcji: własnymi planszami, trybami bez zgadywania i bez flag oraz zapisem gier. Działa całkowicie offline i ma otwarty kod źródłowy.</string>
+    <string name="donation_info_why_title">Dlaczego wsparcie ma znaczenie</string>
+    <string name="donation_info_why_body">Nie ma tu reklam, analityki, kont ani zakupów w aplikacji. Pracuję nad grą w wolnym czasie; kawa pomaga mi naprawiać błędy i dodawać przydatne funkcje.</string>
+    <string name="donation_info_thanks">Opinie i zgłoszenia błędów też pomagają. Dzięki za grę!</string>
+    <string name="donation_back">Wstecz</string>
+    <string name="donation_buy_coffee">Postaw mi kawę</string>
+</resources>

@@ -67,7 +67,10 @@ enum class LanguageMode(val id: String, val label: String, val languageTag: Stri
     ENGLISH("en", "English", "en"),
     GERMAN("de", "Deutsch", "de"),
     SPANISH("es", "Español", "es"),
-    FRENCH("fr", "Français", "fr");
+    FRENCH("fr", "Français", "fr"),
+    POLISH("pl", "Polski", "pl"),
+    ITALIAN("it", "Italiano", "it"),
+    PORTUGUESE_BRAZILIAN("pt-BR", "Português (Brasil)", "pt-BR");
 
     fun localeList(): LocaleListCompat {
         return languageTag?.let(LocaleListCompat::forLanguageTags) ?: LocaleListCompat.getEmptyLocaleList()
@@ -88,7 +91,10 @@ enum class LanguageMode(val id: String, val label: String, val languageTag: Stri
         private fun systemPreviewLanguageTag(): String {
             val systemLocale = ConfigurationCompat.getLocales(Resources.getSystem().configuration).get(0)
                 ?: Locale.ENGLISH
-            return systemLocale.language.takeIf { it in supportedPreviewLanguageTags } ?: "en"
+            val systemTag = systemLocale.toLanguageTag()
+            return supportedPreviewLanguageTags.firstOrNull { it.equals(systemTag, ignoreCase = true) }
+                ?: systemLocale.language.takeIf { it in supportedPreviewLanguageTags }
+                ?: "en"
         }
     }
 }

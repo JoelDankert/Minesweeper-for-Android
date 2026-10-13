@@ -205,6 +205,7 @@ class SettingsActivity : AppCompatActivity() {
         val textContext = languageMode.previewContext(this)
         binding.titleText.text = textContext.getString(R.string.settings)
         binding.donationCard.donationTitle.text = textContext.getString(R.string.donation_title)
+        binding.donationCard.donationSubtitle.text = textContext.getString(R.string.donation_subtitle)
         binding.donationCard.donationAction.text = textContext.getString(R.string.donation_action)
         binding.donationCard.root.contentDescription = textContext.getString(R.string.donation_card_description)
         binding.themeModeLabel.text = textContext.getString(R.string.theme_mode)
