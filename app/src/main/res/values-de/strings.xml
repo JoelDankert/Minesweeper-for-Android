@@ -143,14 +143,11 @@
         <item>Fast!</item>
         <item>Erneut!</item>
     </string-array>
-    <string name="donation_info_label">UNTERSTÜTZEN</string>
-    <string name="donation_info_eyebrow">HINTER DEN FELDERN</string>
     <string name="donation_info_title">Ein kleines Spiel, mit Liebe gemacht.</string>
-    <string name="donation_info_intro">Minesweeper ist ein kleiner Ort zum Abschalten, Nachdenken und für noch eine Runde. Mir ist wichtig, dass es sich jedes Mal gut anfühlt: einfach zu spielen, schön anzusehen und zuverlässig auf deinem Handy.</string>
+    <string name="donation_info_intro">Ich habe diese Minesweeper-Version gebaut, weil ich das Spiel gern spiele. In meiner Freizeit arbeite ich weiter daran.</string>
     <string name="donation_info_why_title">Warum Unterstützung hilft</string>
-    <string name="donation_info_why_body">Auch ein einfaches Spiel braucht nach der Veröffentlichung Pflege. Neue Android-Versionen kommen, kleine Fehler tauchen auf, Übersetzungen wollen verbessert werden und die Details, die ein Spiel angenehm machen, kosten Zeit. Freiwillige Unterstützung gibt mir den Raum, Minesweeper weiterzuentwickeln, ohne das Spiel mit Werbung oder ständigen Kaufaufforderungen zu füllen.</string>
-    <string name="donation_info_thanks">Du musst nichts geben. Spielen, das Spiel weiterempfehlen und mir sagen, was besser werden könnte, hilft schon sehr. Wenn du die Arbeit darüber hinaus unterstützen möchtest, kannst du mir einen Kaffee ausgeben. Danke, dass du hier bist.</string>
-    <string name="donation_info_hint">Freiwillig · öffnet deinen Browser</string>
-    <string name="donation_close">Schließen</string>
+    <string name="donation_info_why_body">Unterstützung hilft mir, Fehler zu beheben und das Spiel für neue Android-Versionen fit zu halten – ohne Werbung einzubauen.</string>
+    <string name="donation_info_thanks">Wenn du helfen möchtest, kannst du mir einen Kaffee ausgeben. Wenn nicht, hab einfach Spaß am Spiel.</string>
+    <string name="donation_back">Zurück</string>
     <string name="donation_buy_coffee">Buy Me A Coffee</string>
 </resources>

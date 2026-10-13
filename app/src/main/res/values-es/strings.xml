@@ -143,14 +143,11 @@
         <item>¡Casi!</item>
         <item>¡Reintentar!</item>
     </string-array>
-    <string name="donation_info_label">APOYO</string>
-    <string name="donation_info_eyebrow">DETRÁS DE LAS CASILLAS</string>
     <string name="donation_info_title">Un pequeño juego hecho con cariño.</string>
-    <string name="donation_info_intro">Minesweeper es un pequeño espacio para desconectar, pensar y jugar otra partida. Quiero que resulte agradable cada vez que lo abras: fácil de usar, bonito y fiable en tu teléfono.</string>
+    <string name="donation_info_intro">Hice esta versión de Minesweeper porque me gusta jugar. Sigo trabajando en ella en mi tiempo libre.</string>
     <string name="donation_info_why_title">Por qué ayuda tu apoyo</string>
-    <string name="donation_info_why_body">Incluso un juego sencillo necesita cuidados después de su lanzamiento. Llegan nuevas versiones de Android, aparecen pequeños errores, hay traducciones que mejorar y los detalles que hacen agradable una partida llevan tiempo. El apoyo voluntario me da margen para seguir mejorando Minesweeper sin llenar el juego de anuncios ni de peticiones constantes para pagar.</string>
-    <string name="donation_info_thanks">No tienes que dar nada. Jugar, recomendar el juego y contarme qué podría mejorar ya ayuda mucho. Si quieres apoyar un poco más este trabajo, puedes invitarme a un café. Gracias por estar aquí.</string>
-    <string name="donation_info_hint">Opcional · se abre en tu navegador</string>
-    <string name="donation_close">Cerrar</string>
+    <string name="donation_info_why_body">Tu apoyo me ayuda a corregir errores y mantener el juego al día con las nuevas versiones de Android, sin añadir anuncios.</string>
+    <string name="donation_info_thanks">Si quieres ayudar, puedes invitarme a un café. Si no, simplemente disfruta del juego.</string>
+    <string name="donation_back">Volver</string>
     <string name="donation_buy_coffee">Buy Me A Coffee</string>
 </resources>
