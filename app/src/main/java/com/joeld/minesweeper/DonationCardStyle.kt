@@ -11,7 +11,6 @@ internal fun styleDonationCard(card: ItemDonationCardBinding, palette: ThemePale
         setColor(palette.panel)
     }
     card.donationTitle.setTextColor(palette.ink)
-    card.donationSubtitle.setTextColor(palette.inkSoft)
     card.donationIcon.imageTintList = ColorStateList.valueOf(palette.accent)
     card.donationBannerClose.imageTintList = ColorStateList.valueOf(palette.inkSoft)
     card.donationAction.background = GradientDrawable().apply {

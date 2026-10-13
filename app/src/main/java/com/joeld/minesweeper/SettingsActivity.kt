@@ -1,13 +1,10 @@
 package com.joeld.minesweeper
 
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.drawable.GradientDrawable
-import android.net.Uri
-import android.widget.Toast
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -69,11 +66,7 @@ class SettingsActivity : AppCompatActivity() {
         bindValues()
         binding.backButton.setOnClickListener { finish() }
         binding.donationCard.root.setOnClickListener {
-            try {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://ko-fi.com/joeldankert")))
-            } catch (_: ActivityNotFoundException) {
-                Toast.makeText(this, previewString(R.string.donation_unavailable), Toast.LENGTH_SHORT).show()
-            }
+            startActivity(Intent(this, DonationInfoActivity::class.java))
         }
         binding.themeModeValue.setOnClickListener { cycleThemeMode() }
         binding.themeValue.setOnClickListener { cycleTheme() }
@@ -212,7 +205,6 @@ class SettingsActivity : AppCompatActivity() {
         val textContext = languageMode.previewContext(this)
         binding.titleText.text = textContext.getString(R.string.settings)
         binding.donationCard.donationTitle.text = textContext.getString(R.string.donation_title)
-        binding.donationCard.donationSubtitle.text = textContext.getString(R.string.donation_subtitle)
         binding.donationCard.donationAction.text = textContext.getString(R.string.donation_action)
         binding.donationCard.root.contentDescription = textContext.getString(R.string.donation_card_description)
         binding.themeModeLabel.text = textContext.getString(R.string.theme_mode)

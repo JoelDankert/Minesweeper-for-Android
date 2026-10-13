@@ -1,15 +1,12 @@
 package com.joeld.minesweeper
 
 import android.content.Intent
-import android.content.ActivityNotFoundException
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
@@ -108,7 +105,7 @@ class HomeActivity : AppCompatActivity() {
     private fun createDonationCard(): View {
         val card = ItemDonationCardBinding.inflate(layoutInflater, binding.modeStrip, false)
         card.donationBannerClose.visibility = View.VISIBLE
-        card.root.setOnClickListener { openDonationPage() }
+        card.root.setOnClickListener { startActivity(Intent(this, DonationInfoActivity::class.java)) }
         card.donationBannerClose.setOnClickListener {
             repository.dismissDonationPrompt(todayLocalDate())
             binding.modeStrip.removeView(card.root)
@@ -196,14 +193,6 @@ class HomeActivity : AppCompatActivity() {
                 .putExtra(GameActivity.EXTRA_MODE_ID, mode.id)
                 .putExtra(GameActivity.EXTRA_RESUME, resume)
         )
-    }
-
-    private fun openDonationPage() {
-        try {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://ko-fi.com/joeldankert")))
-        } catch (_: ActivityNotFoundException) {
-            Toast.makeText(this, R.string.donation_unavailable, Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun todayLocalDate(): String =

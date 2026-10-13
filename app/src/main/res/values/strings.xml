@@ -4,13 +4,13 @@
     <string name="new_game">New game</string>
     <string name="new_game_short">New Game</string>
     <string name="donation_title">Support Minesweeper</string>
-    <string name="donation_subtitle">Enjoying the game? Help keep it independent.</string>
-    <string name="donation_action">Support on Ko-fi</string>
-    <string name="donation_card_description">Support Minesweeper on Ko-fi. Opens an external website.</string>
-    <string name="donation_unavailable">No browser available to open Ko-fi.</string>
-    <string name="donation_banner_text">Enjoying Minesweeper? Support it on Ko-fi</string>
-    <string name="donation_banner_dismiss">Dismiss Ko-fi reminder for today</string>
-    <string name="donation_daily_prompt">Show daily Ko-fi reminder</string>
+
+    <string name="donation_action">More Info</string>
+    <string name="donation_card_description">More information about supporting Minesweeper.</string>
+    <string name="donation_unavailable">No browser available to open the support page.</string>
+
+    <string name="donation_banner_dismiss">Dismiss support reminder for today</string>
+    <string name="donation_daily_prompt">Show daily support reminder</string>
     <string name="donation_daily_prompt_disable_confirmation">That’s a pity – voluntary donations help keep the game in development. Do you really want to turn off the daily reminder?</string>
     <string name="disable">Turn off</string>
     <string name="settings">Settings</string>
@@ -143,4 +143,14 @@
         <item>Almost!</item>
         <item>Retry!</item>
     </string-array>
+    <string name="donation_info_label">SUPPORT</string>
+    <string name="donation_info_eyebrow">BEHIND THE TILES</string>
+    <string name="donation_info_title">A little game, made with care.</string>
+    <string name="donation_info_intro">Minesweeper is a small place to slow down, think, and enjoy one more round. I want it to feel good every time you open it: clear to play, pleasant to look at, and reliable on the phone you use.</string>
+    <string name="donation_info_why_title">Why your support matters</string>
+    <string name="donation_info_why_body">Even a simple game needs care after its first release. New Android versions arrive, little bugs surface, translations need attention, and the details that make a game feel right take time. Voluntary support gives me room to keep improving Minesweeper without filling the game with ads or constant requests to pay.</string>
+    <string name="donation_info_thanks">There is no pressure to give anything. Playing, sharing the game, and telling me what could be better already help. If you would like to support the work a little more, buying me a coffee is a lovely way to do it. Thank you for being here.</string>
+    <string name="donation_info_hint">Optional · opens in your browser</string>
+    <string name="donation_close">Close</string>
+    <string name="donation_buy_coffee">Buy Me A Coffee</string>
 </resources>

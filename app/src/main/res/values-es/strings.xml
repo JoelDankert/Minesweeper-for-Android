@@ -4,13 +4,13 @@
     <string name="new_game">Nueva partida</string>
     <string name="new_game_short">Nueva partida</string>
     <string name="donation_title">Apoya Minesweeper</string>
-    <string name="donation_subtitle">¿Te gusta el juego? Ayuda a mantenerlo independiente.</string>
-    <string name="donation_action">Apoyar en Ko-fi</string>
-    <string name="donation_card_description">Apoya Minesweeper en Ko-fi. Abre un sitio web externo.</string>
-    <string name="donation_unavailable">No hay navegador disponible para abrir Ko-fi.</string>
-    <string name="donation_banner_text">¿Te gusta Minesweeper? Apóyalo en Ko-fi</string>
-    <string name="donation_banner_dismiss">Cerrar el recordatorio de Ko-fi por hoy</string>
-    <string name="donation_daily_prompt">Mostrar recordatorio diario de Ko-fi</string>
+
+    <string name="donation_action">Más información</string>
+    <string name="donation_card_description">Más información sobre cómo apoyar Minesweeper.</string>
+    <string name="donation_unavailable">No hay ningún navegador disponible para abrir la página de apoyo.</string>
+
+    <string name="donation_banner_dismiss">Descartar el recordatorio de apoyo por hoy</string>
+    <string name="donation_daily_prompt">Mostrar el recordatorio diario de apoyo</string>
     <string name="donation_daily_prompt_disable_confirmation">Es una pena: las donaciones voluntarias ayudan a seguir desarrollando el juego. ¿Seguro que quieres desactivar el recordatorio diario?</string>
     <string name="disable">Desactivar</string>
     <string name="settings">Ajustes</string>
@@ -143,4 +143,14 @@
         <item>¡Casi!</item>
         <item>¡Reintentar!</item>
     </string-array>
+    <string name="donation_info_label">APOYO</string>
+    <string name="donation_info_eyebrow">DETRÁS DE LAS CASILLAS</string>
+    <string name="donation_info_title">Un pequeño juego hecho con cariño.</string>
+    <string name="donation_info_intro">Minesweeper es un pequeño espacio para desconectar, pensar y jugar otra partida. Quiero que resulte agradable cada vez que lo abras: fácil de usar, bonito y fiable en tu teléfono.</string>
+    <string name="donation_info_why_title">Por qué ayuda tu apoyo</string>
+    <string name="donation_info_why_body">Incluso un juego sencillo necesita cuidados después de su lanzamiento. Llegan nuevas versiones de Android, aparecen pequeños errores, hay traducciones que mejorar y los detalles que hacen agradable una partida llevan tiempo. El apoyo voluntario me da margen para seguir mejorando Minesweeper sin llenar el juego de anuncios ni de peticiones constantes para pagar.</string>
+    <string name="donation_info_thanks">No tienes que dar nada. Jugar, recomendar el juego y contarme qué podría mejorar ya ayuda mucho. Si quieres apoyar un poco más este trabajo, puedes invitarme a un café. Gracias por estar aquí.</string>
+    <string name="donation_info_hint">Opcional · se abre en tu navegador</string>
+    <string name="donation_close">Cerrar</string>
+    <string name="donation_buy_coffee">Buy Me A Coffee</string>
 </resources>
