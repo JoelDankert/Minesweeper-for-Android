@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.materialswitch.MaterialSwitch
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.joeld.minesweeper.databinding.ActivityAdvancedSettingsBinding
 
 class AdvancedSettingsActivity : AppCompatActivity() {
@@ -89,6 +88,14 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 repository.clearAllScores()
+            }
+        }
+    private val donationPromptConfirmLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                updatingDonationPromptSwitch = true
+                binding.donationDailyPrompt.isChecked = false
+                updatingDonationPromptSwitch = false
             }
         }
 
@@ -246,18 +253,12 @@ class AdvancedSettingsActivity : AppCompatActivity() {
         updatingDonationPromptSwitch = true
         binding.donationDailyPrompt.isChecked = true
         updatingDonationPromptSwitch = false
-        MaterialAlertDialogBuilder(this)
-            .setMessage(R.string.donation_daily_prompt_disable_confirmation)
-            .setNegativeButton(R.string.cancel, null)
-            .setPositiveButton(R.string.disable) { _, _ ->
-                updatingDonationPromptSwitch = true
-                binding.donationDailyPrompt.isChecked = DonationPromptPolicy.resolveEnabledAfterOptOut(
-                    currentEnabled = true,
-                    confirmed = true
-                )
-                updatingDonationPromptSwitch = false
-            }
-            .show()
+        donationPromptConfirmLauncher.launch(
+            Intent(this, ModeChangeConfirmActivity::class.java)
+                .putExtra(ModeChangeConfirmActivity.EXTRA_TITLE, getString(R.string.donation_title))
+                .putExtra(ModeChangeConfirmActivity.EXTRA_MESSAGE, getString(R.string.donation_daily_prompt_disable_confirmation))
+                .putExtra(ModeChangeConfirmActivity.EXTRA_CONTINUE_LABEL, getString(R.string.disable))
+        )
     }
 
     private fun finishWithResult() {
