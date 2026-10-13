@@ -31,14 +31,14 @@ The Android package is `com.joeld.minesweeper`.
 
 The current release version is configured in [app/build.gradle.kts](app/build.gradle.kts):
 
-- `versionCode = 7`
-- `versionName = "1.6"`
+- `versionCode = 8`
+- `versionName = "1.7"`
 
 For an F-Droid submission, create a matching git tag for the release, for example:
 
 ```sh
-git tag v1.6
-git push origin v1.6
+git tag v1.7
+git push origin v1.7
 ```
 
 ## F-Droid
@@ -46,6 +46,10 @@ git push origin v1.6
 The repository includes store listing text under `fastlane/metadata/android/en-US/` and a draft fdroiddata metadata file under `fdroid/com.joeld.minesweeper.yml`.
 
 For the official F-Droid repository, copy `fdroid/com.joeld.minesweeper.yml` to `metadata/com.joeld.minesweeper.yml` in an `fdroiddata` merge request after tagging the matching release.
+
+## Support
+
+If you enjoy the game, you can [support development on Ko-fi](https://ko-fi.com/joeldankert).
 
 ## License
 

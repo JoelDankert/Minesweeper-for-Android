@@ -3,6 +3,11 @@
     <string name="app_name">Minesweeper</string>
     <string name="new_game">Nueva partida</string>
     <string name="new_game_short">Nueva partida</string>
+    <string name="donation_title">Apoya Minesweeper</string>
+    <string name="donation_subtitle">¿Te gusta el juego? Ayuda a mantenerlo independiente.</string>
+    <string name="donation_action">Apoyar en Ko-fi</string>
+    <string name="donation_card_description">Apoya Minesweeper en Ko-fi. Abre un sitio web externo.</string>
+    <string name="donation_unavailable">No hay navegador disponible para abrir Ko-fi.</string>
     <string name="settings">Ajustes</string>
     <string name="settings_subtitle">Tema, controles y valores predeterminados.</string>
     <string name="timer_idle">0s</string>

@@ -1,10 +1,13 @@
 package com.joeld.minesweeper
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
+import android.widget.Toast
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -65,6 +68,13 @@ class SettingsActivity : AppCompatActivity() {
         setupInsets()
         bindValues()
         binding.backButton.setOnClickListener { finish() }
+        binding.donationCard.setOnClickListener {
+            try {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://ko-fi.com/joeldankert")))
+            } catch (_: ActivityNotFoundException) {
+                Toast.makeText(this, previewString(R.string.donation_unavailable), Toast.LENGTH_SHORT).show()
+            }
+        }
         binding.themeModeValue.setOnClickListener { cycleThemeMode() }
         binding.themeValue.setOnClickListener { cycleTheme() }
         binding.languageValue.setOnClickListener { cycleLanguage() }
@@ -199,6 +209,10 @@ class SettingsActivity : AppCompatActivity() {
         palette = ThemeCatalog.resolve(themeId, previewUsesDarkPalette(), previewUsesAmoledPalette())
         val textContext = languageMode.previewContext(this)
         binding.titleText.text = textContext.getString(R.string.settings)
+        binding.donationTitle.text = textContext.getString(R.string.donation_title)
+        binding.donationSubtitle.text = textContext.getString(R.string.donation_subtitle)
+        binding.donationAction.text = textContext.getString(R.string.donation_action)
+        binding.donationCard.contentDescription = textContext.getString(R.string.donation_card_description)
         binding.themeModeLabel.text = textContext.getString(R.string.theme_mode)
         binding.themeModeValue.text = themeModeLabel(themeMode)
         binding.themeLabel.text = textContext.getString(R.string.theme_color)
@@ -228,6 +242,22 @@ class SettingsActivity : AppCompatActivity() {
         binding.topBar.setBackgroundColor(palette.background)
         binding.content.setBackgroundColor(palette.background)
         binding.titleText.setTextColor(palette.ink)
+        binding.donationTitle.setTextColor(palette.ink)
+        binding.donationSubtitle.setTextColor(palette.inkSoft)
+        binding.donationIcon.setTextColor(palette.revealedCell)
+        binding.donationAction.setTextColor(palette.revealedCell)
+        binding.donationCard.background = GradientDrawable().apply {
+            cornerRadius = 22f * resources.displayMetrics.density
+            setColor(palette.panel)
+        }
+        binding.donationIcon.background = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(palette.accent)
+        }
+        binding.donationAction.background = GradientDrawable().apply {
+            cornerRadius = 16f * resources.displayMetrics.density
+            setColor(palette.accent)
+        }
         binding.recentGamesText.setTextColor(palette.ink)
         binding.recentGamesValue.setTextColor(palette.inkSoft)
         binding.languageText.setTextColor(palette.ink)
