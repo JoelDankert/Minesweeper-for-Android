@@ -1,0 +1,4 @@
+• Added optional support reminders and a support information page
+• Added Polish, Italian and Portuguese translations
+• Updated the launcher icon and refined the settings and support cards
+• Improved the daily reminder confirmation

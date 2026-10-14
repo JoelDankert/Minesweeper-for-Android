@@ -1,13 +1,14 @@
-Minesweeper is a native Android implementation of the classic puzzle game with configurable modes and an offline-first design.
+Minesweeper brings the classic puzzle to Android with custom game modes and a board you can tune to your liking. Play offline, with no ads, tracking or account.
+
+Create modes with your own name, width, height and mine count, or use the included presets. Switch on no-guess mode for boards designed to be solved by logic, or try no-flag mode. Scores are kept separately for different mode settings.
 
 Features:
 
-- Custom board sizes and mine counts
-- Optional no-guess mode
-- Optional no-flag mode
-- Saved in-progress games
-- Recent games and score history
-- Adjustable controls, animations, vibration, and visual settings
-- Light and dark themes
+• Save and resume games in progress
+• View recent games and score history
+• Choose between reveal and flag controls, with long-press for the other action and optional cording
+• Adjust animations, vibration, screen shake, tile display and control behavior
+• Pick light or dark mode and different color themes
+• Customize the board while keeping the familiar Minesweeper rules
 
-The app does not require network access and does not include ads, analytics, billing, or account features.
+The app is open source and works without network access. It has no ads, analytics, accounts or in-app purchases. If you enjoy it, you can optionally support further development from within the app.
