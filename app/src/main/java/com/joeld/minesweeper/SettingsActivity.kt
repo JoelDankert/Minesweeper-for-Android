@@ -65,6 +65,9 @@ class SettingsActivity : AppCompatActivity() {
         setupInsets()
         bindValues()
         binding.backButton.setOnClickListener { finish() }
+        binding.donationCard.root.setOnClickListener {
+            startActivity(Intent(this, DonationInfoActivity::class.java))
+        }
         binding.themeModeValue.setOnClickListener { cycleThemeMode() }
         binding.themeValue.setOnClickListener { cycleTheme() }
         binding.languageValue.setOnClickListener { cycleLanguage() }
@@ -159,7 +162,8 @@ class SettingsActivity : AppCompatActivity() {
                     screenShakeEnabled = advanced.screenShakeEnabled,
                     longPressDelayMs = advanced.longPressDelayMs,
                     animationSpeedPercent = advanced.animationSpeedPercent,
-                    amoledTheme = advanced.amoledTheme
+                    amoledTheme = advanced.amoledTheme,
+                    donationDailyPromptEnabled = advanced.donationDailyPromptEnabled
                 )
             } ?: base
         }
@@ -184,7 +188,8 @@ class SettingsActivity : AppCompatActivity() {
             candidate.screenShakeEnabled != settings.screenShakeEnabled ||
             candidate.longPressDelayMs != settings.longPressDelayMs ||
             candidate.animationSpeedPercent != settings.animationSpeedPercent ||
-            candidate.amoledTheme != settings.amoledTheme
+            candidate.amoledTheme != settings.amoledTheme ||
+            candidate.donationDailyPromptEnabled != settings.donationDailyPromptEnabled
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -199,6 +204,10 @@ class SettingsActivity : AppCompatActivity() {
         palette = ThemeCatalog.resolve(themeId, previewUsesDarkPalette(), previewUsesAmoledPalette())
         val textContext = languageMode.previewContext(this)
         binding.titleText.text = textContext.getString(R.string.settings)
+        binding.donationCard.donationTitle.text = textContext.getString(R.string.donation_title)
+        binding.donationCard.donationSubtitle.text = textContext.getString(R.string.donation_subtitle)
+        binding.donationCard.donationAction.text = textContext.getString(R.string.donation_action)
+        binding.donationCard.root.contentDescription = textContext.getString(R.string.donation_card_description)
         binding.themeModeLabel.text = textContext.getString(R.string.theme_mode)
         binding.themeModeValue.text = themeModeLabel(themeMode)
         binding.themeLabel.text = textContext.getString(R.string.theme_color)
@@ -228,6 +237,7 @@ class SettingsActivity : AppCompatActivity() {
         binding.topBar.setBackgroundColor(palette.background)
         binding.content.setBackgroundColor(palette.background)
         binding.titleText.setTextColor(palette.ink)
+        styleDonationCard(binding.donationCard, palette, resources.displayMetrics.density)
         binding.recentGamesText.setTextColor(palette.ink)
         binding.recentGamesValue.setTextColor(palette.inkSoft)
         binding.languageText.setTextColor(palette.ink)

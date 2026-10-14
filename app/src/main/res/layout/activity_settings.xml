@@ -44,6 +44,10 @@
             android:orientation="vertical"
             android:padding="20dp">
 
+            <include
+                android:id="@+id/donationCard"
+                layout="@layout/item_donation_card" />
+
             <LinearLayout
                 android:id="@+id/themeModeRow"
                 android:layout_width="match_parent"

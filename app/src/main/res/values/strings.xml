@@ -3,6 +3,17 @@
     <string name="app_name">Minesweeper</string>
     <string name="new_game">New game</string>
     <string name="new_game_short">New Game</string>
+    <string name="donation_title">Support Minesweeper</string>
+
+    <string name="donation_action">More Info</string>
+    <string name="donation_subtitle">I could really use a coffee ;)</string>
+    <string name="donation_card_description">More information about supporting Minesweeper.</string>
+    <string name="donation_unavailable">No browser available to open the support page.</string>
+
+    <string name="donation_banner_dismiss">Dismiss support reminder for today</string>
+    <string name="donation_daily_prompt">Show daily support reminder</string>
+    <string name="donation_daily_prompt_disable_confirmation">That’s a pity – voluntary donations help keep the game in development. Do you really want to turn off the daily reminder?</string>
+    <string name="disable">Turn off</string>
     <string name="settings">Settings</string>
     <string name="settings_subtitle">Theme, controls and defaults.</string>
     <string name="timer_idle">0s</string>
@@ -133,4 +144,11 @@
         <item>Almost!</item>
         <item>Retry!</item>
     </string-array>
+    <string name="donation_info_title">Why I made Minesweeper</string>
+    <string name="donation_info_intro">I built this app for myself because I wanted classic Minesweeper with more options: custom boards, no-guess and no-flag modes, and saved games. It works fully offline and is open source.</string>
+    <string name="donation_info_why_title">Why your support matters</string>
+    <string name="donation_info_why_body">There are no ads, analytics, accounts or in-app purchases. I work on the game in my spare time; a coffee helps me fix bugs and add features that fit.</string>
+    <string name="donation_info_thanks">Feedback and bug reports help too. Thanks for playing.</string>
+    <string name="donation_back">Back</string>
+    <string name="donation_buy_coffee">Buy Me A Coffee</string>
 </resources>

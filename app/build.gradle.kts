@@ -10,8 +10,8 @@ android {
         applicationId = "com.joeld.minesweeper"
         minSdk = 23
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.6"
+        versionCode = 18
+        versionName = "1.17"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -3,6 +3,17 @@
     <string name="app_name">Minesweeper</string>
     <string name="new_game">Nueva partida</string>
     <string name="new_game_short">Nueva partida</string>
+    <string name="donation_title">Apoya Minesweeper</string>
+
+    <string name="donation_action">Más información</string>
+    <string name="donation_subtitle">un café me vendría genial ;)</string>
+    <string name="donation_card_description">Más información sobre cómo apoyar Minesweeper.</string>
+    <string name="donation_unavailable">No hay ningún navegador disponible para abrir la página de apoyo.</string>
+
+    <string name="donation_banner_dismiss">Descartar el recordatorio de apoyo por hoy</string>
+    <string name="donation_daily_prompt">Mostrar el recordatorio diario de apoyo</string>
+    <string name="donation_daily_prompt_disable_confirmation">Es una pena: las donaciones voluntarias ayudan a seguir desarrollando el juego. ¿Seguro que quieres desactivar el recordatorio diario?</string>
+    <string name="disable">Desactivar</string>
     <string name="settings">Ajustes</string>
     <string name="settings_subtitle">Tema, controles y valores predeterminados.</string>
     <string name="timer_idle">0s</string>
@@ -133,4 +144,11 @@
         <item>¡Casi!</item>
         <item>¡Reintentar!</item>
     </string-array>
+    <string name="donation_info_title">Por qué hice Minesweeper</string>
+    <string name="donation_info_intro">Hice esta app para mí porque quería el Minesweeper clásico con más opciones: tableros personalizados, modos sin adivinar o sin banderas y partidas guardadas. Funciona completamente sin conexión y es de código abierto.</string>
+    <string name="donation_info_why_title">Por qué ayuda tu apoyo</string>
+    <string name="donation_info_why_body">No hay anuncios, analíticas, cuentas ni compras en la app. Trabajo en el juego en mi tiempo libre; un café me ayuda a corregir errores y añadir funciones que encajen.</string>
+    <string name="donation_info_thanks">Los comentarios y avisos de errores también ayudan. Gracias por jugar.</string>
+    <string name="donation_back">Volver</string>
+    <string name="donation_buy_coffee">Invítame a un café</string>
 </resources>

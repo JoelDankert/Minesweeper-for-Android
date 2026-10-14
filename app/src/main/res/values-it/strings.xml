@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Minesweeper</string>
+    <string name="new_game">Nuova partita</string>
+    <string name="new_game_short">Nuova partita</string>
+    <string name="donation_title">Sostieni Minesweeper</string>
+
+    <string name="donation_action">Scopri di più</string>
+    <string name="donation_subtitle">Un caffè mi farebbe proprio bene ;)</string>
+    <string name="donation_card_description">Scopri come sostenere Minesweeper.</string>
+    <string name="donation_unavailable">Nessun browser disponibile per aprire la pagina di supporto.</string>
+
+    <string name="donation_banner_dismiss">Nascondi il promemoria di oggi</string>
+    <string name="donation_daily_prompt">Mostra il promemoria giornaliero per il supporto</string>
+    <string name="donation_daily_prompt_disable_confirmation">Peccato: le donazioni volontarie aiutano a continuare lo sviluppo del gioco. Vuoi davvero disattivare il promemoria giornaliero?</string>
+    <string name="disable">Disattiva</string>
+    <string name="settings">Impostazioni</string>
+    <string name="settings_subtitle">Tema, comandi e opzioni predefinite.</string>
+    <string name="timer_idle">0s</string>
+    <string name="status_won">Completata</string>
+    <string name="status_lost">Mina</string>
+    <string name="scoreboard_title_default">Classifica</string>
+    <string name="scoreboard_title_won">Migliori 5</string>
+    <string name="scoreboard_title_lost">Migliori 5</string>
+    <string name="scoreboard_empty">Ancora nessuna vittoria</string>
+    <string name="reveal">Scopri</string>
+    <string name="flag">Bandiera</string>
+    <string name="back">Indietro</string>
+    <string name="continue_game">Continua</string>
+    <string name="create_mode">Crea</string>
+    <string name="add_mode_title">Aggiungi modalità</string>
+    <string name="edit_mode">Modifica modalità</string>
+    <string name="flag_mode_default">Avvia in modalità bandiera</string>
+    <string name="show_bottom_toggle">Mostra selettore scopri/bandiera</string>
+    <string name="show_top_clears">Mostra le migliori vittorie</string>
+    <string name="show_mine_density">Mostra densità delle mine</string>
+    <string name="show_recent_modes_button">Mostra pulsante modalità recenti</string>
+    <string name="min_fade">Sfumatura min.</string>
+    <string name="max_fade">Sfumatura max.</string>
+    <string name="round_corners">Arrotonda gli angoli</string>
+    <string name="merge_tiles">Unisci le caselle</string>
+    <string name="fill_gaps">Riempi gli spazi</string>
+    <string name="enable_cording">Abilita apertura rapida</string>
+    <string name="vibrate_enabled">Vibrazione</string>
+    <string name="screen_shake">Scuotimento dello schermo</string>
+    <string name="dark_theme">Tema scuro</string>
+    <string name="theme_mode">Modalità tema</string>
+    <string name="theme_mode_system">Sistema</string>
+    <string name="theme_mode_light">Chiaro</string>
+    <string name="theme_mode_dark">Scuro</string>
+    <string name="amoled_theme">Sfondo nero AMOLED</string>
+    <string name="theme_color">Colore del tema</string>
+    <string name="theme_color_sand">Sabbia</string>
+    <string name="theme_color_sage">Salvia</string>
+    <string name="theme_color_mist">Nebbia</string>
+    <string name="theme_color_rose">Rosa</string>
+    <string name="theme_color_apricot">Albicocca</string>
+    <string name="theme_color_lagoon">Laguna</string>
+    <string name="theme_color_ember">Brace</string>
+    <string name="theme_color_iris">Iris</string>
+    <string name="theme_color_citrus">Agrumi</string>
+    <string name="language">Lingua</string>
+    <string name="language_system">Sistema</string>
+    <string name="recent_games">Partite recenti</string>
+    <string name="recent_game_lost">Persa</string>
+    <string name="advanced">Avanzate</string>
+    <string name="restore_default_modes">Ripristina modalità predefinite</string>
+    <string name="pending">In sospeso</string>
+    <string name="default_modes">Modalità predefinite</string>
+    <string name="restore">Ripristina</string>
+    <string name="long_press_delay">Durata della pressione prolungata</string>
+    <string name="animation_speed">Velocità delle animazioni</string>
+    <string name="open">Apri</string>
+    <string name="show_more">Mostra altro</string>
+    <string name="show_less">Mostra meno</string>
+    <string name="apply">Applica</string>
+    <string name="close">Chiudi</string>
+    <string name="cancel">Annulla</string>
+    <string name="continue_label">Continua</string>
+    <string name="mode">Modalità</string>
+    <string name="mode_subtitle">Tutte le modalità sono in un unico elenco. Aggiungile, modificale o rimuovile liberamente.</string>
+    <string name="name">Nome</string>
+    <string name="width">Larghezza</string>
+    <string name="height">Altezza</string>
+    <string name="mines">Mine</string>
+    <string name="mines_or_mine_density">Mine / Densità delle mine</string>
+    <string name="no_guess_mode">Modalità senza tentativi a caso</string>
+    <string name="no_flag_mode">Modalità senza bandiere</string>
+    <string name="no_guess_failed_title">Generazione senza tentativi fallita</string>
+    <string name="no_guess_failed_message">Nessuna griglia valida senza tentativi a caso trovata per questa partenza. Riprova.</string>
+    <string name="mode_change_confirm_title">Modifica della modalità</string>
+    <string name="mode_change_confirm_message">I punteggi ottenuti con le impostazioni precedenti non saranno più mostrati qui. Continuare?</string>
+    <string name="mode_already_exists_title">Modalità già esistente</string>
+    <string name="mode_already_exists_message">%1$s ha già queste impostazioni. Vuoi usare quella modalità?</string>
+    <string name="use_existing">Usa quella esistente</string>
+    <string name="create_anyway">Crea comunque</string>
+    <string name="mode_delete_confirm_message">Questa modalità verrà rimossa. I punteggi ottenuti con queste impostazioni non saranno più mostrati qui. Continuare?</string>
+    <string name="clear_scores">Cancella punteggi</string>
+    <string name="clear">Cancella</string>
+    <string name="clear_scores_confirm_message">Tutti i punteggi per queste impostazioni verranno cancellati. Continuare?</string>
+    <string name="clear_all_scores">Cancella tutti i punteggi</string>
+    <string name="all_scores">Tutti i punteggi</string>
+    <string name="clear_all_scores_confirm_message">Tutti i punteggi salvati verranno cancellati. Continuare?</string>
+    <string name="mode_error">La griglia deve essere almeno 5 x 5 e non superare 200 x 200; lascia spazio per una prima mossa sicura.</string>
+    <string name="save">Salva</string>
+    <string name="add">Aggiungi</string>
+    <string name="delete">Elimina</string>
+    <string name="delete_recent_game_message">Questo punteggio verrà rimosso dalle partite recenti.</string>
+    <string name="add_mode">Aggiungi modalità</string>
+    <string name="mode_meta">%1$d x %2$d · %3$d%4$s</string>
+    <string name="no_guess_short">NG</string>
+    <string name="no_flag_short">NF</string>
+    <string name="mode_delete_error">Deve rimanere almeno una modalità.</string>
+    <string name="info_theme_mode">Scegli se usare il tema di sistema, sempre quello chiaro o sempre quello scuro.</string>
+    <string name="info_theme_color">Cambia il colore della griglia e degli elementi dell’interfaccia. Puoi vedere subito l’anteprima; tocca Applica per salvare.</string>
+    <string name="info_language">Cambia la lingua dell’app. Sistema usa la lingua del dispositivo e, se non disponibile, passa all’inglese.</string>
+    <string name="info_flag_mode_default">Le nuove partite iniziano in modalità bandiera anziché in modalità scopri.</string>
+    <string name="info_enable_cording">Toccando un numero scoperto si aprono le caselle nascoste vicine se è stato piazzato il giusto numero di bandiere.</string>
+    <string name="info_vibrate_enabled">Aggiunge un riscontro tattile alle azioni di gioco.</string>
+    <string name="info_amoled_theme">Usa superfici completamente nere quando è attivo il tema scuro.</string>
+    <string name="info_show_bottom_toggle">Mostra il selettore scopri/bandiera nella parte inferiore della schermata di gioco.</string>
+    <string name="info_show_top_clears">Mostra i migliori punteggi delle partite vinte nel pannello di fine partita.</string>
+    <string name="info_show_mine_density">Mostra la densità delle mine invece del solo numero di mine nei riepiloghi delle modalità. Sfumatura min. e Sfumatura max. regolano l’intervallo di densità usato per la sfumatura di colore.</string>
+    <string name="info_show_recent_modes_button">Mostra nella schermata iniziale il pulsante Mostra altro per le modalità già giocate ma non salvate.</string>
+    <string name="info_round_corners">Arrotonda gli angoli visibili delle caselle.</string>
+    <string name="info_merge_tiles">Unisce le caselle scoperte adiacenti in forme più grandi quando gli angoli arrotondati sono attivi.</string>
+    <string name="info_fill_gaps">Riempie i piccoli spazi visivi tra caselle unite o quadrate.</string>
+    <string name="info_long_press_delay">Imposta per quanto tempo tenere premuta una casella perché la pressione sia considerata prolungata. La pressione prolungata esegue l’azione opposta: piazza una bandiera in modalità scopri e scopre una casella in modalità bandiera.</string>
+    <string name="info_animation_speed">Regola la velocità delle animazioni di scoperta e delle mine.</string>
+    <string name="info_restore_default_modes">Segna le modalità predefinite da ripristinare quando tocchi Applica nella schermata principale delle impostazioni.</string>
+    <string name="info_clear_all_scores">Elimina tutti i punteggi salvati dopo la conferma.</string>
+    <string name="info_screen_shake">Scuote brevemente la griglia quando colpisci una mina.</string>
+    <string-array name="game_win_headlines">
+        <item>Bravo!</item>
+        <item>Ottimo lavoro!</item>
+        <item>Impeccabile!</item>
+        <item>Grande!</item>
+        <item>Perfetto!</item>
+    </string-array>
+    <string-array name="game_loss_headlines">
+        <item>Ancora!</item>
+        <item>Alla prossima!</item>
+        <item>Ci sei andato vicino!</item>
+        <item>Quasi!</item>
+        <item>Riprova!</item>
+    </string-array>
+    <string name="donation_info_title">Perché ho creato Minesweeper</string>
+    <string name="donation_info_intro">Ho creato quest’app per me: volevo il classico Campo minato con più opzioni, come griglie personalizzate, modalità senza tentativi a caso o senza bandiere e partite salvate. Funziona interamente offline ed è open source.</string>
+    <string name="donation_info_why_title">Perché il tuo supporto conta</string>
+    <string name="donation_info_why_body">Niente pubblicità, analisi dei dati, account o acquisti in-app. Lavoro al gioco nel tempo libero: un caffè mi aiuta a correggere i bug e ad aggiungere nuove funzioni utili.</string>
+    <string name="donation_info_thanks">Anche i suggerimenti e le segnalazioni di bug sono utili. Grazie per aver giocato.</string>
+    <string name="donation_back">Indietro</string>
+    <string name="donation_buy_coffee">Offrimi un caffè</string>
+</resources>

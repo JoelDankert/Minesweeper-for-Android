@@ -1,0 +1,14 @@
+Minesweeper bringt das klassische Rätselspiel auf Android – mit eigenen Spielmodi und vielen Einstellungen für das Spielfeld. Die App funktioniert offline, ohne Werbung, Tracking oder Nutzerkonto.
+
+Erstelle Modi mit eigenem Namen, Breite, Höhe und Minenanzahl oder nutze die vorhandenen Modi. Im optionalen „Ohne Raten“-Modus lassen sich Spielfelder durch logisches Schließen lösen. Für eine andere Herausforderung gibt es den „Ohne Flaggen“-Modus. Unterschiedliche Moduseinstellungen haben getrennte Bestenlisten.
+
+Funktionen:
+
+• Angefangene Spiele speichern und fortsetzen
+• Letzte Spiele und Punkteverlauf ansehen
+• Aufdecken und Flaggen umschalten, die jeweils andere Aktion per langem Drücken nutzen und optionales Cording aktivieren
+• Animationen, Vibration, Bildschirmwackeln, Kacheldarstellung und Bedienung anpassen
+• Helles und dunkles Design sowie verschiedene Farbschemata wählen
+• Eigene Spielfelder erstellen, ohne auf die klassischen Minesweeper-Regeln zu verzichten
+
+Die App ist Open Source und benötigt keinen Netzwerkzugriff. Es gibt weder Werbung noch Analytik, Konten oder In-App-Käufe. Wer möchte, kann die Weiterentwicklung freiwillig in der App unterstützen.

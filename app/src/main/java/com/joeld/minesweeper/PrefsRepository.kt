@@ -62,6 +62,7 @@ class PrefsRepository(context: Context) {
             screenShakeEnabled = prefs.getBoolean(KEY_SCREEN_SHAKE_ENABLED, true),
             longPressDelayMs = clampLongPressDelay(prefs.getInt(KEY_LONG_PRESS_DELAY_MS, 250)),
             animationSpeedPercent = clampAnimationSpeed(prefs.getInt(KEY_ANIMATION_SPEED_PERCENT, 50)),
+            donationDailyPromptEnabled = prefs.getBoolean(KEY_DONATION_DAILY_PROMPT_ENABLED, true),
             themeMode = themeMode,
             amoledTheme = amoledTheme,
             themeId = prefs.getString(KEY_THEME_ID, "sand") ?: "sand",
@@ -88,12 +89,25 @@ class PrefsRepository(context: Context) {
             .putBoolean(KEY_SCREEN_SHAKE_ENABLED, settings.screenShakeEnabled)
             .putInt(KEY_LONG_PRESS_DELAY_MS, clampLongPressDelay(settings.longPressDelayMs))
             .putInt(KEY_ANIMATION_SPEED_PERCENT, clampAnimationSpeed(settings.animationSpeedPercent))
+            .putBoolean(KEY_DONATION_DAILY_PROMPT_ENABLED, settings.donationDailyPromptEnabled)
             .putBoolean(KEY_DARK_THEME, settings.themeMode == ThemeMode.DARK)
             .putString(KEY_THEME_MODE, settings.themeMode.id)
             .putBoolean(KEY_AMOLED_THEME, settings.amoledTheme)
             .putString(KEY_THEME_ID, settings.themeId)
             .putString(KEY_LANGUAGE_MODE, settings.languageMode.id)
             .apply()
+    }
+
+    fun shouldShowDonationPrompt(todayLocalDate: String): Boolean {
+        return DonationPromptPolicy.shouldShow(
+            enabled = prefs.getBoolean(KEY_DONATION_DAILY_PROMPT_ENABLED, true),
+            dismissedLocalDate = prefs.getString(KEY_DONATION_PROMPT_DISMISSED_DATE, null),
+            todayLocalDate = todayLocalDate
+        )
+    }
+
+    fun dismissDonationPrompt(todayLocalDate: String) {
+        prefs.edit().putString(KEY_DONATION_PROMPT_DISMISSED_DATE, todayLocalDate).apply()
     }
 
     fun loadSelectedModeId(modes: List<GameMode>): String {
@@ -504,6 +518,8 @@ class PrefsRepository(context: Context) {
         const val KEY_SCREEN_SHAKE_ENABLED = "screen_shake_enabled"
         const val KEY_LONG_PRESS_DELAY_MS = "long_press_delay_ms"
         const val KEY_ANIMATION_SPEED_PERCENT = "animation_speed_percent"
+        const val KEY_DONATION_DAILY_PROMPT_ENABLED = "donation_daily_prompt_enabled"
+        const val KEY_DONATION_PROMPT_DISMISSED_DATE = "donation_prompt_dismissed_date"
         const val KEY_DARK_THEME = "dark_theme"
         const val KEY_THEME_MODE = "theme_mode"
         const val KEY_AMOLED_THEME = "amoled_theme"

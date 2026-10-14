@@ -3,6 +3,17 @@
     <string name="app_name">Minesweeper</string>
     <string name="new_game">Neues Spiel</string>
     <string name="new_game_short">Neues Spiel</string>
+    <string name="donation_title">Minesweeper unterstützen</string>
+
+    <string name="donation_action">Mehr erfahren</string>
+    <string name="donation_subtitle">Ein Kaffee würde mir echt guttun ;)</string>
+    <string name="donation_card_description">Mehr über die Unterstützung von Minesweeper erfahren.</string>
+    <string name="donation_unavailable">Kein Browser zum Öffnen der Unterstützungsseite verfügbar.</string>
+
+    <string name="donation_banner_dismiss">Unterstützungshinweis für heute schließen</string>
+    <string name="donation_daily_prompt">Täglichen Unterstützungshinweis anzeigen</string>
+    <string name="donation_daily_prompt_disable_confirmation">Schade – freiwillige Spenden helfen, das Spiel weiterzuentwickeln. Möchtest du den täglichen Hinweis wirklich ausschalten?</string>
+    <string name="disable">Ausschalten</string>
     <string name="settings">Einstellungen</string>
     <string name="settings_subtitle">Design, Steuerung und Standardwerte.</string>
     <string name="timer_idle">0s</string>
@@ -133,4 +144,11 @@
         <item>Fast!</item>
         <item>Erneut!</item>
     </string-array>
+    <string name="donation_info_title">Warum ich Minesweeper gebaut habe</string>
+    <string name="donation_info_intro">Ich wollte klassisches Minesweeper mit mehr Möglichkeiten: eigenen Spielfeldern, Modi ohne Raten oder Flaggen und gespeicherten Spielen. Deshalb habe ich die App erst mal für mich gebaut. Sie funktioniert komplett offline und ist Open Source.</string>
+    <string name="donation_info_why_title">Warum Unterstützung hilft</string>
+    <string name="donation_info_why_body">Es gibt keine Werbung, Analyse, Konten oder In-App-Käufe. Ich arbeite in meiner Freizeit am Spiel; ein Kaffee hilft mir, Fehler zu beheben und passende Funktionen hinzuzufügen.</string>
+    <string name="donation_info_thanks">Feedback und Fehlermeldungen helfen auch. Danke fürs Spielen.</string>
+    <string name="donation_back">Zurück</string>
+    <string name="donation_buy_coffee">Spendier mir einen Kaffee</string>
 </resources>

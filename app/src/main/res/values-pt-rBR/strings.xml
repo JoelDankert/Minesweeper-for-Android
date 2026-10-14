@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Minesweeper</string>
+    <string name="new_game">Novo jogo</string>
+    <string name="new_game_short">Novo jogo</string>
+    <string name="donation_title">Apoie o Minesweeper</string>
+
+    <string name="donation_action">Saiba mais</string>
+    <string name="donation_subtitle">um cafezinho cairia muito bem ;)</string>
+    <string name="donation_card_description">Mais informações sobre como apoiar o Minesweeper.</string>
+    <string name="donation_unavailable">Nenhum navegador disponível para abrir a página de apoio.</string>
+
+    <string name="donation_banner_dismiss">Dispensar o lembrete de apoio por hoje</string>
+    <string name="donation_daily_prompt">Mostrar lembrete diário de apoio</string>
+    <string name="donation_daily_prompt_disable_confirmation">Que pena! As doações voluntárias ajudam a manter o jogo em desenvolvimento. Quer mesmo desativar o lembrete diário?</string>
+    <string name="disable">Desativar</string>
+    <string name="settings">Configurações</string>
+    <string name="settings_subtitle">Tema, controles e padrões.</string>
+    <string name="timer_idle">0s</string>
+    <string name="status_won">Concluído</string>
+    <string name="status_lost">Mina</string>
+    <string name="scoreboard_title_default">Placar</string>
+    <string name="scoreboard_title_won">Top 5</string>
+    <string name="scoreboard_title_lost">Top 5</string>
+    <string name="scoreboard_empty">Nenhuma vitória ainda</string>
+    <string name="reveal">Revelar</string>
+    <string name="flag">Marcar</string>
+    <string name="back">Voltar</string>
+    <string name="continue_game">Continuar</string>
+    <string name="create_mode">Criar</string>
+    <string name="add_mode_title">Adicionar modo</string>
+    <string name="edit_mode">Editar modo</string>
+    <string name="flag_mode_default">Iniciar no modo de marcação</string>
+    <string name="show_bottom_toggle">Mostrar botão de revelar/marcar</string>
+    <string name="show_top_clears">Mostrar melhores vitórias</string>
+    <string name="show_mine_density">Mostrar densidade de minas</string>
+    <string name="show_recent_modes_button">Mostrar botão de modos recentes</string>
+    <string name="min_fade">Desvanecimento mín.</string>
+    <string name="max_fade">Desvanecimento máx.</string>
+    <string name="round_corners">Arredondar cantos</string>
+    <string name="merge_tiles">Unir casas</string>
+    <string name="fill_gaps">Preencher espaços</string>
+    <string name="enable_cording">Ativar abertura automática</string>
+    <string name="vibrate_enabled">Vibrar</string>
+    <string name="screen_shake">Sacudir a tela</string>
+    <string name="dark_theme">Modo escuro</string>
+    <string name="theme_mode">Modo do tema</string>
+    <string name="theme_mode_system">Sistema</string>
+    <string name="theme_mode_light">Claro</string>
+    <string name="theme_mode_dark">Escuro</string>
+    <string name="amoled_theme">Fundos pretos para AMOLED</string>
+    <string name="theme_color">Cor do tema</string>
+    <string name="theme_color_sand">Areia</string>
+    <string name="theme_color_sage">Sálvia</string>
+    <string name="theme_color_mist">Névoa</string>
+    <string name="theme_color_rose">Rosa</string>
+    <string name="theme_color_apricot">Damasco</string>
+    <string name="theme_color_lagoon">Lagoa</string>
+    <string name="theme_color_ember">Brasa</string>
+    <string name="theme_color_iris">Íris</string>
+    <string name="theme_color_citrus">Cítrico</string>
+    <string name="language">Idioma</string>
+    <string name="language_system">Sistema</string>
+    <string name="recent_games">Jogos recentes</string>
+    <string name="recent_game_lost">Derrota</string>
+    <string name="advanced">Avançado</string>
+    <string name="restore_default_modes">Restaurar modos padrão</string>
+    <string name="pending">Pendente</string>
+    <string name="default_modes">Modos padrão</string>
+    <string name="restore">Restaurar</string>
+    <string name="long_press_delay">Tempo para toque longo</string>
+    <string name="animation_speed">Velocidade das animações</string>
+    <string name="open">Abrir</string>
+    <string name="show_more">Mostrar mais</string>
+    <string name="show_less">Mostrar menos</string>
+    <string name="apply">Aplicar</string>
+    <string name="close">Fechar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="continue_label">Continuar</string>
+    <string name="mode">Modo</string>
+    <string name="mode_subtitle">Tudo em uma lista. Adicione, edite ou remova à vontade.</string>
+    <string name="name">Nome</string>
+    <string name="width">Largura</string>
+    <string name="height">Altura</string>
+    <string name="mines">Minas</string>
+    <string name="mines_or_mine_density">Minas / Densidade de minas</string>
+    <string name="no_guess_mode">Modo sem adivinhação</string>
+    <string name="no_flag_mode">Modo sem bandeiras</string>
+    <string name="no_guess_failed_title">Falha no modo sem adivinhação</string>
+    <string name="no_guess_failed_message">Não foi encontrado um campo válido sem adivinhação para este início. Tente novamente.</string>
+    <string name="mode_change_confirm_title">Alterar modo</string>
+    <string name="mode_change_confirm_message">As pontuações obtidas com as configurações anteriores deixarão de aparecer aqui. Continuar?</string>
+    <string name="mode_already_exists_title">Modo já existente</string>
+    <string name="mode_already_exists_message">%1$s já tem essas configurações. Usar esse modo?</string>
+    <string name="use_existing">Usar existente</string>
+    <string name="create_anyway">Criar mesmo assim</string>
+    <string name="mode_delete_confirm_message">Este modo será removido. As pontuações obtidas com essas configurações deixarão de aparecer aqui. Continuar?</string>
+    <string name="clear_scores">Apagar pontuações</string>
+    <string name="clear">Apagar</string>
+    <string name="clear_scores_confirm_message">Todas as pontuações destas configurações serão apagadas. Continuar?</string>
+    <string name="clear_all_scores">Apagar todas as pontuações</string>
+    <string name="all_scores">Todas as pontuações</string>
+    <string name="clear_all_scores_confirm_message">Todas as pontuações salvas serão apagadas. Continuar?</string>
+    <string name="mode_error">Use no mínimo 5 x 5 e no máximo 200 x 200, deixando espaço para uma abertura segura.</string>
+    <string name="save">Salvar</string>
+    <string name="add">Adicionar</string>
+    <string name="delete">Excluir</string>
+    <string name="delete_recent_game_message">Esta pontuação será removida dos jogos recentes.</string>
+    <string name="add_mode">Adicionar modo</string>
+    <string name="mode_meta">%1$d x %2$d · %3$d%4$s</string>
+    <string name="no_guess_short">NG</string>
+    <string name="no_flag_short">NF</string>
+    <string name="mode_delete_error">É preciso manter pelo menos um modo.</string>
+    <string name="info_theme_mode">Escolhe se o aplicativo segue o tema do sistema ou usa sempre o tema claro ou escuro.</string>
+    <string name="info_theme_color">Muda a cor de destaque do campo e da interface. A prévia aparece agora; a cor é salva ao tocar em Aplicar.</string>
+    <string name="info_language">Muda o idioma do aplicativo. A opção Sistema segue o idioma do dispositivo e usa inglês se não houver tradução.</string>
+    <string name="info_flag_mode_default">Novos jogos começam no modo de marcação em vez do modo de revelação.</string>
+    <string name="info_enable_cording">Ao tocar em um número revelado, as casas ocultas ao redor são abertas se houver a quantidade certa de bandeiras.</string>
+    <string name="info_vibrate_enabled">Adiciona resposta tátil às ações do jogo.</string>
+    <string name="info_amoled_theme">Usa fundos totalmente pretos quando o modo escuro está ativo.</string>
+    <string name="info_show_bottom_toggle">Mostra o botão para alternar entre revelar e marcar na parte inferior da tela do jogo.</string>
+    <string name="info_show_top_clears">Mostra as melhores pontuações de vitórias no painel de fim de jogo.</string>
+    <string name="info_show_mine_density">Mostra a densidade de minas, e não só a quantidade, nos resumos dos modos. Desvanecimento mín. e máx. definem o intervalo de densidade usado no gradiente de cores.</string>
+    <string name="info_show_recent_modes_button">Mostra na tela inicial o botão Mostrar mais para modos já jogados, mas não salvos.</string>
+    <string name="info_round_corners">Arredonda os cantos visíveis das casas.</string>
+    <string name="info_merge_tiles">Une casas reveladas adjacentes em formas maiores quando os cantos arredondados estão ativados.</string>
+    <string name="info_fill_gaps">Preenche pequenos espaços visuais entre casas unidas ou quadradas.</string>
+    <string name="info_long_press_delay">Define por quanto tempo é preciso segurar uma casa para contar como toque longo. O toque longo faz a ação oposta: marca no modo de revelação e revela no modo de marcação.</string>
+    <string name="info_animation_speed">Controla a velocidade das animações de revelação e de minas.</string>
+    <string name="info_restore_default_modes">Marca os modos padrão para restauração ao tocar em Aplicar na tela principal de configurações.</string>
+    <string name="info_clear_all_scores">Apaga todas as pontuações salvas após a confirmação.</string>
+    <string name="info_screen_shake">Sacode o campo brevemente ao atingir uma mina.</string>
+    <string-array name="game_win_headlines">
+        <item>Boa!</item>
+        <item>Mandou bem!</item>
+        <item>Sem erros!</item>
+        <item>Arrasou!</item>
+        <item>Perfeito!</item>
+    </string-array>
+    <string-array name="game_loss_headlines">
+        <item>De novo!</item>
+        <item>Na próxima!</item>
+        <item>Por pouco!</item>
+        <item>Quase!</item>
+        <item>Tente outra vez!</item>
+    </string-array>
+    <string name="donation_info_title">Por que criei o Minesweeper</string>
+    <string name="donation_info_intro">Criei este aplicativo para mim porque queria o Campo Minado clássico com mais opções: campos personalizados, modos sem adivinhação e sem bandeiras, e jogos salvos. Funciona totalmente offline e tem código aberto.</string>
+    <string name="donation_info_why_title">Por que seu apoio importa</string>
+    <string name="donation_info_why_body">Sem anúncios, análises de uso, contas nem compras no aplicativo. Desenvolvo o jogo no meu tempo livre; um cafezinho me ajuda a corrigir erros e adicionar recursos que fazem sentido.</string>
+    <string name="donation_info_thanks">Comentários e relatos de erros também ajudam. Obrigado por jogar.</string>
+    <string name="donation_back">Voltar</string>
+    <string name="donation_buy_coffee">Pagar um café para mim</string>
+</resources>

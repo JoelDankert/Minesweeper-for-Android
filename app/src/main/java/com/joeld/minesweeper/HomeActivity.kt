@@ -13,6 +13,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.joeld.minesweeper.databinding.ActivityHomeBinding
+import com.joeld.minesweeper.databinding.ItemDonationCardBinding
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
@@ -73,6 +77,9 @@ class HomeActivity : AppCompatActivity() {
 
     private fun rebuildModeList() {
         binding.modeStrip.removeAllViews()
+        if (repository.shouldShowDonationPrompt(todayLocalDate())) {
+            binding.modeStrip.addView(createDonationCard())
+        }
         val continuableRecentOnlyModes = recentOnlyModes.filter { repository.hasContinuableProgress(it.id) }
         val historyRecentOnlyModes = recentOnlyModes.filterNot { repository.hasContinuableProgress(it.id) }
         continuableRecentOnlyModes.forEach { mode ->
@@ -93,6 +100,18 @@ class HomeActivity : AppCompatActivity() {
             }
         }
         binding.createModeButton.visibility = View.VISIBLE
+    }
+
+    private fun createDonationCard(): View {
+        val card = ItemDonationCardBinding.inflate(layoutInflater, binding.modeStrip, false)
+        card.donationBannerClose.visibility = View.VISIBLE
+        card.root.setOnClickListener { startActivity(Intent(this, DonationInfoActivity::class.java)) }
+        card.donationBannerClose.setOnClickListener {
+            repository.dismissDonationPrompt(todayLocalDate())
+            binding.modeStrip.removeView(card.root)
+        }
+        styleDonationCard(card, palette, resources.displayMetrics.density)
+        return card.root
     }
 
     private fun createModeCard(mode: GameMode, dimmed: Boolean, savedMode: Boolean): View {
@@ -175,6 +194,9 @@ class HomeActivity : AppCompatActivity() {
                 .putExtra(GameActivity.EXTRA_RESUME, resume)
         )
     }
+
+    private fun todayLocalDate(): String =
+        SimpleDateFormat("yyyy-MM-dd", Locale.ROOT).format(Date())
 
     private fun applyPalette() {
         applySystemBars()

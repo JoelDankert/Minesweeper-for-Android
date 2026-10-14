@@ -1,0 +1,1 @@
+Klassisches Minesweeper mit eigenen Modi, offline und ohne Werbung.
